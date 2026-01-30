@@ -82,6 +82,12 @@ export default function AndroidView({ theme, toggleTheme, tools }: { theme: Them
           </div>
           <p className="text-xs text-rose-600/70 dark:text-rose-400/60 leading-relaxed">Your files never leave this device. Processing happens entirely in RAM.</p>
         </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-600">
+            Built by <span className="text-rose-500">potatameister</span>
+          </p>
+        </div>
       </main>
 
       {/* Bottom Nav */}

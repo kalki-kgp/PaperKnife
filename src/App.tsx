@@ -25,7 +25,13 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('web')
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as Theme) || 'light'
+      const savedTheme = localStorage.getItem('theme') as Theme
+      if (savedTheme) return savedTheme
+      
+      // Default to system preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark'
+      }
     }
     return 'light'
   })

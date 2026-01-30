@@ -4,21 +4,35 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-export const generateThumbnail = async (file: File): Promise<string> => {
+export interface PdfMetaData {
+  thumbnail: string
+  pageCount: number
+  isLocked: boolean
+}
+
+export const generateThumbnail = async (file: File): Promise<PdfMetaData> => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     
-    // Load the document with standard font maps (cMaps) to prevent missing text
+    // Load the document with local standard font maps (cMaps) for true offline support
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
-      cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
+      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
       cMapPacked: true,
     });
 
+    // Handle password protected files
+    loadingTask.onPassword = (updatePassword: (p: string) => void, reason: number) => {
+      console.warn('PDF is password protected', reason);
+      // We don't ask for password here, just flag it as locked
+      throw new Error('PASSWORD_REQUIRED');
+    };
+
     const pdf = await loadingTask.promise;
+    const pageCount = pdf.numPages;
     const page = await pdf.getPage(1);
     
-    const viewport = page.getViewport({ scale: 1.0 }); // Render at 1x scale
+    const viewport = page.getViewport({ scale: 1.0 });
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     
@@ -29,10 +43,20 @@ export const generateThumbnail = async (file: File): Promise<string> => {
     
     await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
     
-    // Return JPEG for smaller memory footprint
-    return canvas.toDataURL('image/jpeg', 0.8);
-  } catch (error) {
-    console.error('Thumbnail generation failed for file:', file.name, error);
-    return ''; // Return empty string on failure
+    return {
+      thumbnail: canvas.toDataURL('image/jpeg', 0.8),
+      pageCount,
+      isLocked: false
+    };
+  } catch (error: any) {
+    console.error('DEBUG: Metadata generation failed for file:', file.name, {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
+    if (error.message === 'PASSWORD_REQUIRED' || error.name === 'PasswordException') {
+      return { thumbnail: '', pageCount: 0, isLocked: true };
+    }
+    return { thumbnail: '', pageCount: 0, isLocked: false };
   }
 };

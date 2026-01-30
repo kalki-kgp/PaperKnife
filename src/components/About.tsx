@@ -38,7 +38,7 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             How it <span className="text-rose-500">Works.</span>
           </h2>
           <p className="text-xl text-gray-500 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            PaperKnife was built on a simple premise: your documents are none of our business.
+            PaperKnife was built on a simple premise: your documents are none of my business.
           </p>
         </section>
 
@@ -50,7 +50,7 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             </div>
             <h3 className="text-xl font-bold mb-4 dark:text-white">Zero-Server Architecture</h3>
             <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-sm">
-              Most PDF tools upload your files to their servers. We don't. Everything you do happens locally in your browser's memory. When you close the tab, the data is gone forever.
+              Most PDF tools upload your files to their servers. I don't. Everything you do happens locally in your browser's memory. When you close the tab, the data is gone forever.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             </div>
             <h3 className="text-xl font-bold mb-4 dark:text-white">Instant Edge Speed</h3>
             <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-sm">
-              By bypassing the upload and download process, we eliminate latency. Large PDF merges happen in milliseconds because the heavy lifting is done by your device's own hardware.
+              By bypassing the upload and download process, I eliminate latency. Large PDF merges happen in milliseconds because the heavy lifting is done by your device's own hardware.
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             </div>
             <h3 className="text-xl font-bold mb-4 dark:text-white">One Codebase, Two Souls</h3>
             <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-sm">
-              Our "Chameleon Mode" allows the same logic to power both this Web Dashboard and our native Android APK. We use Capacitor to bridge the gap between web and native.
+              My "Chameleon Mode" allows the same logic to power both this Web Dashboard and the native Android APK. I use Capacitor to bridge the gap between web and native.
             </p>
           </div>
 
@@ -80,7 +80,7 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             </div>
             <h3 className="text-xl font-bold mb-4 dark:text-white">Offline by Default</h3>
             <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-sm">
-              Because we don't rely on APIs, PaperKnife works perfectly without an internet connection once the page is loaded. Absolute privacy, even in Airplane mode.
+              Because I don't rely on APIs, PaperKnife works perfectly without an internet connection once the page is loaded. Absolute privacy, even in Airplane mode.
             </p>
           </div>
         </div>
@@ -88,9 +88,9 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
         {/* Support Section */}
         <section className="bg-rose-500 rounded-[3rem] p-8 md:p-16 text-white text-center shadow-2xl shadow-rose-500/20">
           <Heart className="mx-auto mb-6 opacity-80" size={48} fill="currentColor" />
-          <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Support the Project</h2>
+          <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Support My Work</h2>
           <p className="text-rose-100 mb-10 max-w-xl mx-auto leading-relaxed text-lg">
-            PaperKnife is 100% free and open-source. We never sell your data because we never see it. If you find this tool useful, consider supporting its development.
+            PaperKnife is 100% free and open-source. I never sell your data because I never see it. If you find this tool useful, consider supporting its development.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
@@ -113,8 +113,16 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
         </section>
       </main>
 
-      <footer className="py-12 text-center text-gray-400 dark:text-zinc-600 text-xs font-bold uppercase tracking-widest">
-        <p>© 2026 PaperKnife • Built for absolute privacy</p>
+      <footer className="py-12 border-t border-gray-100 dark:border-zinc-900 mt-10">
+        <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-600">
+          <p>© 2026 PaperKnife</p>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>
+            <p>Built with ❤️ by <a href="https://github.com/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:text-rose-600 transition-colors">potatameister</a></p>
+            <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>
+            <a href="https://github.com/potatameister/PaperKnife" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">GitHub</a>
+          </div>
+        </div>
       </footer>
     </div>
   )

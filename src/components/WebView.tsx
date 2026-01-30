@@ -163,7 +163,11 @@ export default function WebView({ theme, toggleTheme, tools }: { theme: Theme, t
           </div>
           
           <div className="pt-8 border-t border-gray-100 dark:border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest">
-            <p>© 2026 PaperKnife. Built for absolute privacy.</p>
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+              <p>© 2026 PaperKnife.</p>
+              <p className="hidden md:block">•</p>
+              <p>Built with ❤️ by <a href="https://github.com/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline">potatameister</a></p>
+            </div>
             <div className="flex gap-8">
               <a href="#" className="hover:text-rose-500 transition">Terms</a>
               <a href="#" className="hover:text-rose-500 transition">License</a>

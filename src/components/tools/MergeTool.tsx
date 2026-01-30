@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { ArrowLeft, Upload, Plus, X, Download, Loader2, CheckCircle2, GripVertical, Moon, Sun } from 'lucide-react'
+import { ArrowLeft, Upload, Plus, X, Download, Loader2, CheckCircle2, GripVertical, Moon, Sun, Lock, Eye, Edit2, RotateCw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { PDFDocument } from 'pdf-lib'
+import { PDFDocument, degrees } from 'pdf-lib'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -15,10 +15,19 @@ type PdfFile = {
   id: string
   file: File
   thumbnail?: string
+  pageCount: number
+  isLocked: boolean
+  rotation: number
+}
+
+// Format File Size helper
+const formatSize = (bytes: number) => {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
 // Draggable Item Component
-function SortableItem({ id, file, onRemove }: { id: string, file: PdfFile, onRemove: (id: string) => void }) {
+function SortableItem({ id, file, onRemove, onRotate }: { id: string, file: PdfFile, onRemove: (id: string) => void, onRotate: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   
   const style = {
@@ -34,23 +43,55 @@ function SortableItem({ id, file, onRemove }: { id: string, file: PdfFile, onRem
         <GripVertical size={20} />
       </div>
       
-      {/* Thumbnail */}
+      {/* Thumbnail with Rotation */}
       <div className="w-12 h-16 bg-gray-100 dark:bg-zinc-800 rounded-lg overflow-hidden shrink-0 border border-gray-200 dark:border-zinc-700 relative">
-        {file.thumbnail ? (
-          <img src={file.thumbnail} alt="Preview" className="w-full h-full object-cover" />
+        {file.isLocked ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-zinc-800 text-rose-500">
+            <Lock size={16} />
+            <span className="text-[8px] font-black uppercase mt-1">Locked</span>
+          </div>
+        ) : file.thumbnail ? (
+          <img 
+            src={file.thumbnail} 
+            alt="Preview" 
+            className="w-full h-full object-cover transition-transform duration-300" 
+            style={{ transform: `rotate(${file.rotation}deg)` }}
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">PDF</div>
+          <div className="w-full h-full flex items-center justify-center animate-pulse">
+            <div className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm truncate dark:text-zinc-200">{file.file.name}</p>
-        <p className="text-xs text-gray-400">{(file.file.size / 1024 / 1024).toFixed(2)} MB</p>
+        <div className="flex items-center gap-2">
+          <p className="font-bold text-sm truncate dark:text-zinc-200">{file.file.name}</p>
+          {file.isLocked && <Lock size={12} className="text-rose-500 shrink-0" />}
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-400">
+          <span>{formatSize(file.file.size)}</span>
+          {!file.isLocked && file.pageCount > 0 && (
+            <>
+              <span>•</span>
+              <span>{file.pageCount} pages</span>
+            </>
+          )}
+        </div>
       </div>
 
-      <button onClick={() => onRemove(id)} className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-full text-gray-400 hover:text-rose-500 transition-colors">
-        <X size={18} />
-      </button>
+      <div className="flex items-center gap-1">
+        <button 
+          onClick={() => onRotate(id)}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full text-gray-400 hover:text-rose-500 transition-colors"
+          title="Rotate 90°"
+        >
+          <RotateCw size={18} />
+        </button>
+        <button onClick={() => onRemove(id)} className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-full text-gray-400 hover:text-rose-500 transition-colors">
+          <X size={18} />
+        </button>
+      </div>
     </div>
   )
 }
@@ -61,29 +102,62 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
   const [files, setFiles] = useState<PdfFile[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [customFileName, setCustomFileName] = useState('paperknife-merged')
+  const [progress, setProgress] = useState(0)
+  const [isDraggingGlobal, setIsDraggingGlobal] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files).map(file => ({
-        id: Math.random().toString(36).substr(2, 9),
-        file,
-        thumbnail: undefined
-      }))
-      
-      setFiles(prev => [...prev, ...newFiles])
-      setDownloadUrl(null)
+  const handleFiles = async (selectedFiles: FileList | File[]) => {
+    const newFiles = Array.from(selectedFiles).filter(f => f.type === 'application/pdf').map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      file,
+      thumbnail: undefined,
+      pageCount: 0,
+      isLocked: false,
+      rotation: 0
+    }))
+    
+    if (newFiles.length === 0) return
 
-      for (const pdfFile of newFiles) {
-        generateThumbnail(pdfFile.file).then(thumb => {
-          setFiles(prev => prev.map(f => f.id === pdfFile.id ? { ...f, thumbnail: thumb } : f))
-        })
-      }
+    setFiles(prev => [...prev, ...newFiles])
+    setDownloadUrl(null)
+
+    for (const pdfFile of newFiles) {
+      generateThumbnail(pdfFile.file).then(meta => {
+        setFiles(prev => prev.map(f => f.id === pdfFile.id ? { 
+          ...f, 
+          thumbnail: meta.thumbnail,
+          pageCount: meta.pageCount,
+          isLocked: meta.isLocked
+        } : f))
+      })
     }
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) handleFiles(e.target.files)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDraggingGlobal(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDraggingGlobal(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDraggingGlobal(false)
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -102,32 +176,69 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
     setDownloadUrl(null)
   }
 
+  const rotateFile = (id: string) => {
+    setFiles(prev => prev.map(f => f.id === id ? { ...f, rotation: (f.rotation + 90) % 360 } : f))
+    setDownloadUrl(null)
+  }
+
+  const totalPages = files.reduce((sum, f) => sum + f.pageCount, 0)
+  const hasLockedFiles = files.some(f => f.isLocked)
+  const canMerge = files.length >= 2 && !hasLockedFiles
+
   const mergePDFs = async () => {
-    if (files.length === 0) return
+    if (!canMerge) return
+
     setIsProcessing(true)
+    setProgress(0)
     try {
       const mergedPdf = await PDFDocument.create()
-      for (const pdfFile of files) {
-        const fileBuffer = await pdfFile.file.arrayBuffer()
-        const pdf = await PDFDocument.load(fileBuffer)
-        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices())
-        copiedPages.forEach((page) => mergedPdf.addPage(page))
+      for (let i = 0; i < files.length; i++) {
+        const pdfFile = files[i]
+        try {
+          const fileBuffer = await pdfFile.file.arrayBuffer()
+          const pdf = await PDFDocument.load(fileBuffer, { ignoreEncryption: true })
+          const pageIndices = pdf.getPageIndices()
+          const copiedPages = await mergedPdf.copyPages(pdf, pageIndices)
+          
+          copiedPages.forEach((page) => {
+            const currentRotation = page.getRotation().angle
+            page.setRotation(degrees((currentRotation + pdfFile.rotation) % 360))
+            mergedPdf.addPage(page)
+          })
+        } catch (innerErr: any) {
+          console.error(`Error loading ${pdfFile.file.name}:`, innerErr)
+          throw new Error(`Could not load "${pdfFile.file.name}". ${innerErr.message || 'It might be encrypted or a newer PDF version than 1.7.'}`)
+        }
+        setProgress(Math.round(((i + 1) / files.length) * 100))
       }
       const mergedPdfBytes = await mergedPdf.save()
       const blob = new Blob([mergedPdfBytes as any], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       setDownloadUrl(url)
-    } catch (error) {
-      console.error('Error merging PDFs:', error)
-      alert('Failed to merge PDFs.')
+    } catch (error: any) {
+      console.error('Final Merge Error:', error)
+      alert(error.message || 'An unexpected error occurred during merging.')
     } finally {
       setIsProcessing(false)
     }
   }
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-zinc-900 dark:via-zinc-950 dark:to-black text-gray-900 dark:text-zinc-100 font-sans animate-slide-in">
-      
+    <div 
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className="min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-zinc-900 dark:via-zinc-950 dark:to-black text-gray-900 dark:text-zinc-100 font-sans animate-slide-in relative transition-colors duration-300 ease-out"
+    >
+      {/* Global Drop Overlay */}
+      {isDraggingGlobal && (
+        <div className="fixed inset-0 z-[200] bg-rose-500/10 dark:bg-rose-500/20 backdrop-blur-sm flex items-center justify-center border-8 border-dashed border-rose-500/50 m-4 rounded-[3rem] pointer-events-none animate-in fade-in zoom-in duration-300">
+          <div className="bg-white dark:bg-zinc-900 p-8 rounded-full shadow-2xl scale-110">
+            <Upload size={48} className="text-rose-500 animate-bounce" />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-gray-100 dark:border-zinc-800 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-4">
@@ -182,25 +293,57 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
           {/* File List (Sortable) */}
           {files.length > 0 && (
             <div className="space-y-2 md:space-y-3">
-              {files.length > 1 && (
-                <p className="text-[10px] md:text-xs font-bold text-rose-500/60 uppercase tracking-widest text-center mb-2">
-                  Tap & drag handles to reorder
-                </p>
-              )}
+              <div className="flex justify-between items-center mb-2 px-1">
+                <div className="flex flex-col">
+                  <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">
+                    {files.length} Files • {totalPages} Pages
+                  </p>
+                </div>
+                <button 
+                  onClick={() => { setFiles([]); setDownloadUrl(null); }}
+                  className="text-[10px] font-black uppercase tracking-widest text-rose-500/60 hover:text-rose-500 transition-colors"
+                >
+                  Clear All
+                </button>
+              </div>
+              
+              <p className="text-[10px] font-bold text-gray-300 dark:text-zinc-600 uppercase tracking-[0.2em] text-center mb-2">
+                Drag handles to reorder
+              </p>
+              
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={files.map(f => f.id)} strategy={verticalListSortingStrategy}>
                   {files.map((file) => (
-                    <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} />
+                    <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} onRotate={rotateFile} />
                   ))}
                 </SortableContext>
               </DndContext>
               
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2.5 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all font-bold text-xs flex items-center justify-center gap-2"
+                className="w-full py-2.5 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all font-bold text-sm flex items-center justify-center gap-2"
               >
                 <Plus size={14} /> Add More Files
               </button>
+
+              {/* Filename Input */}
+              {!downloadUrl && (
+                <div className="mt-8 p-6 bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800 shadow-sm">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 flex items-center gap-2">
+                    <Edit2 size={12} /> Output Filename
+                  </label>
+                  <div className="flex items-center gap-2 bg-gray-50 dark:bg-black rounded-2xl px-4 py-3 border border-gray-100 dark:border-zinc-800 focus-within:border-rose-500 transition-colors">
+                    <input 
+                      type="text" 
+                      value={customFileName}
+                      onChange={(e) => setCustomFileName(e.target.value.replace(/[^a-z0-9-_]/gi, ''))}
+                      className="bg-transparent outline-none flex-1 text-sm font-bold dark:text-white"
+                      placeholder="Enter filename..."
+                    />
+                    <span className="text-gray-400 text-xs font-bold">.pdf</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -220,37 +363,58 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
               </div>
             ) : !downloadUrl ? (
               // Ready to Merge
-              <button 
-                onClick={mergePDFs}
-                disabled={isProcessing}
-                className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-lg md:text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="animate-spin size={20}" /> Merging...
-                  </>
-                ) : (
-                  <>
-                    Merge {files.length} Files
-                  </>
+              <div className="space-y-4">
+                {isProcessing && (
+                  <div className="w-full bg-gray-100 dark:bg-zinc-800 h-3 rounded-full overflow-hidden border border-gray-200 dark:border-zinc-700">
+                    <div 
+                      className="bg-rose-500 h-full transition-all duration-300 ease-out shadow-[0_0_15px_rgba(244,63,94,0.5)]" 
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
                 )}
-              </button>
-            ) : (
-              // Download State
-              <div className="animate-in slide-in-from-bottom duration-500 fade-in">
-                 <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-3 md:p-4 rounded-2xl mb-4 flex items-center justify-center gap-2 font-bold text-xs md:text-sm border border-green-100 dark:border-green-900/30">
-                    <CheckCircle2 size={16} /> Success! Files merged.
-                 </div>
-                 <a 
-                  href={downloadUrl}
-                  download="paperknife-merged.pdf"
-                  className="block w-full bg-gray-900 dark:bg-white text-white dark:text-black p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl font-black text-lg md:text-xl tracking-tight transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+                <button 
+                  onClick={mergePDFs}
+                  disabled={isProcessing || !canMerge}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-lg md:text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
-                  <Download size={20} className="md:w-[24px] md:h-[24px]" /> Download PDF
-                </a>
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="animate-spin size={20}" /> {progress}% Merging...
+                    </>
+                  ) : (
+                    <>
+                      {files.length < 2 ? 'Select at least 2 files' : `Merge ${files.length} Files (${totalPages} Pages)`}
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              // Download & Preview State
+              <div className="animate-in slide-in-from-bottom duration-500 fade-in space-y-4">
+                 <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-3 md:p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs md:text-sm border border-green-100 dark:border-green-900/30">
+                    <CheckCircle2 size={16} /> Success! Your PDF is ready.
+                 </div>
+                 
+                 <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                      onClick={() => window.open(downloadUrl, '_blank')}
+                      className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm font-black text-lg md:text-xl tracking-tight transition-all hover:bg-gray-50 active:scale-95 flex items-center justify-center gap-3"
+                    >
+                      <Eye size={24} /> Preview
+                    </button>
+                    
+                    <a 
+                      href={downloadUrl}
+                      download={`${customFileName || 'merged'}.pdf`}
+                      className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl font-black text-lg md:text-xl tracking-tight transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+                    >
+                      <Download size={24} /> Download PDF
+                    </a>
+                 </div>
+
                 <button 
                   onClick={() => { setFiles([]); setDownloadUrl(null); }}
-                  className="w-full mt-4 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 font-bold text-xs"
+                  className="w-full mt-4 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-[0.2em]"
                 >
                   Start Over
                 </button>
@@ -265,6 +429,18 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
           100% Client-Side Processing
         </div>
       </main>
+
+      <footer className="py-12 border-t border-gray-100 dark:border-zinc-900 mt-20">
+        <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-600">
+          <p>© 2026 PaperKnife</p>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>
+            <p>Built with ❤️ by <a href="https://github.com/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline">potatameister</a></p>
+            <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>
+            <a href="https://github.com/potatameister/PaperKnife" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">GitHub</a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
