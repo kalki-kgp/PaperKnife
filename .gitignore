@@ -25,6 +25,7 @@ dist-ssr
 
 # Project specific
 .gemini/
+GEMINI.md
 gha-creds-*.json
 
 # Capacitor
