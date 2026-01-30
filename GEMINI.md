@@ -42,3 +42,9 @@
     *   `tools/`: Directory for individual tool implementations.
 *   **State Management:** Local React state + localStorage for persistence (Theme).
 *   **Transitions:** GPU-accelerated CSS transforms for page slides and theme fading.
+
+## ⚠️ 6. Critical Dev Notes (Maintenance)
+*   **Circular Dependencies:** Never import shared UI components (like `Logo.tsx`) from `WebView.tsx`. `WebView` is a heavy entry point; importing from it into other components will cause "ReferenceError" crashes.
+*   **PDF.js Worker:** To fix "blank thumbnails," the worker must be imported via Vite's `?url` suffix: `import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'`.
+*   **Deployment Basename:** The `BrowserRouter` in `App.tsx` **must** have `basename="/PaperKnife/"`. Removing this will break all routing on GitHub Pages.
+*   **Theme Transitions:** Keep the transition duration below 300ms. High durations make text color changes feel laggy on mobile browsers.
