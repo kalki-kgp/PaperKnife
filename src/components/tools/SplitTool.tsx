@@ -1,18 +1,47 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ArrowLeft, Download, Loader2, CheckCircle2, Moon, Sun, Edit2, Scissors, Heart, Check, Plus, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PDFDocument } from 'pdf-lib'
 import JSZip from 'jszip'
 
 import { Theme } from '../../types'
-import { generateThumbnail, getPdfMetaData } from '../../utils/pdfHelpers'
+import { getPdfMetaData, loadPdfDocument, renderPageThumbnail } from '../../utils/pdfHelpers'
 import { PaperKnifeLogo } from '../Logo'
 
 type SplitPdfFile = {
   file: File
   pageCount: number
   isLocked: boolean
-  thumbnails: string[]
+  pdfDoc?: any
+}
+
+// Lazy Thumbnail Component
+const LazyThumbnail = ({ pdfDoc, pageNum }: { pdfDoc: any, pageNum: number }) => {
+  const [src, setSrc] = useState<string | null>(null)
+  const imgRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!pdfDoc || src) return
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        renderPageThumbnail(pdfDoc, pageNum).then(setSrc)
+        observer.disconnect()
+      }
+    }, { rootMargin: '200px' }) // Start loading when 200px away
+
+    if (imgRef.current) observer.observe(imgRef.current)
+
+    return () => observer.disconnect()
+  }, [pdfDoc, pageNum, src])
+
+  if (src) return <img src={src} className="w-full h-full object-cover animate-in fade-in duration-300" alt={`Page ${pageNum}`} />
+  
+  return (
+    <div ref={imgRef} className="w-full h-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400">
+      <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 }
 
 export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggleTheme: () => void }) {
@@ -34,18 +63,16 @@ export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggle
     try {
       const meta = await getPdfMetaData(file)
       if (meta.isLocked) {
-        setPdfData({ file, pageCount: 0, isLocked: true, thumbnails: [] })
+        setPdfData({ file, pageCount: 0, isLocked: true })
       } else {
-        // Load first batch of thumbnails (e.g., first 12 for speed)
-        const thumbs: string[] = []
-        for (let i = 1; i <= Math.min(meta.pageCount, 12); i++) {
-          thumbs.push(await generateThumbnail(file, i))
-        }
+        // Load the efficient PDF document proxy once
+        const pdfDoc = await loadPdfDocument(file)
+        
         setPdfData({
           file,
           pageCount: meta.pageCount,
           isLocked: false,
-          thumbnails: thumbs
+          pdfDoc
         })
         // Select all by default
         const all = new Set<number>()
@@ -202,11 +229,7 @@ export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggle
                         onClick={() => togglePage(pageNum)}
                         className={`relative group cursor-pointer aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all ${isSelected ? 'border-rose-500 shadow-lg scale-[1.02]' : 'border-transparent hover:border-gray-200 dark:hover:border-zinc-700'}`}
                       >
-                        {pdfData.thumbnails[i] ? (
-                          <img src={pdfData.thumbnails[i]} className="w-full h-full object-cover" alt={`Page ${pageNum}`} />
-                        ) : (
-                          <div className="w-full h-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400">Page {pageNum}</div>
-                        )}
+                        <LazyThumbnail pdfDoc={pdfData.pdfDoc} pageNum={pageNum} />
                         <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${isSelected ? 'bg-rose-500/10 opacity-100' : 'bg-black/20 opacity-0 group-hover:opacity-100'}`}>
                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-transform ${isSelected ? 'bg-rose-500 text-white scale-100' : 'bg-white text-gray-400 scale-75'}`}>
                               {isSelected ? <Check size={20} strokeWidth={3} /> : <Plus size={20} />}
