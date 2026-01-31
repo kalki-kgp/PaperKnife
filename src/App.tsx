@@ -7,14 +7,16 @@ import { Theme, ViewMode, Tool } from './types'
 const WebView = lazy(() => import('./components/WebView'))
 const AndroidView = lazy(() => import('./components/AndroidView'))
 const MergeTool = lazy(() => import('./components/tools/MergeTool'))
+const SplitTool = lazy(() => import('./components/tools/SplitTool'))
+const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
 const About = lazy(() => import('./components/About'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into a single document effortlessly.', icon: FileText, implemented: true },
-  { title: 'Split PDF', desc: 'Extract specific pages or divide your PDF into separate files.', icon: Grid, implemented: false },
+  { title: 'Split PDF', desc: 'Extract specific pages or divide your PDF into separate files.', icon: Grid, implemented: true },
   { title: 'Compress PDF', desc: 'Optimize your file size for sharing without quality loss.', icon: Zap, implemented: false },
   { title: 'PDF to Image', desc: 'Convert document pages into high-quality JPG or PNG images.', icon: Download, implemented: false },
-  { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Shield, implemented: false },
+  { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Shield, implemented: true },
   { title: 'Unlock PDF', desc: 'Remove passwords and restrictions from your PDF files.', icon: Shield, implemented: false },
   { title: 'Rotate PDF', desc: 'Rotate pages in your PDF document to the correct orientation.', icon: Smartphone, implemented: false },
   { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents for easy editing.', icon: FileText, implemented: false },
@@ -71,6 +73,8 @@ function App() {
               )
             } />
             <Route path="/merge" element={<MergeTool theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/split" element={<SplitTool theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/protect" element={<ProtectTool theme={theme} toggleTheme={toggleTheme} />} />
             <Route path="/about" element={<About theme={theme} toggleTheme={toggleTheme} />} />
           </Routes>
         </Suspense>

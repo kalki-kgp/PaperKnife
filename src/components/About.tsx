@@ -1,10 +1,22 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Shield, Zap, Github, Globe, Smartphone, Moon, Sun, Heart } from 'lucide-react'
+import { ArrowLeft, Shield, Zap, Github, Globe, Smartphone, Moon, Sun, Heart, Key, Star, Sparkles } from 'lucide-react'
 import { Theme } from '../types'
 import { PaperKnifeLogo } from './Logo'
 
 export default function About({ theme, toggleTheme }: { theme: Theme, toggleTheme: () => void }) {
   const navigate = useNavigate()
+  const [supporterKey, setSupporterKey] = useState('')
+  const [isVerifying, setIsVerifying] = useState(false)
+
+  const handleRedeem = () => {
+    setIsVerifying(true)
+    // Simple local validation logic to be implemented later
+    setTimeout(() => {
+      setIsVerifying(false)
+      alert("This is a preview. In the final version, this will unlock the Rose Gold and OLED Black themes!")
+    }, 1500)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-zinc-900 dark:via-zinc-950 dark:to-black text-gray-900 dark:text-zinc-100 font-sans transition-colors duration-300 ease-out">
@@ -84,6 +96,55 @@ export default function About({ theme, toggleTheme }: { theme: Theme, toggleThem
             </p>
           </div>
         </div>
+
+        {/* Supporter Key Section */}
+        <section className="mb-24 bg-white dark:bg-zinc-900 rounded-[3rem] p-8 md:p-12 border border-gray-100 dark:border-zinc-800 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 text-rose-500/10 pointer-events-none">
+            <Key size={120} strokeWidth={1} />
+          </div>
+          
+          <div className="relative z-10 max-w-2xl">
+            <div className="flex items-center gap-3 text-rose-500 font-black uppercase tracking-[0.2em] text-xs mb-4">
+              <Star size={16} fill="currentColor" />
+              Supporter Features
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black mb-6 dark:text-white">Redeem Supporter Key</h2>
+            <p className="text-gray-500 dark:text-zinc-400 mb-8 leading-relaxed">
+              If you supported PaperKnife on <a href="https://github.com/sponsors/potatameister" className="text-rose-500 hover:underline">Gumroad</a>, enter your license key below to unlock exclusive "Pro" themes and help keep this project 100% private and ad-free.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input 
+                type="text" 
+                value={supporterKey}
+                onChange={(e) => setSupporterKey(e.target.value.toUpperCase())}
+                placeholder="PK-XXXX-XXXX-XXXX"
+                className="flex-1 bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-mono font-bold transition-colors"
+              />
+              <button 
+                onClick={handleRedeem}
+                disabled={!supporterKey || isVerifying}
+                className="bg-gray-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isVerifying ? <Sparkles size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                Verify Key
+              </button>
+            </div>
+            
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-zinc-800">
+                <div className="text-rose-500 mb-2"><Moon size={20} /></div>
+                <h4 className="font-bold text-sm mb-1 dark:text-white">OLED Black</h4>
+                <p className="text-[10px] text-gray-400">Pure black for battery savings.</p>
+              </div>
+              <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-2xl border border-rose-100 dark:border-rose-900/20">
+                <div className="text-rose-500 mb-2"><Sparkles size={20} /></div>
+                <h4 className="font-bold text-sm mb-1 dark:text-white">Rose Gold</h4>
+                <p className="text-[10px] text-gray-400">Our signature premium look.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Support Section */}
         <section className="bg-rose-500 rounded-[3rem] p-8 md:p-16 text-white text-center shadow-2xl shadow-rose-500/20">

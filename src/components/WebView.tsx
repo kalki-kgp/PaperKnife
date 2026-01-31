@@ -52,6 +52,10 @@ export default function WebView({ theme, toggleTheme, tools }: { theme: Theme, t
     if (!tool.implemented) return;
     if (tool.title === 'Merge PDF') {
       navigate('/merge')
+    } else if (tool.title === 'Split PDF') {
+      navigate('/split')
+    } else if (tool.title === 'Protect PDF') {
+      navigate('/protect')
     }
   }
 
@@ -65,6 +69,10 @@ export default function WebView({ theme, toggleTheme, tools }: { theme: Theme, t
           </Link>
           <div className="flex items-center gap-2 md:gap-6">
             <nav className="flex items-center gap-4 text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400 mr-2">
+              <a href="https://github.com/sponsors/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:text-rose-600 transition flex items-center gap-2 px-3 py-1.5 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
+                <Heart size={18} fill="currentColor" />
+                <span className="hidden sm:block">Sponsor</span>
+              </a>
               <Link to="/about" className="hover:text-rose-500 transition flex items-center gap-2">
                 <Info size={20} className="md:hidden" />
                 <span className="hidden md:block">About</span>

@@ -10,53 +10,112 @@ export interface PdfMetaData {
   isLocked: boolean
 }
 
-export const generateThumbnail = async (file: File): Promise<PdfMetaData> => {
+export const generateThumbnail = async (file: File, pageNum: number = 1): Promise<string> => {
+
   try {
+
     const arrayBuffer = await file.arrayBuffer();
-    
-    // Load the document with local standard font maps (cMaps) for true offline support
+
     const loadingTask = pdfjsLib.getDocument({
+
       data: arrayBuffer,
+
       cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+
       cMapPacked: true,
+
     });
 
-    // Handle password protected files
-    loadingTask.onPassword = (_updatePassword: (p: string) => void, reason: number) => {
-      console.warn('PDF is password protected', reason);
-      // We don't ask for password here, just flag it as locked
-      throw new Error('PASSWORD_REQUIRED');
-    };
+
 
     const pdf = await loadingTask.promise;
-    const pageCount = pdf.numPages;
-    const page = await pdf.getPage(1);
+
+    const page = await pdf.getPage(pageNum);
+
     
-    const viewport = page.getViewport({ scale: 1.0 });
+
+    const viewport = page.getViewport({ scale: 0.5 }); // Lower scale for grid thumbnails
+
     const canvas = document.createElement('canvas');
+
     const context = canvas.getContext('2d');
+
     
+
     if (!context) throw new Error('Canvas context not available');
+
     
+
     canvas.height = viewport.height;
+
     canvas.width = viewport.width;
+
     
+
     await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
-    
-    return {
-      thumbnail: canvas.toDataURL('image/jpeg', 0.8),
-      pageCount,
-      isLocked: false
-    };
-  } catch (error: any) {
-    console.error('DEBUG: Metadata generation failed for file:', file.name, {
-      message: error.message,
-      name: error.name,
-      stack: error.stack
-    });
-    if (error.message === 'PASSWORD_REQUIRED' || error.name === 'PasswordException') {
-      return { thumbnail: '', pageCount: 0, isLocked: true };
-    }
-    return { thumbnail: '', pageCount: 0, isLocked: false };
+
+    return canvas.toDataURL('image/jpeg', 0.6);
+
+  } catch (error) {
+
+    console.error('Thumbnail error:', error);
+
+    return '';
+
   }
+
+};
+
+
+
+export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
+
+  try {
+
+    const arrayBuffer = await file.arrayBuffer();
+
+    const loadingTask = pdfjsLib.getDocument({
+
+      data: arrayBuffer,
+
+      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+
+      cMapPacked: true,
+
+    });
+
+    
+
+    loadingTask.onPassword = () => { throw new Error('PASSWORD_REQUIRED'); };
+
+    
+
+    const pdf = await loadingTask.promise;
+
+    const firstPageThumb = await generateThumbnail(file, 1);
+
+    
+
+    return {
+
+      thumbnail: firstPageThumb,
+
+      pageCount: pdf.numPages,
+
+      isLocked: false
+
+    };
+
+  } catch (error: any) {
+
+    if (error.message === 'PASSWORD_REQUIRED' || error.name === 'PasswordException') {
+
+      return { thumbnail: '', pageCount: 0, isLocked: true };
+
+    }
+
+    return { thumbnail: '', pageCount: 0, isLocked: false };
+
+  }
+
 };

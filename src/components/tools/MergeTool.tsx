@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ArrowLeft, Upload, Plus, X, Download, Loader2, CheckCircle2, GripVertical, Moon, Sun, Lock, Eye, Edit2, RotateCw } from 'lucide-react'
+import { ArrowLeft, Upload, Plus, X, Download, Loader2, CheckCircle2, GripVertical, Moon, Sun, Lock, Eye, Edit2, RotateCw, Heart } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PDFDocument, degrees } from 'pdf-lib'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
@@ -7,7 +7,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { CSS } from '@dnd-kit/utilities'
 
 import { Theme } from '../../types'
-import { generateThumbnail } from '../../utils/pdfHelpers'
+import { getPdfMetaData } from '../../utils/pdfHelpers'
 import { PaperKnifeLogo } from '../Logo'
 
 // File Item Type
@@ -127,7 +127,7 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
     setDownloadUrl(null)
 
     for (const pdfFile of newFiles) {
-      generateThumbnail(pdfFile.file).then(meta => {
+      getPdfMetaData(pdfFile.file).then(meta => {
         setFiles(prev => prev.map(f => f.id === pdfFile.id ? { 
           ...f, 
           thumbnail: meta.thumbnail,
@@ -365,11 +365,16 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
               // Ready to Merge
               <div className="space-y-4">
                 {isProcessing && (
-                  <div className="w-full bg-gray-100 dark:bg-zinc-800 h-3 rounded-full overflow-hidden border border-gray-200 dark:border-zinc-700">
-                    <div 
-                      className="bg-rose-500 h-full transition-all duration-300 ease-out shadow-[0_0_15px_rgba(244,63,94,0.5)]" 
-                      style={{ width: `${progress}%` }}
-                    />
+                  <div className="space-y-4">
+                    <div className="w-full bg-gray-100 dark:bg-zinc-800 h-3 rounded-full overflow-hidden border border-gray-200 dark:border-zinc-700">
+                      <div 
+                        className="bg-rose-500 h-full transition-all duration-300 ease-out shadow-[0_0_15px_rgba(244,63,94,0.5)]" 
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-center text-gray-400 uppercase font-black tracking-widest animate-pulse">
+                      Processing locally on your device. Larger files take more compute power.
+                    </p>
                   </div>
                 )}
                 <button 
@@ -434,6 +439,9 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
         <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-600">
           <p>© 2026 PaperKnife</p>
           <div className="flex items-center gap-4">
+            <a href="https://github.com/sponsors/potatameister" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-rose-500 hover:text-rose-600 transition-colors">
+              <Heart size={12} fill="currentColor" /> Sponsor
+            </a>
             <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>
             <p>Built with ❤️ by <a href="https://github.com/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline">potatameister</a></p>
             <span className="hidden md:block text-gray-200 dark:text-zinc-800">|</span>

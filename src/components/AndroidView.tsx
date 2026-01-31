@@ -1,4 +1,4 @@
-import { Shield, Home, Grid, Menu, Moon, Sun, ChevronRight } from 'lucide-react'
+import { Shield, Home, Grid, Menu, Moon, Sun, ChevronRight, Heart } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Theme, Tool } from '../types'
 import { PaperKnifeLogo } from './Logo'
@@ -38,6 +38,10 @@ export default function AndroidView({ theme, toggleTheme, tools }: { theme: Them
     if (!tool.implemented) return
     if (tool.title === 'Merge PDF') {
       navigate('/merge')
+    } else if (tool.title === 'Split PDF') {
+      navigate('/split')
+    } else if (tool.title === 'Protect PDF') {
+      navigate('/protect')
     }
   }
 
@@ -49,6 +53,14 @@ export default function AndroidView({ theme, toggleTheme, tools }: { theme: Them
           <h1 className="text-xl font-black tracking-tighter dark:text-white">PaperKnife</h1>
         </div>
         <div className="flex items-center gap-2">
+          <a 
+            href="https://github.com/sponsors/potatameister" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center justify-center h-10 px-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 border border-rose-100 dark:border-rose-900/30 active:scale-95 transition-all"
+          >
+            <Heart size={18} fill="currentColor" />
+          </a>
           <button 
             onClick={toggleTheme}
             className="flex items-center justify-center h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-700 active:scale-90 transition-transform"
