@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowLeft, Download, Loader2, CheckCircle2, Moon, Sun, Edit2, Scissors, Heart, Check, Plus, Eye } from 'lucide-react'
+import { ArrowLeft, Download, Loader2, CheckCircle2, Moon, Sun, Edit2, Scissors, Heart, Check, Plus, Eye, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PDFDocument } from 'pdf-lib'
 import JSZip from 'jszip'
 
 import { Theme } from '../../types'
-import { getPdfMetaData, loadPdfDocument, renderPageThumbnail } from '../../utils/pdfHelpers'
+import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
 import { PaperKnifeLogo } from '../Logo'
 
 type SplitPdfFile = {
@@ -13,6 +13,7 @@ type SplitPdfFile = {
   pageCount: number
   isLocked: boolean
   pdfDoc?: any
+  password?: string
 }
 
 // Lazy Thumbnail Component
@@ -55,6 +56,31 @@ export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggle
   const [customFileName, setCustomFileName] = useState('paperknife-split')
   const [rangeInput, setRangeInput] = useState('')
   const [splitMode, setSplitMode] = useState<'single' | 'individual'>('single')
+  const [unlockPassword, setUnlockPassword] = useState('')
+
+  const handleUnlock = async () => {
+    if (!pdfData || !unlockPassword) return
+    setIsLoadingMeta(true)
+    const result = await unlockPdf(pdfData.file, unlockPassword)
+    if (result.success) {
+      const pdfDoc = await loadPdfDocument(pdfData.file)
+      setPdfData({
+        ...pdfData,
+        isLocked: false,
+        pageCount: result.pageCount,
+        pdfDoc,
+        password: unlockPassword
+      })
+      // Select all by default
+      const all = new Set<number>()
+      for (let i = 1; i <= result.pageCount; i++) all.add(i)
+      setSelectedPages(all)
+      setRangeInput(`1-${result.pageCount}`)
+    } else {
+      alert('Incorrect password')
+    }
+    setIsLoadingMeta(false)
+  }
 
   // Handle File Selection
   const handleFile = async (file: File) => {
@@ -129,7 +155,9 @@ export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggle
 
     try {
       const originalBuffer = await pdfData.file.arrayBuffer()
-      const originalPdf = await PDFDocument.load(originalBuffer)
+      const originalPdf = await PDFDocument.load(originalBuffer, { 
+        password: pdfData.password 
+      } as any)
       
       if (splitMode === 'single') {
         const newPdf = await PDFDocument.create()
@@ -208,6 +236,40 @@ export default function SplitTool({ theme, toggleTheme }: { theme: Theme, toggle
                 <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Tap to start splitting</p>
               </>
             )}
+          </div>
+        ) : pdfData.isLocked ? (
+          <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 shadow-xl text-center">
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock size={32} />
+              </div>
+              <h3 className="text-2xl font-bold mb-2 dark:text-white">File is Protected</h3>
+              <p className="text-sm text-gray-500 dark:text-zinc-400 mb-8">This PDF requires a password to open.</p>
+              
+              <div className="space-y-4">
+                <input 
+                  type="password" 
+                  value={unlockPassword}
+                  onChange={(e) => setUnlockPassword(e.target.value)}
+                  placeholder="Enter Password"
+                  className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold text-center transition-all"
+                  autoFocus
+                />
+                <button 
+                  onClick={handleUnlock}
+                  disabled={!unlockPassword || isLoadingMeta}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isLoadingMeta ? 'Unlocking...' : 'Unlock PDF'}
+                </button>
+                <button 
+                  onClick={() => setPdfData(null)}
+                  className="w-full py-2 text-xs font-bold text-gray-400 hover:text-rose-500"
+                >
+                  Choose different file
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

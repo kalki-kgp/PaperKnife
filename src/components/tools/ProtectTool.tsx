@@ -5,7 +5,7 @@ import { PDFDocument } from 'pdf-lib'
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite'
 
 import { Theme } from '../../types'
-import { getPdfMetaData } from '../../utils/pdfHelpers'
+import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { PaperKnifeLogo } from '../Logo'
 
 type ProtectPdfFile = {
@@ -13,6 +13,7 @@ type ProtectPdfFile = {
   thumbnail?: string
   pageCount: number
   isLocked: boolean
+  sourcePassword?: string
 }
 
 export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, toggleTheme: () => void }) {
@@ -23,6 +24,25 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [unlockPassword, setUnlockPassword] = useState('')
+
+  const handleUnlock = async () => {
+    if (!pdfData || !unlockPassword) return
+    setIsProcessing(true)
+    const result = await unlockPdf(pdfData.file, unlockPassword)
+    if (result.success) {
+      setPdfData({
+        ...pdfData,
+        isLocked: false,
+        thumbnail: result.thumbnail,
+        pageCount: result.pageCount,
+        sourcePassword: unlockPassword
+      })
+    } else {
+      alert('Incorrect password')
+    }
+    setIsProcessing(false)
+  }
 
   const handleFile = async (file: File) => {
     if (file.type !== 'application/pdf') return
@@ -50,7 +70,10 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
     try {
       const arrayBuffer = await pdfData.file.arrayBuffer()
       // Load source PDF
-      const sourcePdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true })
+      const sourcePdf = await PDFDocument.load(arrayBuffer, { 
+        password: pdfData.sourcePassword,
+        ignoreEncryption: false 
+      } as any)
       
       // Create a new PDF to ensure clean state
       const newPdf = await PDFDocument.create()
@@ -114,6 +137,40 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
             </div>
             <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Select PDF to Protect</h3>
             <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Tap to browse your files</p>
+          </div>
+        ) : pdfData.isLocked ? (
+          <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 shadow-xl text-center">
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock size={32} />
+              </div>
+              <h3 className="text-2xl font-bold mb-2 dark:text-white">File is Protected</h3>
+              <p className="text-sm text-gray-500 dark:text-zinc-400 mb-8">Unlock this file to re-protect it with a new password.</p>
+              
+              <div className="space-y-4">
+                <input 
+                  type="password" 
+                  value={unlockPassword}
+                  onChange={(e) => setUnlockPassword(e.target.value)}
+                  placeholder="Current Password"
+                  className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold text-center transition-all"
+                  autoFocus
+                />
+                <button 
+                  onClick={handleUnlock}
+                  disabled={!unlockPassword || isProcessing}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isProcessing ? 'Unlocking...' : 'Unlock PDF'}
+                </button>
+                <button 
+                  onClick={() => setPdfData(null)}
+                  className="w-full py-2 text-xs font-bold text-gray-400 hover:text-rose-500"
+                >
+                  Choose different file
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

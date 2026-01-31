@@ -7,7 +7,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { CSS } from '@dnd-kit/utilities'
 
 import { Theme } from '../../types'
-import { getPdfMetaData } from '../../utils/pdfHelpers'
+import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { PaperKnifeLogo } from '../Logo'
 
 // File Item Type
@@ -18,6 +18,7 @@ type PdfFile = {
   pageCount: number
   isLocked: boolean
   rotation: number
+  password?: string
 }
 
 // Format File Size helper
@@ -27,14 +28,22 @@ const formatSize = (bytes: number) => {
 }
 
 // Draggable Item Component
-function SortableItem({ id, file, onRemove, onRotate }: { id: string, file: PdfFile, onRemove: (id: string) => void, onRotate: (id: string) => void }) {
+function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, file: PdfFile, onRemove: (id: string) => void, onRotate: (id: string) => void, onUnlock: (id: string, pass: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const [localPass, setLocalPass] = useState('')
+  const [isUnlocking, setIsUnlocking] = useState(false)
   
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 50 : 0,
     position: 'relative' as const,
+  }
+
+  const handleUnlockClick = async () => {
+    setIsUnlocking(true)
+    await onUnlock(id, localPass)
+    setIsUnlocking(false)
   }
 
   return (
@@ -48,7 +57,7 @@ function SortableItem({ id, file, onRemove, onRotate }: { id: string, file: PdfF
         {file.isLocked ? (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-zinc-800 text-rose-500">
             <Lock size={16} />
-            <span className="text-[8px] font-black uppercase mt-1">Locked</span>
+            <span className="text-[8px] font-black uppercase mt-1 text-center px-1">Locked</span>
           </div>
         ) : file.thumbnail ? (
           <img 
@@ -69,15 +78,35 @@ function SortableItem({ id, file, onRemove, onRotate }: { id: string, file: PdfF
           <p className="font-bold text-sm truncate dark:text-zinc-200">{file.file.name}</p>
           {file.isLocked && <Lock size={12} className="text-rose-500 shrink-0" />}
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <span>{formatSize(file.file.size)}</span>
-          {!file.isLocked && file.pageCount > 0 && (
-            <>
-              <span>•</span>
-              <span>{file.pageCount} pages</span>
-            </>
-          )}
-        </div>
+        
+        {file.isLocked ? (
+          <div className="flex gap-1 mt-1">
+            <input 
+              type="password" 
+              placeholder="Password" 
+              value={localPass}
+              onChange={(e) => setLocalPass(e.target.value)}
+              className="flex-1 bg-gray-50 dark:bg-black border border-gray-100 dark:border-zinc-800 rounded-lg px-2 py-1 text-[10px] font-bold outline-none focus:border-rose-500"
+            />
+            <button 
+              onClick={handleUnlockClick}
+              disabled={!localPass || isUnlocking}
+              className="bg-rose-500 text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest disabled:opacity-50"
+            >
+              {isUnlocking ? '...' : 'Unlock'}
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span>{formatSize(file.file.size)}</span>
+            {file.pageCount > 0 && (
+              <>
+                <span>•</span>
+                <span>{file.pageCount} pages</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-1">
@@ -135,6 +164,24 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
           isLocked: meta.isLocked
         } : f))
       })
+    }
+  }
+
+  const handleUnlock = async (id: string, pass: string) => {
+    const pdfFile = files.find(f => f.id === id)
+    if (!pdfFile) return
+
+    const result = await unlockPdf(pdfFile.file, pass)
+    if (result.success) {
+      setFiles(prev => prev.map(f => f.id === id ? {
+        ...f,
+        isLocked: false,
+        thumbnail: result.thumbnail,
+        pageCount: result.pageCount,
+        password: pass
+      } : f))
+    } else {
+      alert('Incorrect password for ' + pdfFile.file.name)
     }
   }
 
@@ -196,7 +243,10 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
         const pdfFile = files[i]
         try {
           const fileBuffer = await pdfFile.file.arrayBuffer()
-          const pdf = await PDFDocument.load(fileBuffer, { ignoreEncryption: true })
+          const pdf = await PDFDocument.load(fileBuffer, { 
+            password: pdfFile.password,
+            ignoreEncryption: false 
+          } as any)
           const pageIndices = pdf.getPageIndices()
           const copiedPages = await mergedPdf.copyPages(pdf, pageIndices)
           
@@ -314,7 +364,7 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={files.map(f => f.id)} strategy={verticalListSortingStrategy}>
                   {files.map((file) => (
-                    <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} onRotate={rotateFile} />
+                    <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} onRotate={rotateFile} onUnlock={handleUnlock} />
                   ))}
                 </SortableContext>
               </DndContext>
@@ -388,7 +438,7 @@ export default function MergeTool({ theme, toggleTheme }: { theme: Theme, toggle
                     </>
                   ) : (
                     <>
-                      {files.length < 2 ? 'Select at least 2 files' : `Merge ${files.length} Files (${totalPages} Pages)`}
+                      {files.length < 2 ? 'Select at least 2 files' : hasLockedFiles ? 'Please unlock all files' : `Merge ${files.length} Files (${totalPages} Pages)`}
                     </>
                   )}
                 </button>

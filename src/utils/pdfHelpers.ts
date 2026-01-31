@@ -78,3 +78,34 @@ export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
     return { thumbnail: '', pageCount: 0, isLocked: false };
   }
 };
+
+export const unlockPdf = async (file: File, password: string): Promise<PdfMetaData & { success: boolean }> => {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({
+      data: arrayBuffer,
+      password: password,
+      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+      cMapPacked: true,
+    });
+
+    const pdf = await loadingTask.promise;
+    
+    // If we reach here, password is correct
+    const firstPageThumb = await renderPageThumbnail(pdf, 1);
+
+    return {
+      thumbnail: firstPageThumb,
+      pageCount: pdf.numPages,
+      isLocked: false,
+      success: true
+    };
+  } catch (error: any) {
+    return {
+      thumbnail: '',
+      pageCount: 0,
+      isLocked: true,
+      success: false
+    };
+  }
+};
