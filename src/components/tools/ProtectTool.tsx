@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { ArrowLeft, Moon, Sun, Lock, ShieldCheck, Heart, Loader2 } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, Lock, ShieldCheck, Heart, Loader2, Download, CheckCircle2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { PDFDocument } from 'pdf-lib'
 
 import { Theme } from '../../types'
 import { getPdfMetaData } from '../../utils/pdfHelpers'
@@ -20,6 +21,7 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
   const [isProcessing, setIsProcessing] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
 
   const handleFile = async (file: File) => {
     if (file.type !== 'application/pdf') return
@@ -30,6 +32,7 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
       pageCount: meta.pageCount,
       isLocked: meta.isLocked
     })
+    setDownloadUrl(null)
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,11 +44,26 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
 
     setIsProcessing(true)
     try {
-      // For now, let's keep the placeholder but avoid the unused variable error
-      await pdfData.file.arrayBuffer()
-      // const pdfDoc = await PDFDocument.load(arrayBuffer)
+      const arrayBuffer = await pdfData.file.arrayBuffer()
+      const pdfDoc: any = await PDFDocument.load(arrayBuffer)
       
-      throw new Error("Password protection is currently in development for the 100% client-side engine.")
+      pdfDoc.encrypt({
+        userPassword: password,
+        ownerPassword: password, // Same for simplicity in this tool
+        permissions: {
+          printing: 'highResolution',
+          modifying: false,
+          copying: false,
+          annotating: false,
+          fillingForms: false,
+          contentAccessibility: false,
+          documentAssembly: false,
+        },
+      })
+
+      const pdfBytes = await pdfDoc.save()
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
+      setDownloadUrl(URL.createObjectURL(blob))
 
     } catch (error: any) {
       console.error('Protect Error:', error)
@@ -110,40 +128,60 @@ export default function ProtectTool({ theme, toggleTheme }: { theme: Theme, togg
             </div>
 
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-gray-100 dark:border-zinc-800 shadow-sm space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Set Password</label>
-                  <input 
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Confirm Password</label>
-                  <input 
-                    type="password" 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
+              {!downloadUrl ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Set Password</label>
+                      <input 
+                        type="password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold transition-colors"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Confirm Password</label>
+                      <input 
+                        type="password" 
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold transition-colors"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </div>
 
-              {password && confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-rose-500 font-bold">Passwords do not match.</p>
+                  {password && confirmPassword && password !== confirmPassword && (
+                    <p className="text-xs text-rose-500 font-bold">Passwords do not match.</p>
+                  )}
+
+                  <button 
+                    onClick={protectPDF}
+                    disabled={isProcessing || !password || password !== confirmPassword}
+                    className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                  >
+                    {isProcessing ? <><Loader2 className="animate-spin" /> Securing...</> : 'Encrypt & Save PDF'}
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                   <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
+                      <CheckCircle2 size={20} /> Encrypted Successfully
+                   </div>
+                   
+                   <a 
+                    href={downloadUrl} 
+                    download={`protected-${pdfData.file.name}`}
+                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-6 rounded-3xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
+                   >
+                    <Download size={24} /> Download Secured PDF
+                  </a>
+                  
+                  <button onClick={() => { setDownloadUrl(null); setPassword(''); setConfirmPassword(''); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Protect Another</button>
+                </div>
               )}
-
-              <button 
-                onClick={protectPDF}
-                disabled={isProcessing || !password || password !== confirmPassword}
-                className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-              >
-                {isProcessing ? <><Loader2 className="animate-spin" /> Securing...</> : 'Encrypt & Save PDF'}
-              </button>
               
               <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-900/30 flex items-start gap-3">
                 <Lock size={16} className="text-amber-600 shrink-0 mt-0.5" />
