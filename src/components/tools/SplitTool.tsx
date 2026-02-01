@@ -28,7 +28,7 @@ const LazyThumbnail = ({ pdfDoc, pageNum }: { pdfDoc: any, pageNum: number }) =>
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        renderPageThumbnail(pdfDoc, pageNum).then(setSrc)
+        renderPageThumbnail(pdfDoc, pageNum, 1.0).then(setSrc)
         observer.disconnect()
       }
     }, { rootMargin: '200px' }) // Start loading when 200px away

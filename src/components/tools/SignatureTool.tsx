@@ -202,7 +202,7 @@ export default function SignatureTool() {
   }
 
   const updateThumbnail = async (pdf: any, pageNum: number) => {
-    const thumb = await renderPageThumbnail(pdf, pageNum)
+    const thumb = await renderPageThumbnail(pdf, pageNum, 2.0)
     setThumbnail(thumb)
   }
 

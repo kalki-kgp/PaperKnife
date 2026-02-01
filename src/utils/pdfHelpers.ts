@@ -22,10 +22,13 @@ export const loadPdfDocument = async (file: File) => {
 };
 
 // Optimized: Render a specific page from an already loaded PDF Document
-export const renderPageThumbnail = async (pdf: any, pageNum: number): Promise<string> => {
+export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.5): Promise<string> => {
   try {
     const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 0.5 }); // Lower scale for grid thumbnails
+    // Use device pixel ratio for sharper rendering on high-DPI screens
+    const outputScale = window.devicePixelRatio || 1;
+    const viewport = page.getViewport({ scale: scale * outputScale });
+    
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     
@@ -34,19 +37,30 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number): Promise<st
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     
-    await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
-    return canvas.toDataURL('image/jpeg', 0.6);
+    // Scale context to match outputScale
+    if (outputScale !== 1) {
+      // Not strictly necessary if we just want raw pixels, but helps if we draw overlays
+    }
+    
+    await page.render({ 
+      canvasContext: context, 
+      viewport, 
+      intent: 'display'
+    }).promise;
+    
+    // Return high-quality JPEG
+    return canvas.toDataURL('image/jpeg', 0.9);
   } catch (error) {
     console.error(`Error rendering page ${pageNum}:`, error);
     return '';
   }
 };
 
-// Wrapper for backward compatibility (MergeTool/ProtectTool use this for single-page thumbs)
+// Wrapper for backward compatibility
 export const generateThumbnail = async (file: File, pageNum: number = 1): Promise<string> => {
   try {
     const pdf = await loadPdfDocument(file);
-    return await renderPageThumbnail(pdf, pageNum);
+    return await renderPageThumbnail(pdf, pageNum, 0.8); // Smaller scale for grid thumbnails
   } catch (error) {
     console.error('Thumbnail error:', error);
     return '';
