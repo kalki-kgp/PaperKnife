@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Download, Loader2, Lock, MousePointer2, Image as ImageIcon, Trash2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Download, Loader2, Lock, MousePointer2, Image as ImageIcon, Trash2, Pen, Eraser, Check } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 
@@ -8,6 +8,122 @@ import { addActivity } from '../../utils/recentActivity'
 import ToolHeader from './shared/ToolHeader'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+
+// --- Components ---
+
+function LoadingOverlay({ message }: { message: string }) {
+  return (
+    <div className="fixed inset-0 z-[300] bg-white/80 dark:bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+      <div className="w-16 h-16 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-sm font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white animate-pulse">{message}</p>
+    </div>
+  )
+}
+
+function SignaturePad({ onSave, onCancel }: { onSave: (blob: Blob) => void, onCancel: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Setup styles
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 3
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+  }, [])
+
+  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDrawing(true)
+    draw(e)
+  }
+
+  const stopDrawing = () => {
+    setIsDrawing(false)
+    const canvas = canvasRef.current
+    if (canvas) {
+      const ctx = canvas.getContext('2d')
+      ctx?.beginPath()
+    }
+  }
+
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing) return
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext('2d')
+    if (!canvas || !ctx) return
+
+    const rect = canvas.getBoundingClientRect()
+    let x, y
+
+    if ('touches' in e) {
+      x = e.touches[0].clientX - rect.left
+      y = e.touches[0].clientY - rect.top
+    } else {
+      x = e.clientX - rect.left
+      y = e.clientY - rect.top
+    }
+
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
+
+  const handleClear = () => {
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext('2d')
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  }
+
+  const handleDone = () => {
+    const canvas = canvasRef.current
+    if (canvas) {
+      canvas.toBlob((blob) => {
+        if (blob) onSave(blob)
+      }, 'image/png')
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="relative aspect-video w-full bg-white border-2 border-gray-100 dark:border-zinc-800 rounded-2xl overflow-hidden touch-none shadow-inner">
+        <canvas
+          ref={canvasRef}
+          width={600}
+          height={300}
+          className="w-full h-full cursor-crosshair"
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseOut={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+        />
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button onClick={handleClear} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-gray-600" title="Clear">
+            <Eraser size={18} />
+          </button>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button onClick={onCancel} className="flex-1 py-3 bg-gray-100 dark:bg-zinc-800 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500">Cancel</button>
+        <button onClick={handleDone} className="flex-[2] py-3 bg-rose-500 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-rose-200 dark:shadow-none">
+          <Check size={16} /> Use Signature
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// --- Main Tool ---
 
 type SignaturePdfData = {
   file: File
@@ -23,41 +139,51 @@ export default function SignatureTool() {
   
   const [pdfData, setPdfData] = useState<SignaturePdfData | null>(null)
   const [signatureImg, setSignatureImg] = useState<string | null>(null)
-  const [signatureFile, setSignatureFile] = useState<File | null>(null)
+  const [signatureFile, setSignatureFile] = useState<File | Blob | null>(null)
   
   const [isProcessing, setIsProcessing] = useState(false)
+  const [loadingMsg, setLoadingOverlay] = useState<string | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const customFileName = 'paperknife-signed'
   const [unlockPassword, setUnlockPassword] = useState('')
   
-  // Placement State
   const [activePage, setActivePage] = useState(1)
   const [pos, setPos] = useState({ x: 50, y: 50 })
   const [size, setSize] = useState(150)
   const [thumbnail, setThumbnail] = useState<string | null>(null)
+  const [sigMode, setSigMode] = useState<'draw' | 'upload' | null>(null)
 
   const handleUnlock = async () => {
     if (!pdfData || !unlockPassword) return
-    setIsProcessing(true)
-    const result = await unlockPdf(pdfData.file, unlockPassword)
-    if (result.success) {
-      setPdfData({
-        ...pdfData,
-        isLocked: false,
-        pageCount: result.pageCount,
-        pdfDoc: result.pdfDoc,
-        password: unlockPassword
-      })
-      updateThumbnail(result.pdfDoc, 1)
-    } else {
-      toast.error('Incorrect password')
+    setLoadingOverlay('Verifying Password...')
+    await new Promise(r => setTimeout(r, 100))
+
+    try {
+      const result = await unlockPdf(pdfData.file, unlockPassword)
+      if (result.success) {
+        setPdfData({
+          ...pdfData,
+          isLocked: false,
+          pageCount: result.pageCount,
+          pdfDoc: result.pdfDoc,
+          password: unlockPassword
+        })
+        await updateThumbnail(result.pdfDoc, 1)
+      } else {
+        toast.error('Incorrect password')
+      }
+    } catch (err) {
+      toast.error('Unlock failed')
+    } finally {
+      setLoadingOverlay(null)
     }
-    setIsProcessing(false)
   }
 
   const handleFile = async (file: File) => {
     if (file.type !== 'application/pdf') return
-    setIsProcessing(true)
+    setLoadingOverlay('Analyzing PDF...')
+    await new Promise(r => setTimeout(r, 100))
+
     try {
       const meta = await getPdfMetaData(file)
       if (meta.isLocked) {
@@ -70,12 +196,12 @@ export default function SignatureTool() {
           isLocked: false,
           pdfDoc
         })
-        updateThumbnail(pdfDoc, 1)
+        await updateThumbnail(pdfDoc, 1)
       }
     } catch (err) {
-      console.error(err)
+      toast.error('Error loading file')
     } finally {
-      setIsProcessing(false)
+      setLoadingOverlay(null)
     }
   }
 
@@ -86,17 +212,17 @@ export default function SignatureTool() {
 
   const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
       setSignatureFile(file)
       setSignatureImg(URL.createObjectURL(file))
-    } else {
-      toast.error('Please upload a transparent PNG signature')
+      setSigMode(null)
     }
   }
 
   const saveSignedPdf = async () => {
     if (!pdfData || !signatureFile) return
     setIsProcessing(true)
+    setLoadingOverlay('Generating Signed PDF...')
     await new Promise(resolve => setTimeout(resolve, 100))
 
     try {
@@ -107,19 +233,12 @@ export default function SignatureTool() {
       } as any)
 
       const sigBytes = await signatureFile.arrayBuffer()
-      let sigImage
-      if (signatureFile.type === 'image/png') {
-        sigImage = await pdfDoc.embedPng(sigBytes)
-      } else {
-        sigImage = await pdfDoc.embedJpg(sigBytes)
-      }
+      const sigImage = await pdfDoc.embedPng(sigBytes)
 
       const pages = pdfDoc.getPages()
       const page = pages[activePage - 1]
       const { width, height } = page.getSize()
 
-      // Convert percentage positions to PDF coordinates
-      // Note: PDF y-axis starts from bottom
       const pdfX = (pos.x / 100) * width
       const pdfY = height - ((pos.y / 100) * height) - (size * (sigImage.height / sigImage.width))
 
@@ -146,27 +265,30 @@ export default function SignatureTool() {
       toast.error(`Error signing PDF: ${error.message}`)
     } finally {
       setIsProcessing(false)
+      setLoadingOverlay(null)
     }
   }
 
   return (
     <div className="flex-1">
+      {loadingMsg && <LoadingOverlay message={loadingMsg} />}
+      
       <main className="max-w-6xl mx-auto px-6 py-6 md:py-10">
         <ToolHeader 
           title="Electronic" 
           highlight="Signature" 
-          description="Sign any PDF document securely. Upload a transparent PNG of your signature." 
+          description="Sign any PDF document securely. Draw your signature or upload a transparent PNG." 
         />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
-        <input type="file" accept="image/*" className="hidden" ref={signatureInputRef} onChange={handleSignatureUpload} />
+        <input type="file" accept="image/png" className="hidden" ref={signatureInputRef} onChange={handleSignatureUpload} />
 
         {!pdfData ? (
-          <div onClick={() => !isProcessing && fileInputRef.current?.click()} className={`border-4 border-dashed border-gray-200 dark:border-zinc-800 rounded-[2.5rem] bg-white/50 dark:bg-zinc-900/50 p-20 text-center hover:border-rose-300 dark:hover:border-rose-900 transition-all cursor-pointer group ${isProcessing ? 'opacity-50' : ''}`}>
+          <div onClick={() => !loadingMsg && fileInputRef.current?.click()} className={`border-4 border-dashed border-gray-200 dark:border-zinc-800 rounded-[2.5rem] bg-white/50 dark:bg-zinc-900/50 p-20 text-center hover:border-rose-300 dark:hover:border-rose-900 transition-all cursor-pointer group ${loadingMsg ? 'opacity-50' : ''}`}>
             <div className="w-24 h-24 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <MousePointer2 size={40} />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Select PDF to Sign</h3>
+            <h3 className="text-2xl font-bold mb-2 dark:text-white">Select PDF to Sign</h3>
             <p className="text-sm text-gray-400">Tap to browse your files</p>
           </div>
         ) : pdfData.isLocked ? (
@@ -182,14 +304,13 @@ export default function SignatureTool() {
                 value={unlockPassword}
                 onChange={(e) => setUnlockPassword(e.target.value)}
                 placeholder="Enter Password"
-                className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold text-center mb-4"
+                className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold text-center mb-4 dark:text-white"
               />
               <button onClick={handleUnlock} className="w-full bg-rose-500 text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs">Unlock PDF</button>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-500">
-            {/* Preview Area */}
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white dark:bg-zinc-900 p-4 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 shadow-sm relative overflow-hidden">
                 <div className="flex justify-between items-center mb-4 px-2">
@@ -197,15 +318,25 @@ export default function SignatureTool() {
                   <div className="flex gap-2">
                     <button 
                       disabled={activePage <= 1}
-                      onClick={() => { setActivePage(prev => prev - 1); updateThumbnail(pdfData.pdfDoc, activePage - 1); }}
-                      className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-[10px] font-bold disabled:opacity-30"
+                      onClick={async () => { 
+                        const newPage = activePage - 1;
+                        setActivePage(newPage); 
+                        setThumbnail(null);
+                        await updateThumbnail(pdfData.pdfDoc, newPage); 
+                      }}
+                      className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-[10px] font-bold disabled:opacity-30 dark:text-white"
                     >
                       Prev
                     </button>
                     <button 
                       disabled={activePage >= pdfData.pageCount}
-                      onClick={() => { setActivePage(prev => prev + 1); updateThumbnail(pdfData.pdfDoc, activePage + 1); }}
-                      className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-[10px] font-bold disabled:opacity-30"
+                      onClick={async () => { 
+                        const newPage = activePage + 1;
+                        setActivePage(newPage); 
+                        setThumbnail(null);
+                        await updateThumbnail(pdfData.pdfDoc, newPage); 
+                      }}
+                      className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-[10px] font-bold disabled:opacity-30 dark:text-white"
                     >
                       Next
                     </button>
@@ -238,13 +369,13 @@ export default function SignatureTool() {
                       }}
                       className="absolute pointer-events-none ring-2 ring-rose-500 ring-offset-2 rounded-sm shadow-2xl transition-all duration-75"
                     >
-                      <img src={signatureImg} className="w-full h-auto" alt="Signature" />
+                      <img src={signatureImg} className="w-full h-auto brightness-0 dark:invert" alt="Signature" />
                     </div>
                   )}
 
                   {!signatureImg && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-lg text-xs font-bold">Upload signature first</p>
+                      <p className="bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-lg text-xs font-bold dark:text-white text-gray-900">Configure signature first</p>
                     </div>
                   )}
                 </div>
@@ -252,25 +383,47 @@ export default function SignatureTool() {
               </div>
             </div>
 
-            {/* Controls */}
             <div className="space-y-6">
               <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 shadow-sm sticky top-24">
                 {!downloadUrl ? (
                   <div className="space-y-8">
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">1. Your Signature</label>
-                      {!signatureImg ? (
-                        <button 
-                          onClick={() => signatureInputRef.current?.click()}
-                          className="w-full aspect-video bg-rose-50 dark:bg-rose-900/10 border-2 border-dashed border-rose-200 dark:border-rose-900/30 rounded-2xl flex flex-col items-center justify-center gap-2 text-rose-500 hover:bg-rose-100 transition-all"
-                        >
-                          <ImageIcon size={24} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Upload PNG</span>
-                        </button>
-                      ) : (
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">1. Configure Signature</label>
+                      
+                      {!signatureImg && !sigMode && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <button 
+                            onClick={() => setSigMode('draw')}
+                            className="aspect-square bg-rose-50 dark:bg-rose-900/10 border-2 border-rose-100 dark:border-rose-900/30 rounded-2xl flex flex-col items-center justify-center gap-2 text-rose-500 hover:bg-rose-100 transition-all"
+                          >
+                            <Pen size={24} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Draw</span>
+                          </button>
+                          <button 
+                            onClick={() => signatureInputRef.current?.click()}
+                            className="aspect-square bg-rose-50 dark:bg-rose-900/10 border-2 border-rose-100 dark:border-rose-900/30 rounded-2xl flex flex-col items-center justify-center gap-2 text-rose-500 hover:bg-rose-100 transition-all"
+                          >
+                            <ImageIcon size={24} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Upload</span>
+                          </button>
+                        </div>
+                      )}
+
+                      {sigMode === 'draw' && (
+                        <SignaturePad 
+                          onSave={(blob) => {
+                            setSignatureFile(blob)
+                            setSignatureImg(URL.createObjectURL(blob))
+                            setSigMode(null)
+                          }}
+                          onCancel={() => setSigMode(null)}
+                        />
+                      )}
+
+                      {signatureImg && (
                         <div className="relative group">
-                          <div className="w-full p-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-zinc-800">
-                            <img src={signatureImg} className="h-20 mx-auto object-contain" alt="Uploaded sig" />
+                          <div className="w-full p-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-zinc-800 flex items-center justify-center">
+                            <img src={signatureImg} className="h-20 object-contain brightness-0 dark:invert" alt="Signature preview" />
                           </div>
                           <button 
                             onClick={() => { setSignatureImg(null); setSignatureFile(null); }}
@@ -313,11 +466,11 @@ export default function SignatureTool() {
                     message="Document Signed!"
                     downloadUrl={downloadUrl}
                     fileName={`${customFileName}.pdf`}
-                    onStartOver={() => { setDownloadUrl(null); setSignatureImg(null); setPdfData(null); }}
+                    onStartOver={() => { setDownloadUrl(null); setSignatureImg(null); setPdfData(null); setSigMode(null); }}
                   />
                 )}
                 
-                <button onClick={() => setPdfData(null)} className="w-full mt-6 py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors tracking-[0.2em]">Cancel</button>
+                <button onClick={() => setPdfData(null)} className="w-full mt-6 py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors tracking-[0.2em]">Close File</button>
               </div>
             </div>
           </div>
