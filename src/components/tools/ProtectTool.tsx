@@ -1,10 +1,14 @@
 import { useState, useRef } from 'react'
-import { Lock, ShieldCheck, Loader2, Download, CheckCircle2 } from 'lucide-react'
+import { Lock, ShieldCheck, Loader2 } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import ToolHeader from './shared/ToolHeader'
+import SuccessState from './shared/SuccessState'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type ProtectPdfFile = {
   file: File
@@ -38,7 +42,7 @@ export default function ProtectTool() {
       })
       setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-protected`)
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -98,7 +102,7 @@ export default function ProtectTool() {
       })
     } catch (error: any) {
       console.error('Protect Error:', error)
-      alert(`Failed to protect PDF: ${error.message}`)
+      toast.error(`Failed to protect PDF: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -107,15 +111,11 @@ export default function ProtectTool() {
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">
-            Secure Your <span className="text-rose-500">Data.</span>
-          </h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">
-            Add a strong password to your PDF document. <br className="hidden md:block"/>
-            Everything stays on your device.
-          </p>
-        </div>
+        <ToolHeader 
+          title="Secure Your" 
+          highlight="Data" 
+          description="Add a strong password to your PDF document. Everything stays on your device." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
 
@@ -227,19 +227,12 @@ export default function ProtectTool() {
                 </>
               ) : (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                   <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
-                      <CheckCircle2 size={20} /> Encrypted Successfully
-                   </div>
-                   
-                   <a 
-                    href={downloadUrl} 
-                    download={`${customFileName || 'protected'}.pdf`}
-                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-6 rounded-3xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                   >
-                    <Download size={24} /> Download Secured PDF
-                  </a>
-                  
-                  <button onClick={() => { setDownloadUrl(null); setPassword(''); setConfirmPassword(''); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Protect Another</button>
+                   <SuccessState 
+                    message="Encrypted Successfully"
+                    downloadUrl={downloadUrl}
+                    fileName={`${customFileName || 'protected'}.pdf`}
+                    onStartOver={() => { setDownloadUrl(null); setPassword(''); setConfirmPassword(''); }}
+                   />
                 </div>
               )}
               
@@ -253,10 +246,7 @@ export default function ProtectTool() {
           </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          Secure Client-Side Encryption
-        </div>
+        <PrivacyBadge />
       </main>
     </div>
   )

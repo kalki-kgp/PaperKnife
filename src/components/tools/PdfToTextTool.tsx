@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, Copy, FileText, Lock, Check } from 'lucide-react'
+import { Loader2, Copy, FileText, Lock, Check, Download } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
+import ToolHeader from './shared/ToolHeader'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type PdfToTextData = {
   file: File
@@ -33,7 +36,7 @@ export default function PdfToTextTool() {
         password: unlockPassword
       })
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -78,8 +81,9 @@ export default function PdfToTextTool() {
         setProgress(Math.round((i / pdfData.pageCount) * 100))
       }
       setExtractedText(fullText)
+      toast.success('Text extracted successfully!')
     } catch (error: any) {
-      alert(`Error extracting text: ${error.message}`)
+      toast.error(`Error extracting text: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -106,10 +110,11 @@ export default function PdfToTextTool() {
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">PDF to <span className="text-rose-500">Text.</span></h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">Extract plain text for easy editing. <br className="hidden md:block"/>Processed locally.</p>
-        </div>
+        <ToolHeader 
+          title="PDF to" 
+          highlight="Text" 
+          description="Extract plain text for easy editing. Processed locally." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
@@ -239,11 +244,7 @@ export default function PdfToTextTool() {
             </div>
           </div>
         )}
-
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          100% Client-Side Processing
-        </div>
+        <PrivacyBadge />
       </main>
     </div>
   )

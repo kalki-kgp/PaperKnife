@@ -1,9 +1,13 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, CheckCircle2, Zap, Shield, Info, Lock } from 'lucide-react'
+import { Zap, Shield, Info, Lock, Loader2 } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import ToolHeader from './shared/ToolHeader'
+import SuccessState from './shared/SuccessState'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type CompressPdfFile = {
   file: File
@@ -42,7 +46,7 @@ export default function CompressTool() {
       })
       setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-compressed`)
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -137,7 +141,7 @@ export default function CompressTool() {
       })
     } catch (error: any) {
       console.error('Compress Error:', error)
-      alert(`Compression failed: ${error.message}`)
+      toast.error(`Compression failed: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -146,10 +150,11 @@ export default function CompressTool() {
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">File <span className="text-rose-500">Shrinker.</span></h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">Optimize and compress your PDFs for easy sharing. <br className="hidden md:block"/>Everything stays on your device.</p>
-        </div>
+        <ToolHeader 
+          title="File" 
+          highlight="Shrinker" 
+          description="Optimize and compress your PDFs for easy sharing. Everything stays on your device." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
 
@@ -280,11 +285,7 @@ export default function CompressTool() {
                 </>
               ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 text-center">
-                   <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
-                      <CheckCircle2 size={20} /> Success! Optimization Complete.
-                   </div>
-
-                   <div className="grid grid-cols-2 gap-4">
+                   <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="p-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-zinc-800">
                         <span className="block text-[10px] font-black uppercase text-gray-400 mb-1">Original</span>
                         <span className="font-bold">{(pdfData.file.size / (1024 * 1024)).toFixed(2)} MB</span>
@@ -295,23 +296,12 @@ export default function CompressTool() {
                       </div>
                    </div>
 
-                   <div className="flex flex-col sm:flex-row gap-3">
-                      <button 
-                        onClick={() => window.open(downloadUrl, '_blank')}
-                        className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 transition-all active:scale-95"
-                      >
-                        Preview
-                      </button>
-                      <a 
-                        href={downloadUrl} 
-                        download={`${customFileName || 'compressed'}.pdf`}
-                        className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                      >
-                        <Download size={24} /> Download PDF
-                      </a>
-                   </div>
-                  
-                  <button onClick={() => { setDownloadUrl(null); setProgress(0); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Compress Again</button>
+                   <SuccessState 
+                    message="Success! Optimization Complete."
+                    downloadUrl={downloadUrl}
+                    fileName={`${customFileName || 'compressed'}.pdf`}
+                    onStartOver={() => { setDownloadUrl(null); setProgress(0); }}
+                   />
                 </div>
               )}
             </div>
@@ -327,10 +317,7 @@ export default function CompressTool() {
           </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          Secure Client-Side Processing
-        </div>
+        <PrivacyBadge />
       </main>
     </div>
   )

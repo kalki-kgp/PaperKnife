@@ -1,9 +1,13 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, CheckCircle2, Image as ImageIcon, Lock, Settings } from 'lucide-react'
+import { Image as ImageIcon, Lock, Settings, Loader2 } from 'lucide-react'
 import JSZip from 'jszip'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import ToolHeader from './shared/ToolHeader'
+import SuccessState from './shared/SuccessState'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type ImageFormat = 'jpg' | 'png'
 
@@ -41,7 +45,7 @@ export default function PdfToImageTool() {
       })
       setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-images`)
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -121,7 +125,7 @@ export default function PdfToImageTool() {
       })
     } catch (error: any) {
       console.error('Conversion Error:', error)
-      alert(`Conversion failed: ${error.message}`)
+      toast.error(`Conversion failed: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -130,10 +134,11 @@ export default function PdfToImageTool() {
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">PDF to <span className="text-rose-500">Image.</span></h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">Convert pages to high-quality images. <br className="hidden md:block"/>Processed locally.</p>
-        </div>
+        <ToolHeader 
+          title="PDF to" 
+          highlight="Image" 
+          description="Convert pages to high-quality images. Processed locally." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
@@ -253,29 +258,19 @@ export default function PdfToImageTool() {
                 </>
               ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 text-center">
-                   <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
-                      <CheckCircle2 size={20} /> Success! Images Ready.
-                   </div>
-
-                   <a 
-                    href={downloadUrl} 
-                    download={`${customFileName}.zip`}
-                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-6 rounded-3xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                   >
-                    <Download size={24} /> Download Images (ZIP)
-                  </a>
-                  
-                  <button onClick={() => { setDownloadUrl(null); setProgress(0); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Convert Another</button>
+                   <SuccessState 
+                    message="Success! Images Ready."
+                    downloadUrl={downloadUrl}
+                    fileName={`${customFileName}.zip`}
+                    onStartOver={() => { setDownloadUrl(null); setProgress(0); }}
+                    showPreview={false}
+                   />
                 </div>
               )}
             </div>
           </div>
         )}
-
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          100% Client-Side Processing
-        </div>
+        <PrivacyBadge />
       </main>
     </div>
   )

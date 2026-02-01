@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
-import { Download, Loader2, CheckCircle2, Lock, Grid, Move, RefreshCcw, Eye } from 'lucide-react'
+import { Loader2, Lock, Grid, Move, RefreshCcw, Download } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import ToolHeader from './shared/ToolHeader'
+import SuccessState from './shared/SuccessState'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type RearrangePdfData = {
   file: File
@@ -98,7 +102,7 @@ export default function RearrangeTool() {
       setPageOrder(Array.from({ length: result.pageCount }, (_, i) => (i + 1).toString()))
       setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-rearranged`)
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -177,7 +181,7 @@ export default function RearrangeTool() {
         resultUrl: url
       })
     } catch (error: any) {
-      alert(`Error saving PDF: ${error.message}`)
+      toast.error(`Error saving PDF: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -186,10 +190,11 @@ export default function RearrangeTool() {
   return (
     <div className="flex-1">
       <main className="max-w-6xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">Rearrange <span className="text-rose-500">PDF.</span></h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">Drag and drop to reorder pages. <br className="hidden md:block"/>Processed locally.</p>
-        </div>
+        <ToolHeader 
+          title="Rearrange" 
+          highlight="PDF" 
+          description="Drag and drop to reorder pages. Processed locally." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
@@ -288,54 +293,64 @@ export default function RearrangeTool() {
                     </div>
                   </div>
 
-                  {!downloadUrl ? (
-                    <button 
-                      onClick={savePDF}
-                      disabled={isProcessing}
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                    >
-                      {isProcessing ? <Loader2 className="animate-spin" /> : <Download />}
-                      Save PDF
-                    </button>
-                  ) : (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
-                        <CheckCircle2 size={20} /> Success!
-                      </div>
-                      
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <button 
-                          onClick={() => window.open(downloadUrl, '_blank')}
-                          className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all active:scale-95"
-                        >
-                          <Eye size={20} /> Preview
-                        </button>
-                        
-                        <a 
-                          href={downloadUrl} 
-                          download={`${customFileName}.pdf`}
-                          className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                        >
-                          <Download size={24} /> Download PDF
-                        </a>
-                      </div>
-                      
-                      <button onClick={() => setDownloadUrl(null)} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Arrange Again</button>
-                    </div>
-                  )}
-                  
-                  <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors tracking-[0.2em]">Close File</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+                                    {!downloadUrl ? (
 
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          100% Client-Side Processing
-        </div>
-      </main>
-    </div>
-  )
-}
+                                      <button 
+
+                                        onClick={savePDF}
+
+                                        disabled={isProcessing}
+
+                                        className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+
+                                      >
+
+                                        {isProcessing ? <Loader2 className="animate-spin" /> : <Download />}
+
+                                        Save PDF
+
+                                      </button>
+
+                                    ) : (
+
+                                      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+
+                                        <SuccessState 
+
+                                          message="Success! PDF rearranged."
+
+                                          downloadUrl={downloadUrl}
+
+                                          fileName={`${customFileName}.pdf`}
+
+                                          onStartOver={() => setDownloadUrl(null)}
+
+                                        />
+
+                                      </div>
+
+                                    )}
+
+                                    
+
+                                    <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors tracking-[0.2em]">Close File</button>
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          )}
+
+                          <PrivacyBadge />
+
+                        </main>
+
+                      </div>
+
+                    )
+
+                  }

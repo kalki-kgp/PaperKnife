@@ -1,9 +1,13 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, CheckCircle2, Type, Lock, Eye, Settings, Sliders } from 'lucide-react'
+import { Type, Lock, Settings, Sliders, Loader2 } from 'lucide-react'
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib'
+import { toast } from 'sonner'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import ToolHeader from './shared/ToolHeader'
+import SuccessState from './shared/SuccessState'
+import PrivacyBadge from './shared/PrivacyBadge'
 
 type WatermarkPdfData = {
   file: File
@@ -40,7 +44,7 @@ export default function WatermarkTool() {
       })
       setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-watermarked`)
     } else {
-      alert('Incorrect password')
+      toast.error('Incorrect password')
     }
     setIsProcessing(false)
   }
@@ -112,7 +116,7 @@ export default function WatermarkTool() {
         resultUrl: url
       })
     } catch (error: any) {
-      alert(`Error applying watermark: ${error.message}`)
+      toast.error(`Error applying watermark: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -121,10 +125,11 @@ export default function WatermarkTool() {
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-black mb-3 md:mb-4 dark:text-white">Watermark <span className="text-rose-500">PDF.</span></h2>
-          <p className="text-sm md:text-base text-gray-500 dark:text-zinc-400">Add secure text overlays to your documents. <br className="hidden md:block"/>Processed locally.</p>
-        </div>
+        <ToolHeader 
+          title="Watermark" 
+          highlight="PDF" 
+          description="Add secure text overlays to your documents. Processed locally." 
+        />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
@@ -283,38 +288,19 @@ export default function WatermarkTool() {
                 </>
               ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                   <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
-                      <CheckCircle2 size={20} /> Success! Watermark applied.
-                   </div>
-                   
-                   <div className="flex flex-col sm:flex-row gap-3">
-                      <button 
-                        onClick={() => window.open(downloadUrl, '_blank')}
-                        className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all active:scale-95"
-                      >
-                        <Eye size={20} /> Preview
-                      </button>
-                      
-                      <a 
-                        href={downloadUrl} 
-                        download={`${customFileName}.pdf`}
-                        className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                      >
-                        <Download size={24} /> Download PDF
-                      </a>
-                   </div>
-                  
-                  <button onClick={() => { setDownloadUrl(null); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Watermark Another</button>
+                   <SuccessState 
+                    message="Success! Watermark applied."
+                    downloadUrl={downloadUrl}
+                    fileName={`${customFileName}.pdf`}
+                    onStartOver={() => setDownloadUrl(null)}
+                   />
                 </div>
               )}
             </div>
           </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          100% Client-Side Processing
-        </div>
+        <PrivacyBadge />
       </main>
     </div>
   )
