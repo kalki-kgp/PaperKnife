@@ -1,8 +1,14 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Shield, Zap, Download, ChevronRight, Github, Heart, Search } from 'lucide-react'
+import { Shield, Zap, Download, ChevronRight, Github, Heart, Search, Clock, Trash2, FileIcon } from 'lucide-react'
 import { Tool, ToolCategory } from '../types'
 import { PaperKnifeLogo } from './Logo'
+import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
+
+const formatSize = (bytes: number) => {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
 
 const ToolCard = ({ title, desc, icon: Icon, className = "", implemented = false, onClick }: Tool & { className?: string, onClick?: () => void }) => (
   <div 
@@ -39,6 +45,16 @@ export default function WebView({ tools }: { tools: Tool[] }) {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<ToolCategory | 'All'>('All')
+  const [history, setHistory] = useState<ActivityEntry[]>([])
+
+  useEffect(() => {
+    getRecentActivity(5).then(setHistory)
+  }, [])
+
+  const handleClearHistory = async () => {
+    await clearActivity()
+    setHistory([])
+  }
 
   const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Convert', 'Optimize']
 
@@ -104,20 +120,87 @@ export default function WebView({ tools }: { tools: Tool[] }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTools.map((tool) => (
-            <ToolCard 
-              key={tool.title} 
-              {...tool} 
-              onClick={() => handleToolClick(tool)}
-            />
-          ))}
-          {filteredTools.length === 0 && (
-            <div className="col-span-full py-20 text-center">
-              <p className="text-xl font-bold text-gray-400">No tools found matching your search.</p>
-              <button onClick={() => { setSearchQuery(''); setActiveCategory('All'); }} className="mt-4 text-rose-500 font-black uppercase tracking-widest text-xs hover:underline">Clear Filters</button>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-3 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTools.map((tool) => (
+                <ToolCard 
+                  key={tool.title} 
+                  {...tool} 
+                  onClick={() => handleToolClick(tool)}
+                />
+              ))}
+              {filteredTools.length === 0 && (
+                <div className="col-span-full py-20 text-center">
+                  <p className="text-xl font-bold text-gray-400">No tools found matching your search.</p>
+                  <button onClick={() => { setSearchQuery(''); setActiveCategory('All'); }} className="mt-4 text-rose-500 font-black uppercase tracking-widest text-xs hover:underline">Clear Filters</button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Activity Sidebar */}
+          <aside className="space-y-6">
+            <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 p-8 shadow-sm h-fit">
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400">
+                  <Clock size={14} /> Recent Files
+                </h4>
+                {history.length > 0 && (
+                  <button onClick={handleClearHistory} className="text-gray-300 hover:text-rose-500 transition-colors">
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
+
+              {history.length === 0 ? (
+                <div className="py-10 text-center space-y-2">
+                  <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest leading-relaxed">No recent activity.<br/>Processed files appear here.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {history.map((item) => (
+                    <div key={item.id} className="group relative">
+                      <div className="flex items-start gap-3 p-3 rounded-2xl border border-transparent hover:border-rose-100 dark:hover:border-rose-900/30 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-all">
+                        <div className="w-10 h-10 bg-gray-50 dark:bg-black rounded-xl flex items-center justify-center text-gray-400 group-hover:text-rose-500 transition-colors shrink-0">
+                          <FileIcon size={18} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold truncate dark:text-zinc-200">{item.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[8px] font-black uppercase px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 text-gray-500 rounded">{item.tool}</span>
+                            <span className="text-[8px] font-bold text-gray-400 uppercase">{formatSize(item.size)}</span>
+                          </div>
+                        </div>
+                        {item.resultUrl && (
+                          <a 
+                            href={item.resultUrl} 
+                            download={item.name}
+                            className="p-2 text-gray-300 hover:text-rose-500 transition-colors"
+                            title="Download again"
+                          >
+                            <Download size={16} />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <p className="text-[8px] text-center text-gray-400 uppercase font-black tracking-widest pt-4 border-t border-gray-100 dark:border-zinc-800">
+                    Auto-deleted after 10 files
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-gradient-to-br from-rose-500 to-rose-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-rose-200 dark:shadow-none">
+              <Heart className="mb-4 text-rose-200" fill="currentColor" size={24} />
+              <h4 className="font-black text-lg mb-2">PaperKnife Supporter</h4>
+              <p className="text-xs font-medium text-rose-100 leading-relaxed mb-6">Support privacy-first tools. Get exclusive OLED themes and local Supporter Keys.</p>
+              <a href="https://github.com/sponsors/potatameister" target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-white text-rose-500 rounded-2xl text-center text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all">
+                Sponsor Now
+              </a>
+            </div>
+          </aside>
         </div>
 
         <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-gray-100 dark:border-zinc-800 pt-20">

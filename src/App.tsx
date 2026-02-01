@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { FileText, Shield, Zap, Smartphone, Monitor, Edit3, Scissors, Grid } from 'lucide-react'
+import { FileText, Shield, Zap, Smartphone, Monitor, Edit3, Scissors, Grid, Wrench } from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Theme, ViewMode, Tool } from './types'
@@ -22,12 +22,14 @@ const PageNumberTool = lazy(() => import('./components/tools/PageNumberTool'))
 const MetadataTool = lazy(() => import('./components/tools/MetadataTool'))
 const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
 const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
+const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const About = lazy(() => import('./components/About'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into a single document effortlessly.', icon: FileText, implemented: true, path: '/merge', category: 'Edit' },
   { title: 'Split PDF', desc: 'Extract specific pages or divide your PDF into separate files.', icon: Scissors, implemented: true, path: '/split', category: 'Edit' },
   { title: 'Compress PDF', desc: 'Optimize your file size for sharing without quality loss.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize' },
+  { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents locally.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize' },
   { title: 'Image to PDF', icon: Edit3, desc: 'Convert multiple images into a single professional PDF document.', implemented: true, path: '/image-to-pdf', category: 'Convert' },
   { title: 'PDF to Image', icon: FileText, desc: 'Convert document pages into high-quality JPG or PNG images.', implemented: true, path: '/pdf-to-image', category: 'Convert' },
   { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Shield, implemented: true, path: '/protect', category: 'Secure' },
@@ -168,6 +170,7 @@ function App() {
               <Route path="/metadata" element={<MetadataTool />} />
               <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
               <Route path="/signature" element={<SignatureTool />} />
+              <Route path="/repair" element={<RepairTool />} />
               <Route path="/about" element={<About theme={theme} toggleTheme={toggleTheme} />} />
             </Routes>
           </Suspense>
