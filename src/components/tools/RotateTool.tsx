@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Download, Loader2, CheckCircle2, RotateCw, Lock, RefreshCcw } from 'lucide-react'
+import { Download, Loader2, CheckCircle2, RotateCw, Lock, RefreshCcw, Eye } from 'lucide-react'
 import { PDFDocument, degrees } from 'pdf-lib'
 
 import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
@@ -299,13 +299,24 @@ export default function RotateTool() {
                       <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-green-100 dark:border-green-900/30">
                         <CheckCircle2 size={20} /> Success!
                       </div>
-                      <a 
-                        href={downloadUrl} 
-                        download={`${customFileName}.pdf`}
-                        className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-6 rounded-3xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                      >
-                        <Download size={24} /> Download PDF
-                      </a>
+                      
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button 
+                          onClick={() => window.open(downloadUrl, '_blank')}
+                          className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all active:scale-95"
+                        >
+                          <Eye size={20} /> Preview
+                        </button>
+                        
+                        <a 
+                          href={downloadUrl} 
+                          download={`${customFileName}.pdf`}
+                          className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
+                        >
+                          <Download size={24} /> Download PDF
+                        </a>
+                      </div>
+                      
                       <button onClick={() => setDownloadUrl(null)} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Edit Again</button>
                     </div>
                   )}
@@ -316,6 +327,11 @@ export default function RotateTool() {
             </div>
           </div>
         )}
+
+        <div className="mt-12 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          100% Client-Side Processing
+        </div>
       </main>
     </div>
   )

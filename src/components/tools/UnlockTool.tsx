@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, CheckCircle2, Lock, Unlock } from 'lucide-react'
+import { Download, Loader2, CheckCircle2, Lock, Unlock, Eye } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
@@ -156,13 +156,22 @@ export default function UnlockTool() {
                       <CheckCircle2 size={20} /> Success! Restrictions removed.
                    </div>
                    
-                   <a 
-                    href={downloadUrl} 
-                    download={`${customFileName || 'unlocked'}.pdf`}
-                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-6 rounded-3xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
-                   >
-                    <Download size={24} /> Download Unlocked PDF
-                  </a>
+                   <div className="flex flex-col sm:flex-row gap-3">
+                      <button 
+                        onClick={() => window.open(downloadUrl, '_blank')}
+                        className="flex-1 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-800 p-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all active:scale-95"
+                      >
+                        <Eye size={20} /> Preview
+                      </button>
+                      
+                      <a 
+                        href={downloadUrl} 
+                        download={`${customFileName || 'unlocked'}.pdf`}
+                        className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all shadow-xl"
+                      >
+                        <Download size={24} /> Download PDF
+                      </a>
+                   </div>
                   
                   <button onClick={() => { setDownloadUrl(null); setPassword(''); }} className="w-full py-2 text-xs font-black uppercase text-gray-400 hover:text-rose-500 tracking-[0.2em]">Unlock Another</button>
                 </div>
