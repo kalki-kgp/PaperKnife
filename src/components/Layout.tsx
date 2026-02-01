@@ -7,7 +7,7 @@ import {
   Plus, Trash2, CheckCircle2, Home, Info, ArrowLeft
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
-import { Theme, Tool } from '../types'
+import { Theme, Tool, ToolCategory } from '../types'
 import { PaperKnifeLogo } from './Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 
@@ -17,6 +17,13 @@ interface LayoutProps {
   toggleTheme: () => void
   tools: Tool[]
   onFileDrop?: (files: FileList) => void
+}
+
+const categoryColors: Record<ToolCategory, { bg: string, text: string, hover: string, iconBg: string }> = {
+  Edit: { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-500', hover: 'hover:bg-rose-50 dark:hover:bg-rose-900/10', iconBg: 'bg-rose-100 dark:bg-rose-900/30' },
+  Secure: { bg: 'bg-indigo-50 dark:bg-indigo-900/20', text: 'text-indigo-500', hover: 'hover:bg-indigo-50 dark:hover:bg-indigo-900/10', iconBg: 'bg-indigo-100 dark:bg-indigo-900/30' },
+  Convert: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-500', hover: 'hover:bg-emerald-50 dark:hover:bg-emerald-900/10', iconBg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+  Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-500', hover: 'hover:bg-amber-50 dark:hover:bg-amber-900/10', iconBg: 'bg-amber-100 dark:bg-amber-900/30' }
 }
 
 export default function Layout({ children, theme, toggleTheme, tools, onFileDrop }: LayoutProps) {
@@ -139,34 +146,37 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
                     acc[tool.category].push(tool)
                     return acc
                   }, {} as Record<string, Tool[]>)
-                ).map(([category, categoryTools]) => (
-                  <div key={category} className="mb-4">
-                    <div className="px-6 py-2">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500/50">{category}</span>
+                ).map(([category, categoryTools]) => {
+                  const colors = categoryColors[category as ToolCategory]
+                  return (
+                    <div key={category} className="mb-4">
+                      <div className="px-6 py-2">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${colors.text} opacity-60`}>{category}</span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1 px-2">
+                        {categoryTools.map((tool, i) => {
+                          const Icon = tool.icon
+                          const isActive = activeTool?.title === tool.title && !isHome
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => { navigate(tool.path || '/'); setIsDropdownOpen(false); }}
+                              className={`flex items-center gap-4 p-3 rounded-2xl transition-all text-left group ${isActive ? `${colors.bg} ${colors.text}` : `hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-500 dark:text-gray-400`}`}
+                            >
+                              <div className={`p-2 rounded-lg transition-colors ${isActive ? 'bg-white dark:bg-zinc-800' : `${colors.iconBg} ${colors.text} opacity-70 group-hover:opacity-100`}`}>
+                                <Icon size={18} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-black uppercase tracking-tight">{tool.title}</p>
+                                <p className="text-[10px] opacity-60 truncate">{tool.desc}</p>
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-1 px-2">
-                      {categoryTools.map((tool, i) => {
-                        const Icon = tool.icon
-                        const isActive = activeTool?.title === tool.title && !isHome
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => { navigate(tool.path || '/'); setIsDropdownOpen(false); }}
-                            className={`flex items-center gap-4 p-3 rounded-2xl transition-all text-left group ${isActive ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-500 dark:text-gray-400'}`}
-                          >
-                            <div className={`p-2 rounded-lg transition-colors ${isActive ? 'bg-rose-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 group-hover:bg-rose-100 dark:group-hover:bg-rose-900/30 group-hover:text-rose-500'}`}>
-                              <Icon size={18} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-black uppercase tracking-tight">{tool.title}</p>
-                              <p className="text-[10px] opacity-60 truncate">{tool.desc}</p>
-                            </div>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
                 
                 <div className="mt-2 pt-4 border-t border-gray-50 dark:border-zinc-800 px-4">
                   <button onClick={() => { navigate('/'); setIsDropdownOpen(false); }} className="w-full flex items-center justify-center gap-2 p-3 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-rose-500 transition-colors">
