@@ -10,36 +10,77 @@ const formatSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-const ToolCard = ({ title, desc, icon: Icon, className = "", implemented = false, onClick }: Tool & { className?: string, onClick?: () => void }) => (
-  <div 
-    onClick={implemented ? onClick : undefined}
-    className={`
-      rounded-3xl border transition-all duration-300 group overflow-hidden flex flex-col p-6 md:p-8 relative h-full
-      ${implemented 
-        ? 'cursor-pointer bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 hover:shadow-lg dark:hover:shadow-rose-900/10 hover:border-rose-200 dark:hover:border-rose-800 hover:-translate-y-0.5' 
-        : 'cursor-not-allowed opacity-60 saturate-0 bg-gray-50 dark:bg-zinc-950 border-transparent'}
-      ${className}
-    `}
-  >
-    <div className={`
-      bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-2xl flex items-center justify-center transition-all duration-300 mb-6 w-12 h-12 md:w-14 md:h-14
-      ${implemented ? 'group-hover:bg-rose-500 group-hover:text-white' : ''}
-    `}>
-      <Icon size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={1.5} />
-    </div>
-    <div className="flex-1 flex flex-col justify-end">
-      <div className="flex items-center justify-between mb-2 md:mb-3">
-        <h3 className="font-bold text-gray-900 dark:text-white text-lg md:text-xl">{title}</h3>
-        {implemented ? (
-          <ChevronRight size={18} className="text-gray-300 dark:text-zinc-600 group-hover:text-rose-500 transition-colors transform group-hover:translate-x-1" />
-        ) : (
-          <span className="text-[10px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-md text-gray-400">Soon</span>
-        )}
+const categoryColors: Record<ToolCategory, { bg: string, text: string, border: string, hover: string, glow: string }> = {
+  Edit: { 
+    bg: 'bg-rose-50 dark:bg-rose-900/20', 
+    text: 'text-rose-500', 
+    border: 'border-rose-100 dark:border-rose-900/30',
+    hover: 'group-hover:bg-rose-500',
+    glow: 'dark:hover:shadow-rose-900/20'
+  },
+  Secure: { 
+    bg: 'bg-indigo-50 dark:bg-indigo-900/20', 
+    text: 'text-indigo-500', 
+    border: 'border-indigo-100 dark:border-indigo-900/30',
+    hover: 'group-hover:bg-indigo-500',
+    glow: 'dark:hover:shadow-indigo-900/20'
+  },
+  Convert: { 
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20', 
+    text: 'text-emerald-500', 
+    border: 'border-emerald-100 dark:border-emerald-900/30',
+    hover: 'group-hover:bg-emerald-500',
+    glow: 'dark:hover:shadow-emerald-900/20'
+  },
+  Optimize: { 
+    bg: 'bg-amber-50 dark:bg-amber-900/20', 
+    text: 'text-amber-500', 
+    border: 'border-amber-100 dark:border-amber-900/30',
+    hover: 'group-hover:bg-amber-500',
+    glow: 'dark:hover:shadow-amber-900/20'
+  }
+}
+
+const ToolCard = ({ title, desc, icon: Icon, implemented = false, onClick, category }: Tool & { onClick?: () => void }) => {
+  const colors = categoryColors[category]
+  
+  return (
+    <div 
+      onClick={implemented ? onClick : undefined}
+      className={`
+        rounded-[2.5rem] border transition-all duration-500 group overflow-hidden flex flex-col p-8 relative h-full
+        ${implemented 
+          ? `cursor-pointer bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 hover:shadow-2xl ${colors.glow} hover:border-transparent hover:-translate-y-1` 
+          : 'cursor-not-allowed opacity-60 saturate-0 bg-gray-50 dark:bg-zinc-950 border-transparent'}
+      `}
+    >
+      <div className={`
+        ${colors.bg} ${colors.text} rounded-2xl flex items-center justify-center transition-all duration-500 mb-6 w-14 h-14
+        ${implemented ? `${colors.hover} group-hover:text-white group-hover:scale-110 group-hover:rotate-3` : ''}
+      `}>
+        <Icon size={28} strokeWidth={1.5} />
       </div>
-      <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-xs md:text-sm">{desc}</p>
+      <div className="flex-1 flex flex-col justify-end">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-black text-gray-900 dark:text-white text-xl tracking-tight">{title}</h3>
+          {implemented ? (
+            <div className={`${colors.bg} ${colors.text} p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0`}>
+              <ChevronRight size={16} />
+            </div>
+          ) : (
+            <span className="text-[10px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-md text-gray-400">Soon</span>
+          )}
+        </div>
+        <p className="text-gray-500 dark:text-zinc-400 leading-relaxed text-sm font-medium">{desc}</p>
+      </div>
+      
+      {/* Subtle Category Badge */}
+      <div className={`absolute top-8 right-8 text-[8px] font-black uppercase tracking-[0.2em] ${colors.text} opacity-20 group-hover:opacity-100 transition-opacity`}>
+        {category}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default function WebView({ tools }: { tools: Tool[] }) {
   const navigate = useNavigate()

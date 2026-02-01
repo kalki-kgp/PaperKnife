@@ -1,5 +1,9 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { FileText, Shield, Zap, Smartphone, Monitor, Edit3, Scissors, Grid, Wrench } from 'lucide-react'
+import { 
+  Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
+  RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
+  Wrench, ImagePlus, FileImage 
+} from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Theme, ViewMode, Tool } from './types'
@@ -26,21 +30,21 @@ const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const About = lazy(() => import('./components/About'))
 
 const tools: Tool[] = [
-  { title: 'Merge PDF', desc: 'Combine multiple PDF files into a single document effortlessly.', icon: FileText, implemented: true, path: '/merge', category: 'Edit' },
+  { title: 'Merge PDF', desc: 'Combine multiple PDF files into a single document effortlessly.', icon: Layers, implemented: true, path: '/merge', category: 'Edit' },
   { title: 'Split PDF', desc: 'Extract specific pages or divide your PDF into separate files.', icon: Scissors, implemented: true, path: '/split', category: 'Edit' },
   { title: 'Compress PDF', desc: 'Optimize your file size for sharing without quality loss.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize' },
   { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents locally.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize' },
-  { title: 'Image to PDF', icon: Edit3, desc: 'Convert multiple images into a single professional PDF document.', implemented: true, path: '/image-to-pdf', category: 'Convert' },
-  { title: 'PDF to Image', icon: FileText, desc: 'Convert document pages into high-quality JPG or PNG images.', implemented: true, path: '/pdf-to-image', category: 'Convert' },
-  { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Shield, implemented: true, path: '/protect', category: 'Secure' },
-  { title: 'Unlock PDF', desc: 'Remove passwords and restrictions from your PDF files.', icon: Shield, implemented: true, path: '/unlock', category: 'Secure' },
-  { title: 'Rotate PDF', desc: 'Rotate pages in your PDF document to the correct orientation.', icon: Smartphone, implemented: true, path: '/rotate-pdf', category: 'Edit' },
-  { title: 'Watermark', desc: 'Overlay custom text on your PDF pages for branding or security.', icon: Edit3, implemented: true, path: '/watermark', category: 'Edit' },
-  { title: 'Page Numbers', desc: 'Automatically add custom page numbering to your documents.', icon: FileText, implemented: true, path: '/page-numbers', category: 'Edit' },
-  { title: 'Metadata', desc: 'Edit document properties like Title, Author, and Keywords.', icon: Edit3, implemented: true, path: '/metadata', category: 'Secure' },
+  { title: 'Image to PDF', icon: ImagePlus, desc: 'Convert multiple images into a single professional PDF document.', implemented: true, path: '/image-to-pdf', category: 'Convert' },
+  { title: 'PDF to Image', icon: FileImage, desc: 'Convert document pages into high-quality JPG or PNG images.', implemented: true, path: '/pdf-to-image', category: 'Convert' },
+  { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure' },
+  { title: 'Unlock PDF', desc: 'Remove passwords and restrictions from your PDF files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure' },
+  { title: 'Rotate PDF', desc: 'Rotate pages in your PDF document to the correct orientation.', icon: RotateCw, implemented: true, path: '/rotate-pdf', category: 'Edit' },
+  { title: 'Watermark', desc: 'Overlay custom text on your PDF pages for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit' },
+  { title: 'Page Numbers', desc: 'Automatically add custom page numbering to your documents.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit' },
+  { title: 'Metadata', desc: 'Edit document properties like Title, Author, and Keywords.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure' },
   { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents for easy editing.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert' },
-  { title: 'Rearrange PDF', desc: 'Organize and reorder pages within a single PDF file.', icon: Grid, implemented: true, path: '/rearrange-pdf', category: 'Edit' },
-  { title: 'Signature', desc: 'Add your electronic signature to any PDF document securely.', icon: Edit3, implemented: true, path: '/signature', category: 'Edit' },
+  { title: 'Rearrange PDF', desc: 'Organize and reorder pages within a single PDF file.', icon: ArrowUpDown, implemented: true, path: '/rearrange-pdf', category: 'Edit' },
+  { title: 'Signature', desc: 'Add your electronic signature to any PDF document securely.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit' },
 ]
 
 function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
@@ -48,9 +52,9 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
   
   const actions = [
     { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500' },
-    { title: 'Protect', icon: Shield, path: '/protect', color: 'text-blue-500' },
+    { title: 'Protect', icon: Lock, path: '/protect', color: 'text-blue-500' },
     { title: 'Split', icon: Scissors, path: '/split', color: 'text-rose-500' },
-    { title: 'Metadata', icon: Edit3, path: '/metadata', color: 'text-purple-500' },
+    { title: 'Metadata', icon: Tags, path: '/metadata', color: 'text-purple-500' },
   ]
 
   return (

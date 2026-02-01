@@ -9,33 +9,42 @@ const formatSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-const ToolCardCompact = ({ title, desc, icon: Icon, implemented, onClick }: Tool & { onClick?: () => void }) => (
-  <div 
-    onClick={implemented ? onClick : undefined}
-    className={`
-      bg-white dark:bg-zinc-900 rounded-3xl border transition-all duration-300 flex flex-row items-center p-4 gap-4
-      ${implemented 
-        ? 'border-gray-100 dark:border-zinc-800 shadow-sm active:scale-95' 
-        : 'border-gray-50 dark:border-zinc-900 opacity-50 saturate-0'}
-    `}
-  >
-    <div className={`
-      bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-2xl flex items-center justify-center w-12 h-12 shrink-0
-      ${implemented ? 'group-hover:bg-rose-500 group-hover:text-white' : ''}
-    `}>
-      <Icon size={24} />
+const categoryColors: Record<ToolCategory, { bg: string, text: string }> = {
+  Edit: { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-500' },
+  Secure: { bg: 'bg-indigo-50 dark:bg-indigo-900/20', text: 'text-indigo-500' },
+  Convert: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-500' },
+  Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-500' }
+}
+
+const ToolCardCompact = ({ title, desc, icon: Icon, implemented, onClick, category }: Tool & { onClick?: () => void }) => {
+  const colors = categoryColors[category]
+  return (
+    <div 
+      onClick={implemented ? onClick : undefined}
+      className={`
+        bg-white dark:bg-zinc-900 rounded-[2rem] border transition-all duration-300 flex flex-row items-center p-4 gap-4
+        ${implemented 
+          ? 'border-gray-100 dark:border-zinc-800 shadow-sm active:scale-95 active:bg-gray-50 dark:active:bg-zinc-800' 
+          : 'border-gray-50 dark:border-zinc-900 opacity-50 saturate-0'}
+      `}
+    >
+      <div className={`
+        ${colors.bg} ${colors.text} rounded-2xl flex items-center justify-center w-12 h-12 shrink-0 transition-transform
+      `}>
+        <Icon size={24} />
+      </div>
+      <div className="text-left overflow-hidden flex-1">
+        <h3 className="font-bold text-gray-900 dark:text-white text-base truncate tracking-tight">{title}</h3>
+        <p className="text-gray-500 dark:text-zinc-400 text-xs truncate">{desc}</p>
+      </div>
+      {implemented ? (
+        <ChevronRight size={16} className="text-gray-300" />
+      ) : (
+        <span className="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-gray-400">Soon</span>
+      )}
     </div>
-    <div className="text-left overflow-hidden flex-1">
-      <h3 className="font-bold text-gray-900 dark:text-white text-base truncate">{title}</h3>
-      <p className="text-gray-500 dark:text-zinc-400 text-xs truncate">{desc}</p>
-    </div>
-    {implemented ? (
-      <ChevronRight size={16} className="text-gray-300" />
-    ) : (
-      <span className="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-gray-400">Soon</span>
-    )}
-  </div>
-)
+  )
+}
 
 export default function AndroidView({ tools }: { tools: Tool[] }) {
   const navigate = useNavigate()
