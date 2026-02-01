@@ -12,18 +12,22 @@ const SplitTool = lazy(() => import('./components/tools/SplitTool'))
 const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
 const CompressTool = lazy(() => import('./components/tools/CompressTool'))
 const UnlockTool = lazy(() => import('./components/tools/UnlockTool'))
+const PdfToImageTool = lazy(() => import('./components/tools/PdfToImageTool'))
+const RotateTool = lazy(() => import('./components/tools/RotateTool'))
+const PdfToTextTool = lazy(() => import('./components/tools/PdfToTextTool'))
+const RearrangeTool = lazy(() => import('./components/tools/RearrangeTool'))
 const About = lazy(() => import('./components/About'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into a single document effortlessly.', icon: FileText, implemented: true },
   { title: 'Split PDF', desc: 'Extract specific pages or divide your PDF into separate files.', icon: Grid, implemented: true },
   { title: 'Compress PDF', desc: 'Optimize your file size for sharing without quality loss.', icon: Zap, implemented: true },
-  { title: 'PDF to Image', desc: 'Convert document pages into high-quality JPG or PNG images.', icon: Download, implemented: false },
+  { title: 'PDF to Image', desc: 'Convert document pages into high-quality JPG or PNG images.', icon: Download, implemented: true },
   { title: 'Protect PDF', desc: 'Secure your documents with strong password encryption.', icon: Shield, implemented: true },
   { title: 'Unlock PDF', desc: 'Remove passwords and restrictions from your PDF files.', icon: Shield, implemented: true },
-  { title: 'Rotate PDF', desc: 'Rotate pages in your PDF document to the correct orientation.', icon: Smartphone, implemented: false },
-  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents for easy editing.', icon: FileText, implemented: false },
-  { title: 'Rearrange PDF', desc: 'Organize and reorder pages within a single PDF file.', icon: Grid, implemented: false },
+  { title: 'Rotate PDF', desc: 'Rotate pages in your PDF document to the correct orientation.', icon: Smartphone, implemented: true },
+  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents for easy editing.', icon: FileText, implemented: true },
+  { title: 'Rearrange PDF', desc: 'Organize and reorder pages within a single PDF file.', icon: Grid, implemented: true },
 ]
 
 function App() {
@@ -87,6 +91,10 @@ function App() {
               <Route path="/protect" element={<ProtectTool />} />
               <Route path="/unlock" element={<UnlockTool />} />
               <Route path="/compress" element={<CompressTool />} />
+              <Route path="/pdf-to-image" element={<PdfToImageTool />} />
+              <Route path="/rotate-pdf" element={<RotateTool />} />
+              <Route path="/pdf-to-text" element={<PdfToTextTool />} />
+              <Route path="/rearrange-pdf" element={<RearrangeTool />} />
               <Route path="/about" element={<About theme={theme} toggleTheme={toggleTheme} />} />
             </Routes>
           </Suspense>
