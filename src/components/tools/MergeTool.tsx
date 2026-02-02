@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import { usePipeline } from '../../utils/pipelineContext'
 import ToolHeader from './shared/ToolHeader'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
@@ -128,6 +129,7 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
 
 export default function MergeTool() {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { setPipelineFile } = usePipeline()
   const [files, setFiles] = useState<PdfFile[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
@@ -262,6 +264,12 @@ export default function MergeTool() {
           const blob = new Blob([payload], { type: 'application/pdf' })
           const url = URL.createObjectURL(blob)
           setDownloadUrl(url)
+          
+          // Set pipeline file
+          setPipelineFile({
+            buffer: payload,
+            name: `${customFileName || 'merged'}.pdf`
+          })
           
           addActivity({
             name: `${customFileName || 'merged'}.pdf`,

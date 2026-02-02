@@ -117,7 +117,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-zinc-900 dark:via-zinc-950 dark:to-black text-gray-900 dark:text-zinc-100 font-sans selection:bg-rose-100 dark:selection:bg-rose-900 selection:text-rose-600 transition-colors duration-300 ease-out">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-black text-gray-900 dark:text-zinc-100 font-sans selection:bg-rose-100 dark:selection:bg-rose-900 selection:text-rose-600 transition-colors duration-300 ease-out">
       <main className="max-w-6xl mx-auto px-6 py-10 md:py-20">
         <div className="text-center mb-10 md:mb-20">
           <span className="inline-block px-4 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 text-[10px] md:text-xs font-bold rounded-full mb-6 border border-rose-100 dark:border-rose-900/30">

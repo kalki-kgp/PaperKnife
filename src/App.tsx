@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Theme, ViewMode, Tool } from './types'
 import Layout from './components/Layout'
+import { PipelineProvider } from './utils/pipelineContext'
 
 // Lazy load views
 const WebView = lazy(() => import('./components/WebView'))
@@ -145,55 +146,57 @@ function App() {
 
   return (
     <BrowserRouter basename="/PaperKnife/">
-      <Layout theme={theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop}>
-        <Toaster position="bottom-center" expand={true} richColors />
-        
-        {droppedFile && <QuickDropModal file={droppedFile} onClear={() => setDroppedFile(null)} />}
+      <PipelineProvider>
+        <Layout theme={theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop}>
+          <Toaster position="bottom-center" expand={true} richColors />
+          
+          {droppedFile && <QuickDropModal file={droppedFile} onClear={() => setDroppedFile(null)} />}
 
-        <div className={`${theme} w-full overflow-x-hidden min-h-screen transition-colors duration-300 ease-out`}>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={
-                viewMode === 'web' ? (
-                  <WebView tools={tools} />
-                ) : (
-                  <AndroidView tools={tools} />
-                )
-              } />
-              <Route path="/merge" element={<MergeTool />} />
-              <Route path="/split" element={<SplitTool />} />
-              <Route path="/protect" element={<ProtectTool />} />
-              <Route path="/unlock" element={<UnlockTool />} />
-              <Route path="/compress" element={<CompressTool />} />
-              <Route path="/pdf-to-image" element={<PdfToImageTool />} />
-              <Route path="/rotate-pdf" element={<RotateTool />} />
-              <Route path="/pdf-to-text" element={<PdfToTextTool />} />
-              <Route path="/rearrange-pdf" element={<RearrangeTool />} />
-              <Route path="/watermark" element={<WatermarkTool />} />
-              <Route path="/page-numbers" element={<PageNumberTool />} />
-              <Route path="/metadata" element={<MetadataTool />} />
-              <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
-              <Route path="/signature" element={<SignatureTool />} />
-              <Route path="/repair" element={<RepairTool />} />
-              <Route path="/about" element={<About />} />
-            </Routes>
-          </Suspense>
+          <div className={`${theme} w-full overflow-x-hidden min-h-screen transition-colors duration-300 ease-out`}>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={
+                  viewMode === 'web' ? (
+                    <WebView tools={tools} />
+                  ) : (
+                    <AndroidView tools={tools} />
+                  )
+                } />
+                <Route path="/merge" element={<MergeTool />} />
+                <Route path="/split" element={<SplitTool />} />
+                <Route path="/protect" element={<ProtectTool />} />
+                <Route path="/unlock" element={<UnlockTool />} />
+                <Route path="/compress" element={<CompressTool />} />
+                <Route path="/pdf-to-image" element={<PdfToImageTool />} />
+                <Route path="/rotate-pdf" element={<RotateTool />} />
+                <Route path="/pdf-to-text" element={<PdfToTextTool />} />
+                <Route path="/rearrange-pdf" element={<RearrangeTool />} />
+                <Route path="/watermark" element={<WatermarkTool />} />
+                <Route path="/page-numbers" element={<PageNumberTool />} />
+                <Route path="/metadata" element={<MetadataTool />} />
+                <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
+                <Route path="/signature" element={<SignatureTool />} />
+                <Route path="/repair" element={<RepairTool />} />
+                <Route path="/about" element={<About />} />
+              </Routes>
+            </Suspense>
 
-          {/* Chameleon Toggle (Dev Only) */}
-          {import.meta.env.DEV && (
-            <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
-              <button
-                onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
-                className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-rose-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
-                title="Toggle Chameleon Mode"
-              >
-                {viewMode === 'web' ? <Smartphone size={20} /> : <Monitor size={20} />}
-                <span className="text-xs font-black uppercase tracking-tighter">{viewMode}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </Layout>
+            {/* Chameleon Toggle (Dev Only) */}
+            {import.meta.env.DEV && (
+              <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
+                <button
+                  onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
+                  className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-rose-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
+                  title="Toggle Chameleon Mode"
+                >
+                  {viewMode === 'web' ? <Smartphone size={20} /> : <Monitor size={20} />}
+                  <span className="text-xs font-black uppercase tracking-tighter">{viewMode}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </Layout>
+      </PipelineProvider>
     </BrowserRouter>
   )
 }

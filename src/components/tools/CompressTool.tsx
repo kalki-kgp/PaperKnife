@@ -1,319 +1,345 @@
-import { useState, useRef } from 'react'
-import { Zap, Shield, Info, Lock, Loader2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Zap, Loader2, Plus, X, FileIcon, Download } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
+import JSZip from 'jszip'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import { usePipeline } from '../../utils/pipelineContext'
 import ToolHeader from './shared/ToolHeader'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
 
 type CompressPdfFile = {
+  id: string
   file: File
   thumbnail?: string
   pageCount: number
   isLocked: boolean
   pdfDoc?: any
   password?: string
+  status: 'pending' | 'processing' | 'completed' | 'error'
+  resultUrl?: string
+  resultSize?: number
 }
 
 type CompressionQuality = 'low' | 'medium' | 'high'
 
 export default function CompressTool() {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [pdfData, setPdfData] = useState<CompressPdfFile | null>(null)
+  const { consumePipelineFile, setPipelineFile } = usePipeline()
+  const [files, setFiles] = useState<CompressPdfFile[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [globalProgress, setGlobalProgress] = useState(0)
   const [quality, setQuality] = useState<CompressionQuality>('medium')
-  const [resultSize, setResultSize] = useState<number | null>(null)
-  const [customFileName, setCustomFileName] = useState('paperknife-compressed')
-  const [unlockPassword, setUnlockPassword] = useState('')
+  const [zipUrl, setZipUrl] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
 
-  const handleUnlock = async () => {
-    if (!pdfData || !unlockPassword) return
-    setIsProcessing(true)
-    const result = await unlockPdf(pdfData.file, unlockPassword)
+  // Handle Pipeline File
+  useEffect(() => {
+    const pipelined = consumePipelineFile()
+    if (pipelined) {
+      try {
+        // Use a Blob first as it's more universally compatible for constructor usage
+        const blob = new Blob([pipelined.buffer], { type: 'application/pdf' });
+        const file = new File([blob], pipelined.name, { type: 'application/pdf' });
+        handleFiles([file]);
+        toast.info(`Received ${file.name} from pipeline`);
+      } catch (e) {
+        console.error("Pipeline file conversion failed", e);
+        // Use a more robust fallback
+        const blob = new Blob([pipelined.buffer], { type: 'application/pdf' });
+        const file = new File([blob], pipelined.name, { type: 'application/pdf' });
+        handleFiles([file]);
+      }
+    }
+  }, [])
+
+  const handleFiles = async (selectedFiles: FileList | File[]) => {
+    const newFiles = Array.from(selectedFiles).filter(f => f.type === 'application/pdf').map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      file,
+      pageCount: 0,
+      isLocked: false,
+      status: 'pending' as const
+    }))
+
+    setFiles(prev => [...prev, ...newFiles])
+    setShowSuccess(false)
+    setZipUrl(null)
+
+    for (const f of newFiles) {
+      try {
+        const meta = await getPdfMetaData(f.file)
+        setFiles(prev => prev.map(item => item.id === f.id ? {
+          ...item,
+          pageCount: meta.pageCount,
+          isLocked: meta.isLocked,
+          thumbnail: meta.thumbnail,
+          pdfDoc: !meta.isLocked ? null : undefined // Will load doc during compression
+        } : item))
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
+  const handleUnlock = async (id: string, password: string) => {
+    const item = files.find(f => f.id === id)
+    if (!item) return
+    
+    const result = await unlockPdf(item.file, password)
     if (result.success) {
-      setPdfData({
-        ...pdfData,
+      setFiles(prev => prev.map(f => f.id === id ? {
+        ...f,
         isLocked: false,
         pageCount: result.pageCount,
         pdfDoc: result.pdfDoc,
         thumbnail: result.thumbnail,
-        password: unlockPassword
-      })
-      setCustomFileName(`${pdfData.file.name.replace('.pdf', '')}-compressed`)
+        password: password
+      } : f))
     } else {
-      toast.error('Incorrect password')
-    }
-    setIsProcessing(false)
-  }
-
-  const handleFile = async (file: File) => {
-    if (file.type !== 'application/pdf') return
-    setIsProcessing(true)
-    try {
-      const meta = await getPdfMetaData(file)
-      if (meta.isLocked) {
-        setPdfData({ file, pageCount: 0, isLocked: true })
-      } else {
-        const pdfDoc = await loadPdfDocument(file)
-        setPdfData({
-          file,
-          pageCount: meta.pageCount,
-          isLocked: false,
-          pdfDoc,
-          thumbnail: meta.thumbnail
-        })
-        setCustomFileName(`${file.name.replace('.pdf', '')}-compressed`)
-      }
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsProcessing(false)
-      setDownloadUrl(null)
+      toast.error(`Incorrect password for ${item.file.name}`)
     }
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) handleFile(e.target.files[0])
+    if (e.target.files) handleFiles(e.target.files)
   }
 
-  const compressPDF = async () => {
-    if (!pdfData || !pdfData.pdfDoc) return
-    setIsProcessing(true)
-    setProgress(0)
-    
-    // Yield to UI
-    await new Promise(resolve => setTimeout(resolve, 100))
-
-    try {
-      const newPdf = await PDFDocument.create()
-      
-      // Settings based on COMPRESSION LEVEL
-      const scaleMap = { high: 1.0, medium: 1.5, low: 2.0 }
-      const qualityMap = { high: 0.3, medium: 0.5, low: 0.7 }
-      
-      const scale = scaleMap[quality]
-      const jpegQuality = qualityMap[quality]
-
-      for (let i = 1; i <= pdfData.pageCount; i++) {
-        const page = await pdfData.pdfDoc.getPage(i)
-        const viewport = page.getViewport({ scale })
-        
-        const canvas = document.createElement('canvas')
-        const context = canvas.getContext('2d')
-        if (!context) continue
-        
-        canvas.height = viewport.height
-        canvas.width = viewport.width
-        
-        await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise
-        
-        const imgData = canvas.toDataURL('image/jpeg', jpegQuality)
-        const imgBytes = await fetch(imgData).then(res => res.arrayBuffer())
-        
-        const pdfImg = await newPdf.embedJpg(imgBytes)
-        const pdfPage = newPdf.addPage([viewport.width, viewport.height])
-        pdfPage.drawImage(pdfImg, {
-          x: 0,
-          y: 0,
-          width: viewport.width,
-          height: viewport.height,
-        })
-        
-        setProgress(Math.round((i / pdfData.pageCount) * 100))
-      }
-
-      const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      setResultSize(blob.size)
-      setDownloadUrl(url)
-
-      addActivity({
-        name: `${customFileName || 'compressed'}.pdf`,
-        tool: 'Compress',
-        size: blob.size,
-        resultUrl: url
-      })
-    } catch (error: any) {
-      console.error('Compress Error:', error)
-      toast.error(`Compression failed: ${error.message}`)
-    } finally {
-      setIsProcessing(false)
+  const compressSingleFile = async (item: CompressPdfFile, quality: CompressionQuality): Promise<{ url: string, size: number, buffer: Uint8Array }> => {
+    let pdfDoc = item.pdfDoc
+    if (!pdfDoc) {
+      pdfDoc = await loadPdfDocument(item.file)
     }
+
+    const newPdf = await PDFDocument.create()
+    const scaleMap = { high: 1.0, medium: 1.5, low: 2.0 }
+    const qualityMap = { high: 0.3, medium: 0.5, low: 0.7 }
+    
+    const scale = scaleMap[quality]
+    const jpegQuality = qualityMap[quality]
+
+    for (let i = 1; i <= item.pageCount; i++) {
+      const page = await pdfDoc.getPage(i)
+      const viewport = page.getViewport({ scale })
+      
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d')
+      if (!context) continue
+      
+      canvas.height = viewport.height
+      canvas.width = viewport.width
+      
+      await page.render({ canvasContext: context, viewport }).promise
+      
+      const imgData = canvas.toDataURL('image/jpeg', jpegQuality)
+      
+      // Cleaner way to get buffer from dataURL without fetch
+      const base64 = imgData.split(',')[1]
+      const binaryString = window.atob(base64)
+      const bytes = new Uint8Array(binaryString.length)
+      for (let j = 0; j < binaryString.length; j++) {
+        bytes[j] = binaryString.charCodeAt(j)
+      }
+      
+      const pdfImg = await newPdf.embedJpg(bytes)
+      const pdfPage = newPdf.addPage([viewport.width, viewport.height])
+      pdfPage.drawImage(pdfImg, {
+        x: 0,
+        y: 0,
+        width: viewport.width,
+        height: viewport.height,
+      })
+    }
+
+    const pdfBytes = await newPdf.save()
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+    const url = URL.createObjectURL(blob)
+    return { url, size: blob.size, buffer: pdfBytes }
+  }
+
+  const startBatchCompression = async () => {
+    const pendingFiles = files.filter(f => !f.isLocked && f.status === 'pending')
+    if (pendingFiles.length === 0) return
+
+    setIsProcessing(true)
+    setGlobalProgress(0)
+
+    const results: { name: string, buffer: Uint8Array }[] = []
+
+    for (let i = 0; i < pendingFiles.length; i++) {
+      const item = pendingFiles[i]
+      setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'processing' } : f))
+      
+      try {
+        const { url, size, buffer } = await compressSingleFile(item, quality)
+        
+        results.push({ name: item.file.name.replace('.pdf', '-compressed.pdf'), buffer })
+        
+        setFiles(prev => prev.map(f => f.id === item.id ? { 
+          ...f, 
+          status: 'completed', 
+          resultUrl: url, 
+          resultSize: size 
+        } : f))
+
+        addActivity({
+          name: item.file.name.replace('.pdf', '-compressed.pdf'),
+          tool: 'Compress',
+          size: size,
+          resultUrl: url
+        })
+
+        if (pendingFiles.length === 1) {
+           setPipelineFile({ buffer, name: item.file.name.replace('.pdf', '-compressed.pdf') })
+        }
+
+      } catch (err) {
+        setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'error' } : f))
+        toast.error(`Failed to compress ${item.file.name}`)
+      }
+      
+      setGlobalProgress(Math.round(((i + 1) / pendingFiles.length) * 100))
+    }
+
+    if (results.length > 1) {
+      const zip = new JSZip()
+      results.forEach(res => zip.file(res.name, res.buffer))
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      setZipUrl(URL.createObjectURL(zipBlob))
+    }
+
+    setIsProcessing(false)
+    setShowSuccess(true)
+  }
+
+  const removeFile = (id: string) => {
+    setFiles(prev => prev.filter(f => f.id !== id))
+    if (files.length <= 1) setShowSuccess(false)
   }
 
   return (
     <div className="flex-1">
       <main className="max-w-4xl mx-auto px-6 py-6 md:py-10">
         <ToolHeader 
-          title="File" 
+          title="Batch" 
           highlight="Shrinker" 
-          description="Optimize and compress your PDFs for easy sharing. Everything stays on your device." 
+          description="Optimize multiple PDFs at once. Everything stays on your device." 
         />
 
-        <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
+        <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
 
-        {!pdfData ? (
-          <div onClick={() => !isProcessing && fileInputRef.current?.click()} className={`border-4 border-dashed border-gray-200 dark:border-zinc-800 rounded-[2rem] md:rounded-[2.5rem] bg-white/50 dark:bg-zinc-900/50 p-10 md:p-20 text-center hover:border-rose-300 dark:hover:border-rose-900 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group ${isProcessing ? 'opacity-50 cursor-wait' : ''}`}>
-            {isProcessing ? (
-              <div className="flex flex-col items-center">
-                <Loader2 size={48} className="text-rose-500 animate-spin mb-4" />
-                <h3 className="text-xl font-bold mb-2">Analyzing PDF...</h3>
-              </div>
-            ) : (
-              <>
-                <div className="w-16 h-16 md:w-24 md:h-24 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                  <Zap size={32} />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Select PDF</h3>
-                <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Tap to start compressing</p>
-              </>
-            )}
-          </div>
-        ) : pdfData.isLocked ? (
-          <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800 shadow-xl text-center">
-              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Lock size={32} />
-              </div>
-              <h3 className="text-2xl font-bold mb-2 dark:text-white">File is Protected</h3>
-              <p className="text-sm text-gray-500 dark:text-zinc-400 mb-8">Unlock this file to compress it.</p>
-              
-              <div className="space-y-4">
-                <input 
-                  type="password" 
-                  value={unlockPassword}
-                  onChange={(e) => setUnlockPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus:border-rose-500 outline-none font-bold text-center transition-all"
-                  autoFocus
-                />
-                <button 
-                  onClick={handleUnlock}
-                  disabled={!unlockPassword || isProcessing}
-                  className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 disabled:opacity-50"
-                >
-                  {isProcessing ? 'Unlocking...' : 'Unlock PDF'}
-                </button>
-                <button 
-                  onClick={() => setPdfData(null)}
-                  className="w-full py-2 text-xs font-bold text-gray-400 hover:text-rose-500"
-                >
-                  Choose different file
-                </button>
-              </div>
+        {files.length === 0 ? (
+          <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-200 dark:border-zinc-800 rounded-[2rem] md:rounded-[2.5rem] bg-white/50 dark:bg-zinc-900/50 p-10 md:p-20 text-center hover:border-rose-300 dark:hover:border-rose-900 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+              <Zap size={32} />
             </div>
+            <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Select PDFs</h3>
+            <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Drop files or tap to start batch compression</p>
           </div>
-        ) : (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* File Info */}
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-100 dark:border-zinc-800 shadow-sm flex items-center gap-6">
-              <div className="w-20 h-28 bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden shrink-0 border border-gray-200 dark:border-zinc-700">
-                {pdfData.thumbnail ? <img src={pdfData.thumbnail} alt="Preview" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-rose-500"><Shield size={24} /></div>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-lg truncate dark:text-white">{pdfData.file.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">{pdfData.pageCount} Pages • {(pdfData.file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                <button onClick={() => setPdfData(null)} className="mt-2 text-xs font-black uppercase text-rose-500 hover:text-rose-600 transition-colors">Change File</button>
-              </div>
+        ) : !showSuccess ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {files.map(f => (
+                <div key={f.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 flex items-center gap-4 relative group">
+                  <div className="w-12 h-16 bg-gray-50 dark:bg-zinc-800 rounded-lg overflow-hidden shrink-0">
+                    {f.thumbnail ? <img src={f.thumbnail} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileIcon className="text-gray-300" size={16} /></div>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold truncate dark:text-white">{f.file.name}</p>
+                    {f.isLocked ? (
+                      <div className="flex gap-1 mt-1">
+                        <input 
+                          type="password" 
+                          placeholder="Unlock..." 
+                          className="bg-gray-50 dark:bg-black text-[8px] p-1 rounded border border-gray-100 dark:border-zinc-800 outline-none w-20"
+                          onKeyDown={(e) => { if(e.key === 'Enter') handleUnlock(f.id, e.currentTarget.value) }}
+                        />
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-gray-400 font-bold">{(f.file.size / (1024*1024)).toFixed(2)} MB • {f.pageCount} p</p>
+                    )}
+                  </div>
+                  <button onClick={() => removeFile(f.id)} className="p-1 text-gray-300 hover:text-rose-500"><X size={14} /></button>
+                </div>
+              ))}
+              <button onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-2xl p-4 text-gray-400 flex flex-col items-center justify-center gap-1 hover:border-rose-300 transition-all">
+                <Plus size={20} />
+                <span className="text-[10px] font-black uppercase tracking-tighter">Add More</span>
+              </button>
             </div>
 
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-zinc-800 shadow-sm space-y-8">
-              {!downloadUrl ? (
-                <>
-                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2"><Zap size={12} /> Compression Level</label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {(['high', 'medium', 'low'] as const).map((lvl) => (
-                        <button
-                          key={lvl}
-                          onClick={() => setQuality(lvl)}
-                          className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${quality === lvl ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-800'}`}
-                        >
-                          <span className={`font-black uppercase text-[10px] ${quality === lvl ? 'text-rose-500' : 'text-gray-400'}`}>{lvl}</span>
-                          <span className="text-[8px] text-gray-400 font-bold">
-                            {lvl === 'high' ? 'Max Shrink' : lvl === 'medium' ? 'Balanced' : 'Best Quality'}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/20 flex items-start gap-3">
-                    <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
-                    <p className="text-[10px] md:text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
-                      <strong>Note:</strong> To achieve maximum compression, text may be converted to images. This makes the file much smaller but prevents text selection.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Output Filename</label>
-                    <div className="flex items-center gap-2 bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-gray-100 dark:border-zinc-800 focus-within:border-rose-500 transition-colors">
-                      <input 
-                        type="text" 
-                        value={customFileName}
-                        onChange={(e) => setCustomFileName(e.target.value)}
-                        className="bg-transparent outline-none flex-1 text-sm font-bold dark:text-white"
-                      />
-                      <span className="text-gray-400 text-xs font-bold">.pdf</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    {isProcessing && (
-                      <div className="space-y-3">
-                        <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                          <div className="bg-rose-500 h-full transition-all duration-300" style={{ width: `${progress}%` }} />
-                        </div>
-                        <p className="text-[10px] text-center font-black uppercase text-gray-400 tracking-widest animate-pulse">Compressing... {progress}%</p>
-                      </div>
-                    )}
-                    <button 
-                      onClick={compressPDF}
-                      disabled={isProcessing}
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2"><Zap size={12} /> Compression Quality</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {(['high', 'medium', 'low'] as const).map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => setQuality(lvl)}
+                      className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${quality === lvl ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-800'}`}
                     >
-                      {isProcessing ? <Loader2 className="animate-spin" /> : <Zap />}
-                      Compress PDF
+                      <span className={`font-black uppercase text-[10px] ${quality === lvl ? 'text-rose-500' : 'text-gray-400'}`}>{lvl}</span>
+                      <span className="text-[8px] text-gray-400 font-bold">{lvl === 'high' ? 'Max' : lvl === 'medium' ? 'Balanced' : 'Best'}</span>
                     </button>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 text-center">
-                   <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="p-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-zinc-800">
-                        <span className="block text-[10px] font-black uppercase text-gray-400 mb-1">Original</span>
-                        <span className="font-bold">{(pdfData.file.size / (1024 * 1024)).toFixed(2)} MB</span>
-                      </div>
-                      <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-2xl border border-rose-100 dark:border-rose-900/20">
-                        <span className="block text-[10px] font-black uppercase text-rose-500 mb-1">Compressed</span>
-                        <span className="font-bold text-rose-600 dark:text-rose-400">{(resultSize! / (1024 * 1024)).toFixed(2)} MB</span>
-                      </div>
-                   </div>
+                  ))}
+                </div>
+              </div>
 
-                   <SuccessState 
-                    message="Success! Optimization Complete."
-                    downloadUrl={downloadUrl}
-                    fileName={`${customFileName || 'compressed'}.pdf`}
-                    onStartOver={() => { setDownloadUrl(null); setProgress(0); }}
-                   />
+              {isProcessing && (
+                <div className="space-y-3">
+                  <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
+                    <div className="bg-rose-500 h-full transition-all duration-300" style={{ width: `${globalProgress}%` }} />
+                  </div>
+                  <p className="text-[10px] text-center font-black uppercase text-gray-400 tracking-widest animate-pulse">Batch Progress: {globalProgress}%</p>
                 </div>
               )}
+
+              <button 
+                onClick={startBatchCompression}
+                disabled={isProcessing || files.filter(f => !f.isLocked).length === 0}
+                className="w-full bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+              >
+                {isProcessing ? <Loader2 className="animate-spin" /> : <Zap />}
+                Compress {files.length} Files
+              </button>
             </div>
           </div>
-        )}
+        ) : (
+          <div className="space-y-6">
+            {zipUrl && (
+              <a 
+                href={zipUrl} 
+                download="paperknife-compressed-batch.zip"
+                className="block w-full bg-zinc-900 dark:bg-white text-white dark:text-black p-8 rounded-[2.5rem] text-center shadow-2xl transition-all hover:scale-[1.01] active:scale-95 group"
+              >
+                <div className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Download className="text-white" size={32} />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight mb-1">Download All (ZIP)</h3>
+                <p className="text-xs font-bold opacity-60 uppercase tracking-widest">{files.length} Optimized Documents</p>
+              </a>
+            )}
 
-        {pdfData?.password && (
-          <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/20 flex items-start gap-3 max-w-md mx-auto">
-            <Lock size={14} className="text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-amber-700 dark:text-amber-400 leading-relaxed font-medium">
-              <strong>Security Note:</strong> This file was protected. The compressed document will be saved <strong>without</strong> a password.
-            </p>
+            {!zipUrl && files.length === 1 && (
+               <SuccessState 
+                message="Success! File compressed."
+                downloadUrl={files[0].resultUrl!}
+                fileName={files[0].file.name.replace('.pdf', '-compressed.pdf')}
+                onStartOver={() => { setFiles([]); setShowSuccess(false); }}
+               />
+            )}
+
+            {zipUrl && (
+               <button 
+                onClick={() => { setFiles([]); setShowSuccess(false); setZipUrl(null); }}
+                className="w-full py-4 text-gray-400 hover:text-rose-500 font-black uppercase tracking-[0.2em] text-xs transition-colors"
+               >
+                 Start New Batch
+               </button>
+            )}
           </div>
         )}
 
