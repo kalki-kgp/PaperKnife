@@ -42,14 +42,14 @@ export default function CompressTool() {
     if (pipelined) {
       try {
         // Use a Blob first as it's more universally compatible for constructor usage
-        const blob = new Blob([pipelined.buffer], { type: 'application/pdf' });
+        const blob = new Blob([pipelined.buffer as any], { type: 'application/pdf' });
         const file = new File([blob], pipelined.name, { type: 'application/pdf' });
         handleFiles([file]);
         toast.info(`Received ${file.name} from pipeline`);
       } catch (e) {
         console.error("Pipeline file conversion failed", e);
         // Use a more robust fallback
-        const blob = new Blob([pipelined.buffer], { type: 'application/pdf' });
+        const blob = new Blob([pipelined.buffer as any], { type: 'application/pdf' });
         const file = new File([blob], pipelined.name, { type: 'application/pdf' });
         handleFiles([file]);
       }
@@ -155,7 +155,7 @@ export default function CompressTool() {
     }
 
     const pdfBytes = await newPdf.save()
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+    const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
     const url = URL.createObjectURL(blob)
     return { url, size: blob.size, buffer: pdfBytes }
   }
