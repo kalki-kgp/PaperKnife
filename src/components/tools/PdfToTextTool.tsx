@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { Loader2, Copy, FileText, Lock, Check, Download } from 'lucide-react'
+import { Loader2, Copy, FileText, Lock, Check, Download, Zap, ScanSearch } from 'lucide-react'
 import { toast } from 'sonner'
+import Tesseract from 'tesseract.js'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import ToolHeader from './shared/ToolHeader'
@@ -14,12 +15,15 @@ type PdfToTextData = {
   password?: string
 }
 
+type ExtractionMode = 'text' | 'ocr'
+
 export default function PdfToTextTool() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pdfData, setPdfData] = useState<PdfToTextData | null>(null)
   const [extractedText, setExtractedText] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [extractionMode, setExtractionMode] = useState<ExtractionMode>('text')
   const [unlockPassword, setUnlockPassword] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -65,25 +69,78 @@ export default function PdfToTextTool() {
     }
   }
 
-  const extractText = async () => {
+  const extractTextLayer = async () => {
+    let fullText = ''
+    for (let i = 1; i <= pdfData!.pageCount; i++) {
+      const page = await pdfData!.pdfDoc.getPage(i)
+      const textContent = await page.getTextContent()
+      const pageText = textContent.items.map((item: any) => item.str).join(' ')
+      fullText += `--- Page ${i} ---\n${pageText}\n\n`
+      setProgress(Math.round((i / pdfData!.pageCount) * 100))
+    }
+    return fullText
+  }
+
+  const extractWithOCR = async () => {
+    let fullText = ''
+    const worker = await Tesseract.createWorker('eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          // Inner progress within a page
+          const pageProgress = m.progress
+          const baseProgress = ((currentPageIndex - 1) / pdfData!.pageCount) * 100
+          const totalProgress = baseProgress + (pageProgress * (100 / pdfData!.pageCount))
+          setProgress(Math.round(totalProgress))
+        }
+      }
+    });
+
+    let currentPageIndex = 1
+    try {
+      for (let i = 1; i <= pdfData!.pageCount; i++) {
+        currentPageIndex = i
+        const page = await pdfData!.pdfDoc.getPage(i)
+        const viewport = page.getViewport({ scale: 2.0 }) // High DPI for better OCR
+        
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        if (!context) continue
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+        
+        await page.render({ canvasContext: context, viewport }).promise
+        
+        const { data: { text } } = await worker.recognize(canvas)
+        fullText += `--- Page ${i} (OCR) ---\n${text}\n\n`
+        
+        // Clear canvas memory
+        canvas.width = 0
+        canvas.height = 0
+      }
+    } finally {
+      await worker.terminate()
+    }
+    return fullText
+  }
+
+  const handleStartExtraction = async () => {
     if (!pdfData || !pdfData.pdfDoc) return
     setIsProcessing(true)
     setProgress(0)
     setExtractedText('')
 
     try {
-      let fullText = ''
-      for (let i = 1; i <= pdfData.pageCount; i++) {
-        const page = await pdfData.pdfDoc.getPage(i)
-        const textContent = await page.getTextContent()
-        const pageText = textContent.items.map((item: any) => item.str).join(' ')
-        fullText += `--- Page ${i} ---\n${pageText}\n\n`
-        setProgress(Math.round((i / pdfData.pageCount) * 100))
+      let result = ''
+      if (extractionMode === 'text') {
+        result = await extractTextLayer()
+      } else {
+        result = await extractWithOCR()
       }
-      setExtractedText(fullText)
-      toast.success('Text extracted successfully!')
+      setExtractedText(result)
+      toast.success('Text extraction complete!')
     } catch (error: any) {
-      toast.error(`Error extracting text: ${error.message}`)
+      console.error('Extraction Error:', error)
+      toast.error(`Error: ${error.message}`)
     } finally {
       setIsProcessing(false)
     }
@@ -113,7 +170,7 @@ export default function PdfToTextTool() {
         <ToolHeader 
           title="PDF to" 
           highlight="Text" 
-          description="Extract plain text for easy editing. Processed locally." 
+          description="Extract text from any PDF, including scanned documents. Powered by local OCR." 
         />
 
         <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
@@ -131,7 +188,7 @@ export default function PdfToTextTool() {
                   <FileText size={32} />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Select PDF</h3>
-                <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Tap to start extracting</p>
+                <p className="text-xs md:text-sm text-gray-400 dark:text-zinc-500">Tap to start extracting text</p>
               </>
             )}
           </div>
@@ -176,7 +233,7 @@ export default function PdfToTextTool() {
               <div className="w-20 h-28 bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden shrink-0 border border-gray-200 dark:border-zinc-700 flex items-center justify-center text-rose-500">
                 <FileText size={32} />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 text-left">
                 <h3 className="font-bold text-lg truncate dark:text-white">{pdfData.file.name}</h3>
                 <p className="text-sm text-gray-500 dark:text-zinc-400">{pdfData.pageCount} Pages • {(pdfData.file.size / (1024 * 1024)).toFixed(2)} MB</p>
                 <button onClick={() => setPdfData(null)} className="mt-2 text-xs font-black uppercase text-rose-500 hover:text-rose-600 transition-colors">Change File</button>
@@ -185,24 +242,50 @@ export default function PdfToTextTool() {
 
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-zinc-800 shadow-sm space-y-8">
               {!extractedText ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-zinc-400 mb-6">Ready to extract text from {pdfData.pageCount} pages.</p>
-                  
+                <div className="space-y-8">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 text-center">Extraction Method</label>
+                    <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                      <button
+                        onClick={() => setExtractionMode('text')}
+                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${extractionMode === 'text' ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-800'}`}
+                      >
+                        <Zap size={20} className={extractionMode === 'text' ? 'text-rose-500' : 'text-gray-400'} />
+                        <div className="text-center">
+                          <p className={`font-black uppercase text-[10px] ${extractionMode === 'text' ? 'text-rose-500' : 'text-gray-400'}`}>Fast Extraction</p>
+                          <p className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">Existing text layers</p>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => setExtractionMode('ocr')}
+                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${extractionMode === 'ocr' ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-800'}`}
+                      >
+                        <ScanSearch size={20} className={extractionMode === 'ocr' ? 'text-rose-500' : 'text-gray-400'} />
+                        <div className="text-center">
+                          <p className={`font-black uppercase text-[10px] ${extractionMode === 'ocr' ? 'text-rose-500' : 'text-gray-400'}`}>Deep OCR Scan</p>
+                          <p className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">For scans & images</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
                   {isProcessing && (
-                    <div className="mb-6 space-y-3 max-w-md mx-auto">
+                    <div className="mb-6 space-y-3 max-w-md mx-auto animate-in fade-in duration-300">
                       <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
                         <div className="bg-rose-500 h-full transition-all duration-300" style={{ width: `${progress}%` }} />
                       </div>
-                      <p className="text-[10px] text-center font-black uppercase text-gray-400 tracking-widest animate-pulse">Extracting... {progress}%</p>
+                      <p className="text-[10px] text-center font-black uppercase text-gray-400 tracking-widest animate-pulse">
+                        {extractionMode === 'ocr' ? `Local OCR Engine: ${progress}%` : `Extracting... ${progress}%`}
+                      </p>
                     </div>
                   )}
 
                   <button 
-                    onClick={extractText}
+                    onClick={handleStartExtraction}
                     disabled={isProcessing}
                     className="w-full md:w-auto px-12 bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl shadow-xl shadow-rose-200 dark:shadow-none font-black text-xl tracking-tight transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 mx-auto"
                   >
-                    {isProcessing ? <Loader2 className="animate-spin" /> : <FileText />}
+                    {isProcessing ? <Loader2 className="animate-spin" /> : extractionMode === 'ocr' ? <ScanSearch /> : <FileText />}
                     Start Extraction
                   </button>
                 </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { 
   History, Trash2, Download, CheckCircle2, 
-  FileText, Clock, Shield, Search
+  Clock, Shield, Search
 } from 'lucide-react'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'

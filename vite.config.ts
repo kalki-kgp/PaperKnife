@@ -8,9 +8,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/logo.svg'],
+      includeAssets: ['icons/logo.svg', 'cmaps/*.bcmap', 'fonts/*.woff2'],
       workbox: {
         sourcemap: false,
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mjs,wasm,bcmap}'],
+        // Increase limit for heavy PDF/OCR chunks
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, 
       },
       manifest: {
         name: 'PaperKnife PDF',
@@ -26,6 +29,16 @@ export default defineConfig({
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable'
+          },
+          {
+            src: 'icons/logo.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml'
+          },
+          {
+            src: 'icons/logo.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml'
           }
         ]
       }
@@ -42,6 +55,7 @@ export default defineConfig({
         manualChunks: {
           'pdf-lib-core': ['pdf-lib'],
           'pdfjs-viewer': ['pdfjs-dist'],
+          'tesseract-core': ['tesseract.js'],
           'vendor-ui': ['react', 'react-dom', 'react-router-dom', 'lucide-react', 'sonner'],
           'vendor-utils': ['jszip', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities']
         }

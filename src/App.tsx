@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { 
   Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
-  Wrench, ImagePlus, FileImage, Shield
+  Wrench, ImagePlus, FileImage
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -164,7 +164,7 @@ function App() {
                   viewMode === 'web' ? (
                     <WebView tools={tools} />
                   ) : (
-                    <AndroidView tools={tools} />
+                    <AndroidView />
                   )
                 } />
                 <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />

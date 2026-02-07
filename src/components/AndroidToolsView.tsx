@@ -1,9 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  Search, ChevronRight, Layers, Scissors, Zap, Lock, 
-  PenTool, Unlock, ImagePlus, FileImage, RotateCw, 
-  Type, Hash, Tags, Wrench, FileText, ArrowUpDown
+  Search, ChevronRight
 } from 'lucide-react'
 import { Tool, ToolCategory } from '../types'
 
