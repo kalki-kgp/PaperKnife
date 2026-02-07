@@ -1,11 +1,10 @@
 import { useState, useRef } from 'react'
-import { Loader2, Copy, FileText, Lock, Check, Download, Zap, ScanSearch, Upload, ArrowRight, X } from 'lucide-react'
+import { Loader2, Copy, FileText, Lock, Check, Download, Zap, ScanSearch, ArrowRight, X } from 'lucide-react'
 import { toast } from 'sonner'
 import Tesseract from 'tesseract.js'
 import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf, downloadFile } from '../../utils/pdfHelpers'
-import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 

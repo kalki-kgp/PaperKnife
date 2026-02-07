@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Lock, Unlock, Loader2, Upload, ArrowRight, X } from 'lucide-react'
+import { Lock, Unlock, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'

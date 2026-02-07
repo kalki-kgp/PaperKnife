@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Image as ImageIcon, Lock, Settings, Loader2, Upload, ArrowRight, X } from 'lucide-react'
+import { Image as ImageIcon, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'

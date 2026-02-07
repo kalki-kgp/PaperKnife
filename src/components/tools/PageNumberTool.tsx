@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Hash, Lock, Settings, Layout, Loader2, Upload, ArrowRight, X } from 'lucide-react'
+import { Hash, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
@@ -21,9 +21,9 @@ export default function PageNumberTool() {
   const [unlockPassword, setUnlockPassword] = useState('')
   const [format, setFormat] = useState('Page {n} of {total}')
   const [position, setPosition] = useState<Position>('bottom-center')
-  const [startFrom, setStartFrom] = useState(1)
-  const [fontSize, setFontSize] = useState(10)
-  const [color, setColor] = useState('#6B7280')
+  const [startFrom] = useState(1)
+  const [fontSize] = useState(10)
+  const [color] = useState('#6B7280')
   const isNative = Capacitor.isNativePlatform()
 
   const handleUnlock = async () => {

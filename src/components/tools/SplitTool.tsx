@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Loader2, Scissors, Check, Plus, Lock, Upload, RefreshCw, ArrowRight } from 'lucide-react'
+import { Loader2, Scissors, Check, Plus, Lock, ArrowRight } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'

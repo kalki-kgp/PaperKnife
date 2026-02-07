@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Type, Lock, Settings, Sliders, Loader2, Upload, ArrowRight, X } from 'lucide-react'
+import { Type, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
@@ -21,8 +21,8 @@ export default function WatermarkTool() {
   const [unlockPassword, setUnlockPassword] = useState('')
   const [text, setText] = useState('CONFIDENTIAL')
   const [opacity, setOpacity] = useState(0.3)
-  const [fontSize, setFontSize] = useState(50)
-  const [rotation, setRotation] = useState(-45)
+  const [fontSize] = useState(50)
+  const [rotation] = useState(-45)
   const [color, setColor] = useState('#F43F5E')
   const isNative = Capacitor.isNativePlatform()
 

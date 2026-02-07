@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Lock, ShieldCheck, Loader2, ArrowRight, Upload } from 'lucide-react'
+import { Lock, ShieldCheck, Loader2, ArrowRight } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite'
 import { toast } from 'sonner'

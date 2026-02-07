@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Download, Loader2, Lock, MousePointer2, Image as ImageIcon, Trash2, ArrowRight, X } from 'lucide-react'
+import { Loader2, Lock, MousePointer2, Image as ImageIcon, ArrowRight } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
@@ -16,7 +16,7 @@ export default function SignatureTool() {
   const fileInputRef = useRef<HTMLInputElement>(null); const signatureInputRef = useRef<HTMLInputElement>(null); const previewRef = useRef<HTMLDivElement>(null)
   const [pdfData, setPdfData] = useState<SignaturePdfData | null>(null); const [signatureImg, setSignatureImg] = useState<string | null>(null); const [signatureFile, setSignatureFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false); const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
-  const [unlockPassword, setUnlockPassword] = useState(''); const [activePage, setActivePage] = useState(1); const [pos, setPos] = useState({ x: 50, y: 50 })
+  const [unlockPassword, setUnlockPassword] = useState(''); const [activePage] = useState(1); const [pos, setPos] = useState({ x: 50, y: 50 })
   const [size, setSize] = useState(150); const [thumbnail, setThumbnail] = useState<string | null>(null); const [isDraggingSig, setIsDraggingSig] = useState(false); const [isResizing, setIsResizing] = useState(false)
   const isNative = Capacitor.isNativePlatform()
 

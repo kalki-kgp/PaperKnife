@@ -127,7 +127,7 @@ export default function CompressTool() {
     let pdfDoc = item.pdfDoc || await loadPdfDocument(item.file)
     const scaleMap = { high: 1.0, medium: 1.5, low: 2.0 }; const qualityMap = { high: 0.3, medium: 0.5, low: 0.7 }
     const scale = scaleMap[quality]; const jpegQuality = qualityMap[quality]
-    const pagesData = []
+    const pagesData: { imageBytes: Uint8Array, width: number, height: number }[] = []
     for (let i = 1; i <= item.pageCount; i++) {
       const page = await pdfDoc.getPage(i); const viewport = page.getViewport({ scale })
       const canvas = document.createElement('canvas'); const context = canvas.getContext('2d')
@@ -206,7 +206,7 @@ export default function CompressTool() {
 
   return (
     <NativeToolLayout title="Compress PDF" description="Reduce file size while maintaining quality. Everything stays on your device." icon={Zap} actions={files.length > 0 && !showSuccess && <ActionButton />}>
-      <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
+      <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files && handleFiles(e.target.files)} />
       {files.length === 0 ? (
         <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
           <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><Zap size={32} /></div>

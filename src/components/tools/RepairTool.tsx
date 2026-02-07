@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { Loader2, Wrench, ShieldAlert, Upload } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { addActivity } from '../../utils/recentActivity'
 import SuccessState from './shared/SuccessState'
@@ -14,7 +13,6 @@ export default function RepairTool() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [fileName, setFileName] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   const handleFile = async (file: File) => {
     if (file.type !== 'application/pdf') return
