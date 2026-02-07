@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Plus, X, Loader2, GripVertical, ImageIcon, Upload, ArrowRight } from 'lucide-react'
+import { Plus, X, Loader2, GripVertical, Upload, ArrowRight } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -71,7 +71,7 @@ export default function ImageToPdfTool() {
   )
 
   return (
-    <NativeToolLayout title="Image to PDF" description="Convert photos and images into a professional PDF." icon={ImageIcon} actions={images.length > 0 && !downloadUrl && <ActionButton />}>
+    <NativeToolLayout title="Image to PDF" description="Convert photos and images into a professional PDF." actions={images.length > 0 && !downloadUrl && <ActionButton />}>
       <input type="file" multiple accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files && handleFiles(e.target.files)} />
       {images.length === 0 ? (
         <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">

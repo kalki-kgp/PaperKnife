@@ -205,7 +205,7 @@ export default function CompressTool() {
   )
 
   return (
-    <NativeToolLayout title="Compress PDF" description="Reduce file size while maintaining quality. Everything stays on your device." icon={Zap} actions={files.length > 0 && !showSuccess && <ActionButton />}>
+    <NativeToolLayout title="Compress PDF" description="Reduce file size while maintaining quality. Everything stays on your device." actions={files.length > 0 && !showSuccess && <ActionButton />}>
       <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files && handleFiles(e.target.files)} />
       {files.length === 0 ? (
         <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">

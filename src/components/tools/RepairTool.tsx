@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Loader2, Wrench, ShieldAlert, Upload } from 'lucide-react'
+import { Loader2, ShieldAlert, Upload } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 
@@ -30,7 +30,7 @@ export default function RepairTool() {
   }
 
   return (
-    <NativeToolLayout title="Repair PDF" description="Fix corrupted or unreadable PDF files by rebuilding structure." icon={Wrench}>
+    <NativeToolLayout title="Repair PDF" description="Fix corrupted or unreadable PDF files by rebuilding structure.">
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       {!downloadUrl ? (
         <div onClick={() => !isProcessing && fileInputRef.current?.click()} className={`border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group ${isProcessing ? 'opacity-50' : ''}`}>

@@ -33,8 +33,8 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#1C1B1F] pb-32 transition-colors">
-      <header className="px-6 pt-14 pb-6">
-        <h1 className="text-4xl font-black tracking-tighter dark:text-white mb-8">All Tools</h1>
+      <header className="px-6 pt-safe pb-6">
+        <h1 className="text-4xl font-black tracking-tighter dark:text-white mb-8 mt-8">All Tools</h1>
         
         <div className="relative group">
           <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-gray-500">

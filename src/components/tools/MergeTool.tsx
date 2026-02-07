@@ -371,7 +371,6 @@ export default function MergeTool() {
     <NativeToolLayout
       title="Merge PDF"
       description="Combine multiple PDF files into one document. Processed entirely on your device."
-      icon={Plus}
       actions={files.length > 0 && !objectUrl && <ActionButton />}
     >
       <div 

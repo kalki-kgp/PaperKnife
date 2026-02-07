@@ -165,7 +165,6 @@ export default function SplitTool() {
     <NativeToolLayout
       title="Split PDF"
       description="Select pages visually or by range to extract them. Everything stays on your device."
-      icon={Scissors}
       actions={pdfData && !pdfData.isLocked && !objectUrl && <ActionButton />}
     >
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />

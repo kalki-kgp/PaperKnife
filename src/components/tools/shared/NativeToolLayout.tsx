@@ -6,7 +6,6 @@ import ToolHeader from './ToolHeader'
 interface NativeToolLayoutProps {
   title: string
   description: string
-  icon: any
   children: React.ReactNode
   actions?: React.ReactNode
   onBack?: () => void
@@ -15,7 +14,6 @@ interface NativeToolLayoutProps {
 export const NativeToolLayout = ({ 
   title, 
   description, 
-  icon: Icon, 
   children, 
   actions,
   onBack 
@@ -53,19 +51,6 @@ export const NativeToolLayout = ({
         {/* Web Header (Hidden on Mobile/Native) */}
         <div className="hidden md:block mb-8">
            <ToolHeader title={title} description={description} />
-        </div>
-
-        {/* Dynamic Native Hero (Only on Mobile) */}
-        <div className="md:hidden mb-6 mt-2">
-           <div className="flex items-center gap-4 p-6 bg-rose-500 rounded-[2rem] text-white shadow-lg shadow-rose-500/20">
-              <div className="p-3 bg-white/20 rounded-2xl">
-                 <Icon size={32} strokeWidth={2.5} />
-              </div>
-              <div>
-                 <p className="text-xs font-black uppercase tracking-widest opacity-80">Active Utility</p>
-                 <h2 className="text-xl font-black tracking-tight">{title}</h2>
-              </div>
-           </div>
         </div>
 
         <div className="flex-1">

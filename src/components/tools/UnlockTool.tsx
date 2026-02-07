@@ -63,7 +63,7 @@ export default function UnlockTool() {
   )
 
   return (
-    <NativeToolLayout title="Unlock PDF" description="Remove passwords and restrictions permanently. Processed locally." icon={Unlock} actions={pdfData && !objectUrl && <ActionButton />}>
+    <NativeToolLayout title="Unlock PDF" description="Remove passwords and restrictions permanently. Processed locally." actions={pdfData && !objectUrl && <ActionButton />}>
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
       {!pdfData ? (
         <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">

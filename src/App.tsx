@@ -165,7 +165,7 @@ function App() {
                   viewMode === 'web' ? (
                     <WebView tools={tools} />
                   ) : (
-                    <AndroidView />
+                    <AndroidView toggleTheme={toggleTheme} theme={theme} />
                   )
                 } />
                 <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />

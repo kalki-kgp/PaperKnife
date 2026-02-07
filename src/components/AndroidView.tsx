@@ -2,25 +2,20 @@ import { useNavigate } from 'react-router-dom'
 import { 
   Shield, 
   ChevronRight,
-  FileText, Settings2, Sparkles,
-  Layers, Zap, Scissors, Lock
+  FileText, Sparkles,
+  Layers, Zap, Scissors, Lock,
+  Moon, Sun
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { getRecentActivity, ActivityEntry } from '../utils/recentActivity'
+import { PaperKnifeLogo } from './Logo'
 
-const PaperKnifeLogo = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path 
-      d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" 
-      stroke="#F43F5E" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+interface AndroidViewProps {
+  theme: 'light' | 'dark'
+  toggleTheme: () => void
+}
 
-export default function AndroidView() {
+export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
   const navigate = useNavigate()
   const [history, setHistory] = useState<ActivityEntry[]>([])
   const [isScrolled, setIsScrolled] = useState(false)
@@ -54,12 +49,15 @@ export default function AndroidView() {
              </div>
              <div>
                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Secure Local Node</span>
-               <span className="block text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">v0.1.0 • Offline Ready</span>
+               <span className="block text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">v0.5.0-beta • Offline</span>
              </div>
           </div>
           <div className="flex gap-1">
-            <button className="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 active:bg-gray-200 dark:active:bg-white/10 transition-colors">
-              <Settings2 size={20} />
+            <button 
+              onClick={toggleTheme}
+              className="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 active:bg-gray-200 dark:active:bg-white/10 transition-colors"
+            >
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
           </div>
         </div>

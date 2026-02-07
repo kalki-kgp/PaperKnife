@@ -8,25 +8,7 @@ import { toast } from 'sonner'
 import { Tool, ToolCategory } from '../types'
 import { getRecentActivity, clearActivity, ActivityEntry } from '../utils/recentActivity'
 import { usePipeline } from '../utils/pipelineContext'
-
-const PaperKnifeLogo = ({ size = 32, className = "" }: { size?: number, className?: string }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-    className={`text-rose-500 ${className}`}
-  >
-    <path 
-      d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+import { PaperKnifeLogo } from './Logo'
 
 const formatSize = (bytes: number) => {
   if (bytes === 0) return '0 Bytes'

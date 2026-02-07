@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Loader2, Lock, MousePointer2, Image as ImageIcon, ArrowRight } from 'lucide-react'
+import { Loader2, Lock, Image as ImageIcon, ArrowRight } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
@@ -64,7 +64,7 @@ export default function SignatureTool() {
   )
 
   return (
-    <NativeToolLayout title="Signature" description="Sign any PDF by dragging your signature image." icon={MousePointer2} actions={pdfData && !pdfData.isLocked && !downloadUrl && <ActionButton />}>
+    <NativeToolLayout title="Signature" description="Sign any PDF by dragging your signature image." actions={pdfData && !pdfData.isLocked && !downloadUrl && <ActionButton />}>
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       <input type="file" accept="image/*" className="hidden" ref={signatureInputRef} onChange={(e) => { const file = e.target.files?.[0]; if (file) { setSignatureFile(file); setSignatureImg(URL.createObjectURL(file)) } }} />
       {!pdfData ? (
