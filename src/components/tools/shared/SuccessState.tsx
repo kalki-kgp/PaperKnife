@@ -2,6 +2,8 @@ import { Download, Eye, CheckCircle2, ArrowRight, Zap, Shield, Scissors, Tags } 
 import { useNavigate } from 'react-router-dom'
 import { usePipeline } from '../../../utils/pipelineContext'
 import { toast } from 'sonner'
+import { downloadFile } from '../../../utils/pdfHelpers'
+import { Capacitor } from '@capacitor/core'
 
 interface SuccessStateProps {
   message: string
@@ -14,6 +16,22 @@ interface SuccessStateProps {
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true }: SuccessStateProps) {
   const navigate = useNavigate()
   const { setPipelineFile } = usePipeline()
+  const isNative = Capacitor.isNativePlatform()
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    try {
+      toast.loading('Saving file...', { id: 'download' })
+      const response = await fetch(downloadUrl)
+      const blob = await response.blob()
+      const buffer = await blob.arrayBuffer()
+      
+      await downloadFile(new Uint8Array(buffer), fileName, 'application/pdf')
+      toast.success(isNative ? 'File saved to Documents' : 'Download started', { id: 'download' })
+    } catch (err) {
+      toast.error('Failed to save file', { id: 'download' })
+    }
+  }
 
   const pipelineActions = [
     { name: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
@@ -59,13 +77,12 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
           </button>
         )}
         
-        <a 
-          href={downloadUrl}
-          download={fileName}
+        <button 
+          onClick={handleDownload}
           className={`flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl font-black text-lg md:text-xl tracking-tight transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 ${!showPreview ? 'w-full' : ''}`}
         >
-          <Download size={24} /> Download
-        </a>
+          <Download size={24} /> {isNative ? 'Save to Device' : 'Download'}
+        </button>
       </div>
 
       <div className="pt-6 border-t border-gray-100 dark:border-zinc-800">

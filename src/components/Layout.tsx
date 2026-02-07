@@ -112,8 +112,8 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
       )}
 
       {/* Unified Top Header */}
-      <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 border-b border-gray-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100] transition-colors">
-        <div className="flex items-center gap-2 md:gap-4">
+      <header className={`flex items-center justify-between px-4 md:px-8 ${isNative ? 'h-auto pt-safe pb-2' : 'h-16 md:h-20'} border-b border-gray-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100] transition-colors`}>
+        <div className={`flex items-center gap-2 md:gap-4 ${isNative ? 'py-3' : ''}`}>
           {!isHome && (
             <button 
               onClick={() => navigate('/')}

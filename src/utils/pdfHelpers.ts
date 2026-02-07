@@ -1,4 +1,6 @@
 import * as pdfjsLib from 'pdfjs-dist';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 // Explicitly import the worker as a URL so Vite handles it correctly
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
@@ -9,6 +11,47 @@ export interface PdfMetaData {
   pageCount: number
   isLocked: boolean
 }
+
+/**
+ * Universal file downloader that works on Web and Android
+ */
+export const downloadFile = async (data: Uint8Array | string, fileName: string, mimeType: string) => {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      // For Android, we use the Filesystem API
+      const base64Data = typeof data === 'string' 
+        ? data.split(',')[1] 
+        : btoa(data.reduce((acc, byte) => acc + String.fromCharCode(byte), ''));
+
+      await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Documents,
+        recursive: true
+      });
+      
+      // Notify user where the file went
+      return true;
+    } catch (e) {
+      console.error('Download error:', e);
+      throw e;
+    }
+  } else {
+    // Standard Web Download
+    const blob = typeof data === 'string' 
+      ? await (await fetch(data)).blob() 
+      : new Blob([data], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    return true;
+  }
+};
 
 // Optimized: Load the PDF Document once
 export const loadPdfDocument = async (file: File) => {
