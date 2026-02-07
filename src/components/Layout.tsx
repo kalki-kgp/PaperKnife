@@ -4,7 +4,8 @@ import {
   Shield, Download, 
   Moon, Sun, 
   History, Upload, ChevronRight, ChevronDown,
-  Plus, Trash2, CheckCircle2, Home, Info, ArrowLeft, Layers
+  Plus, Trash2, CheckCircle2, Home, Info, ArrowLeft,
+  Layers, LayoutGrid
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { Theme, Tool, ToolCategory, ViewMode } from '../types'
@@ -191,16 +192,15 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         </div>
 
         <div className="flex items-center gap-1 md:gap-3">
-          <Link 
-            to="/about"
-            className={`p-2 md:px-4 md:py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}
-          >
-            <Info size={18} />
-            <span className="hidden md:block">About</span>
-          </Link>
+                    <Link 
+                      to="/about"
+                      className={`p-2 md:px-4 md:py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}
+                    >
+                      <Info size={18} />
+                      <span className="hidden md:block">About</span>
+                    </Link>
           
-          <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-rose-500 transition-colors" title="Toggle Light/Dark">
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                    <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-rose-500 transition-colors" title="Toggle Light/Dark">            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
           </button>
           
           <button 
@@ -232,10 +232,10 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             onClick={() => navigate('/')}
             className="flex flex-col items-center gap-1 flex-1 relative group active:scale-90 transition-transform duration-200"
           >
-            <div className={`px-5 py-1 rounded-full transition-all duration-300 ${isHome ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>
-              <Home size={22} strokeWidth={isHome ? 2.5 : 2} />
+            <div className={`px-5 py-1 rounded-full transition-all duration-300 ${location.pathname === '/' || (location.pathname === '/PaperKnife/') ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>
+              <Home size={22} fill={(location.pathname === '/' || location.pathname === '/PaperKnife/') ? "currentColor" : "none"} strokeWidth={2.5} />
             </div>
-            <span className={`text-[10px] font-black tracking-tight ${isHome ? 'text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>Home</span>
+            <span className={`text-[10px] font-black tracking-tight ${location.pathname === '/' || location.pathname === '/PaperKnife/' ? 'text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>Home</span>
           </button>
 
           {/* Tools Tab */}
@@ -244,7 +244,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             className="flex flex-col items-center gap-1 flex-1 relative group active:scale-90 transition-transform duration-200"
           >
             <div className={`px-5 py-1 rounded-full transition-all duration-300 ${location.pathname === '/android-tools' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>
-              <Layers size={22} strokeWidth={location.pathname === '/android-tools' ? 2.5 : 2} />
+              <LayoutGrid size={22} fill={location.pathname === '/android-tools' ? "currentColor" : "none"} strokeWidth={2.5} />
             </div>
             <span className={`text-[10px] font-black tracking-tight ${location.pathname === '/android-tools' ? 'text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>Tools</span>
           </button>
@@ -253,7 +253,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
           <div className="flex-1 flex flex-col items-center -mt-10">
              <button 
                onClick={() => navigate('/android-tools')}
-               className="w-14 h-14 bg-rose-500 text-white rounded-[1.25rem] shadow-lg shadow-rose-500/30 flex items-center justify-center active:scale-95 active:rotate-12 transition-all border-[6px] border-[#FDFDFD] dark:border-[#1C1B1F]"
+               className="w-14 h-14 bg-rose-500 text-white rounded-[1.25rem] shadow-lg shadow-rose-500/30 flex items-center justify-center active:scale-95 active:rotate-12 transition-all border-[6px] border-[#FAFAFA] dark:border-[#1C1B1F]"
              >
                <Plus size={32} strokeWidth={3} />
              </button>
@@ -266,7 +266,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             className="flex flex-col items-center gap-1 flex-1 relative group active:scale-90 transition-transform duration-200"
           >
             <div className={`px-5 py-1 rounded-full transition-all duration-300 ${location.pathname === '/android-history' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>
-              <History size={22} strokeWidth={location.pathname === '/android-history' ? 2.5 : 2} />
+              <History size={22} strokeWidth={location.pathname === '/android-history' ? 3 : 2.5} />
             </div>
             <span className={`text-[10px] font-black tracking-tight ${location.pathname === '/android-history' ? 'text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>History</span>
           </button>
@@ -277,7 +277,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             className="flex flex-col items-center gap-1 flex-1 relative group active:scale-90 transition-transform duration-200 no-underline"
           >
             <div className={`px-5 py-1 rounded-full transition-all duration-300 ${location.pathname.includes('about') ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>
-              <Shield size={22} strokeWidth={location.pathname.includes('about') ? 2.5 : 2} />
+              <Shield size={22} fill={location.pathname.includes('about') ? "currentColor" : "none"} strokeWidth={2.5} />
             </div>
             <span className={`text-[10px] font-black tracking-tight ${location.pathname.includes('about') ? 'text-rose-600 dark:text-rose-400' : 'text-[#49454F] dark:text-[#CAC4D0]'}`}>Privacy</span>
           </Link>

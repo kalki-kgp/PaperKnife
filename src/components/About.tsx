@@ -5,8 +5,10 @@ import {
   Code, Star, 
   Terminal, Zap,
   ExternalLink, Award,
-  Scissors, Cpu, ShieldCheck, Shield
+  Scissors, Cpu, ShieldCheck, Shield,
+  Sparkles
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const TechSpec = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -49,7 +51,15 @@ export default function About() {
           </h2>
           <p className="text-lg md:text-xl text-gray-500 dark:text-zinc-400 leading-relaxed font-medium max-w-2xl">
             PaperKnife is a high-integrity PDF utility that executes entirely within the client-side runtime. We removed the server to ensure your documents never leave your sight.
-          </p> section.
+          </p>
+          <div className="mt-8">
+            <Link 
+              to="/thanks" 
+              className="inline-flex items-center gap-2 text-rose-500 font-black text-xs uppercase tracking-widest hover:translate-x-1 transition-transform"
+            >
+              <Sparkles size={16} /> View Special Thanks
+            </Link>
+          </div>
         </section>
 
         {/* Technical Specification Protocol */}
@@ -141,6 +151,7 @@ export default function About() {
         <footer className="text-center pt-10 border-t border-gray-100 dark:border-zinc-900">
             <div className="flex justify-center gap-8 mb-8">
                 <a href="https://github.com/potatameister/PaperKnife" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-rose-500 transition-colors"><Github size={20} /></a>
+                <Link to="/thanks" className="text-gray-400 hover:text-rose-500 transition-colors"><Sparkles size={20} /></Link>
                 <a href="https://github.com/sponsors/potatameister" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-rose-500 transition-colors"><Heart size={20} /></a>
             </div>
             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-300 dark:text-zinc-800 mb-2 leading-relaxed">

@@ -368,6 +368,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               <ul className="space-y-4 text-sm font-bold text-gray-600 dark:text-zinc-400">
                 <li><Link to="/" className="hover:text-rose-500 transition">All Tools</Link></li>
                 <li><Link to="/about" className="hover:text-rose-500 transition">Privacy Protocol</Link></li>
+                <li><Link to="/thanks" className="hover:text-rose-500 transition">Special Thanks</Link></li>
                 <li><a href="#" className="hover:text-rose-500 transition">Documentation</a></li>
               </ul>
             </div>

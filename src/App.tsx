@@ -32,6 +32,7 @@ const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
 const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
 const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const About = lazy(() => import('./components/About'))
+const Thanks = lazy(() => import('./components/Thanks'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit' },
@@ -185,6 +186,7 @@ function App() {
                 <Route path="/signature" element={<SignatureTool />} />
                 <Route path="/repair" element={<RepairTool />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/thanks" element={<Thanks />} />
               </Routes>
             </Suspense>
 

@@ -1,3 +1,8 @@
+# Android signing keys
+*.jks
+*.keystore
+paperknife.jks
+
 # Logs
 logs
 *.log
