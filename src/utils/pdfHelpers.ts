@@ -40,7 +40,7 @@ export const downloadFile = async (data: Uint8Array | string, fileName: string, 
     // Standard Web Download
     const blob = typeof data === 'string' 
       ? await (await fetch(data)).blob() 
-      : new Blob([data], { type: mimeType });
+      : new Blob([data as BlobPart], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { ArrowLeft, MoreVertical, Share2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { ToolHeader } from './ToolHeader'
+import ToolHeader from './ToolHeader'
 
 interface NativeToolLayoutProps {
   title: string
@@ -52,7 +52,7 @@ export const NativeToolLayout = ({
       <main className="flex-1 flex flex-col p-4 md:p-8 max-w-5xl mx-auto w-full">
         {/* Web Header (Hidden on Mobile/Native) */}
         <div className="hidden md:block mb-8">
-           <ToolHeader title={title} description={description} icon={Icon} />
+           <ToolHeader title={title} description={description} />
         </div>
 
         {/* Dynamic Native Hero (Only on Mobile) */}
