@@ -1,13 +1,8 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- We put the airplane logo in a 256x256 area in the center of the 512x512 canvas (50% size) to ensure it's in the "safe zone" -->
+  <!-- Center the normal PaperKnife wing logo in the safe zone -->
   <g transform="translate(128, 128) scale(10.66)">
-    <path 
-      d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" 
-      stroke="#F43F5E" 
-      stroke-width="2" 
-      stroke-linecap="round" 
-      stroke-linejoin="round"
-      fill="none"
-    />
+    <path d="M4 4L21 12H9L4 4Z" fill="#F43F5E" />
+    <path d="M4 20L21 12H9L4 20Z" fill="#18181b" />
+    <path d="M9 12L21 12" stroke="white" stroke-width="1" stroke-opacity="0.2" />
   </g>
 </svg>

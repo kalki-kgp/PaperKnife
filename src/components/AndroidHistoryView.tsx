@@ -36,8 +36,8 @@ export default function AndroidHistoryView() {
   return (
     <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#1C1B1F] pb-32 transition-colors">
       {/* Top App Bar */}
-      <header className="px-6 pt-safe pb-6">
-        <div className="flex items-center justify-between mt-4 mb-8">
+      <header className="px-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-6">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
              <div className="p-2.5 bg-rose-500 rounded-2xl shadow-lg shadow-rose-500/20">
                <History size={20} className="text-white" />

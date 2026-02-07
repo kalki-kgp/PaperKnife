@@ -23,7 +23,7 @@ export const NativeToolLayout = ({
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFDFD] dark:bg-[#1C1B1F]">
       {/* Native-style AppBar */}
-      <header className="px-4 pt-safe pb-2 flex items-center justify-between sticky top-0 z-50 bg-white/80 dark:bg-[#1C1B1F]/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 md:hidden">
+      <header className="px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-2 flex items-center justify-between sticky top-0 z-50 bg-white/80 dark:bg-[#1C1B1F]/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 md:hidden">
         <div className="flex items-center gap-4 py-2">
           <button 
             onClick={onBack || (() => navigate(-1))}
