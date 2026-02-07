@@ -41,11 +41,11 @@ export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
     <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#1C1B1F] pb-32 transition-colors">
       
       {/* M3 System Header */}
-      <header className={`px-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-6 sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#F3EDF7] dark:bg-[#2B2930] shadow-sm' : 'bg-transparent'}`}>
+      <header className={`px-6 pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-6 sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#F3EDF7] dark:bg-[#2B2930] shadow-sm' : 'bg-transparent'}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
              <div className="p-2.5 bg-rose-500 rounded-2xl shadow-lg shadow-rose-500/20 active:scale-90 transition-all">
-               <PaperKnifeLogo size={20} />
+               <PaperKnifeLogo size={20} iconColor="white" />
              </div>
              <div>
                <span className="block text-xs font-black tracking-tighter text-gray-900 dark:text-white">PaperKnife</span>
