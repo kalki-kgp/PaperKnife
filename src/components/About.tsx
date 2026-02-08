@@ -1,18 +1,16 @@
 import { useState } from 'react'
 import { 
   Heart, 
-  ChevronDown, 
-  Code, 
   Zap,
-  ShieldCheck, Shield,
+  ShieldCheck,
   Sparkles, Trash2, Clock, Moon, Sun, Monitor,
-  ChevronRight, ExternalLink, Scale, FileLock
+  ChevronRight, Scale, Github
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'
 import { Theme } from '../types'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
+import { PaperKnifeLogo } from './Logo'
 
 const SettingItem = ({ 
   icon: Icon, 
@@ -32,23 +30,26 @@ const SettingItem = ({
   <button 
     onClick={onClick}
     disabled={!onClick}
-    className={`w-full flex items-center justify-between p-4 active:bg-gray-100 dark:active:bg-zinc-900 transition-colors text-left ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
+    className={`w-full flex items-center justify-between p-5 active:bg-gray-100 dark:active:bg-zinc-900 transition-colors text-left ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
   >
-    <div className="flex items-center gap-4">
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${danger ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}>
+    <div className="flex items-center gap-4 flex-1">
+      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${danger ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}>
         <Icon size={20} />
       </div>
-      <div>
-        <h4 className={`text-sm font-bold ${danger ? 'text-rose-500' : 'text-gray-900 dark:text-white'}`}>{title}</h4>
-        {subtitle && <p className="text-[10px] text-gray-500 dark:text-zinc-500 font-medium">{subtitle}</p>}
+      <div className="min-w-0 flex-1">
+        <h4 className={`text-sm font-bold truncate ${danger ? 'text-rose-500' : 'text-gray-900 dark:text-white'}`}>{title}</h4>
+        {subtitle && <p className="text-[10px] text-gray-500 dark:text-zinc-500 font-medium line-clamp-1">{subtitle}</p>}
       </div>
     </div>
-    {action || (onClick && <ChevronRight size={18} className="text-gray-300" />)}
+    <div className="flex items-center gap-2 shrink-0">
+      {action}
+      {onClick && !action && <ChevronRight size={18} className="text-gray-300" />}
+    </div>
   </button>
 )
 
 const SettingGroup = ({ title, children }: { title: string, children: React.ReactNode }) => (
-  <div className="mb-6">
+  <div className="mb-8">
     <h3 className="px-6 mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">{title}</h3>
     <div className="bg-white dark:bg-zinc-950 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5">
       {children}
@@ -68,16 +69,11 @@ export default function About({ theme, setTheme }: { theme?: Theme, setTheme?: (
     toast.success(newValue ? 'Auto-Wipe Armed' : 'Auto-Wipe Off')
   }
 
-  const changeTimer = (val: string) => {
-    setWipeTimer(val)
-    localStorage.setItem('autoWipeTimer', val)
-    toast.success(`Wipe timer set to ${val}m`)
-  }
-
   return (
     <NativeToolLayout title="Settings" description="Application configuration">
-      <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20 -mx-4 md:mx-0">
+      <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-32 -mx-4 md:mx-0">
         
+        {/* Appearance */}
         <SettingGroup title="Appearance">
           <div className="p-4 grid grid-cols-3 gap-2 bg-white dark:bg-zinc-950">
             {[
@@ -97,11 +93,12 @@ export default function About({ theme, setTheme }: { theme?: Theme, setTheme?: (
           </div>
         </SettingGroup>
 
-        <SettingGroup title="Privacy & Security">
+        {/* Security */}
+        <SettingGroup title="Security & Privacy">
           <SettingItem 
             icon={Clock} 
-            title="Auto-Wipe History" 
-            subtitle="Scrub activity logs on launch"
+            title="Auto-Wipe Logic" 
+            subtitle="Scrub activity logs on app launch"
             action={
               <button 
                 onClick={toggleAutoWipe}
@@ -112,28 +109,33 @@ export default function About({ theme, setTheme }: { theme?: Theme, setTheme?: (
             }
           />
           {autoWipe && (
-            <div className="p-4 px-6 bg-gray-50/50 dark:bg-zinc-900/30 flex items-center justify-between">
-               <span className="text-xs font-bold text-gray-500 uppercase">Inactivity Timeout</span>
+            <div className="p-4 px-6 bg-rose-50/30 dark:bg-rose-900/10 flex items-center justify-between border-t border-rose-100/20 dark:border-rose-900/20">
+               <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Inactivity Timeout</span>
                <select 
                 value={wipeTimer}
-                onChange={(e) => changeTimer(e.target.value)}
-                className="bg-transparent text-sm font-black text-rose-500 outline-none"
+                onChange={(e) => {
+                  const val = e.target.value
+                  setWipeTimer(val)
+                  localStorage.setItem('autoWipeTimer', val)
+                  toast.success(`Timer set to ${val}m`)
+                }}
+                className="bg-transparent text-xs font-black text-gray-900 dark:text-white outline-none appearance-none cursor-pointer"
                >
                   <option value="1">1 Minute</option>
                   <option value="5">5 Minutes</option>
                   <option value="15">15 Minutes</option>
                   <option value="30">30 Minutes</option>
-                  <option value="0">Instant (Exit)</option>
+                  <option value="0">Immediate</option>
                </select>
             </div>
           )}
           <SettingItem 
             icon={Trash2} 
             title="Nuke All Data" 
-            subtitle="Wipe everything instantly" 
+            subtitle="Reset app to factory defaults" 
             danger
             onClick={async () => {
-              if(confirm("This will clear all history and settings. Continue?")) {
+              if(confirm("DANGER: This will delete ALL history and settings. Proceed?")) {
                 await clearActivity()
                 localStorage.clear()
                 window.location.reload()
@@ -142,19 +144,20 @@ export default function About({ theme, setTheme }: { theme?: Theme, setTheme?: (
           />
         </SettingGroup>
 
-        <SettingGroup title="Documentation">
+        {/* Legal & Docs */}
+        <SettingGroup title="Legal & Protocol">
           <SettingItem 
             icon={ShieldCheck} 
             title="Privacy Policy" 
-            subtitle="Zero-data collection policy"
+            subtitle="Zero-data collection commitment"
             onClick={() => {
-              alert("Privacy Policy: PaperKnife is a zero-server application. We do not collect, store, or transmit any PDF data, passwords, or personal metrics. All processing occurs locally in your device's volatile memory.")
+              alert("PRIVACY POLICY:\n\n1. NO SERVER: PaperKnife is 100% client-side.\n2. NO TRACKING: We do not use analytics.\n3. VOLATILE MEMORY: Data exists only in RAM.\n4. LOCAL STORAGE: Only filenames/settings are stored.")
             }}
           />
           <SettingItem 
             icon={Scale} 
-            title="MIT License" 
-            subtitle="Open-source legal protocol"
+            title="GPL v3 License" 
+            subtitle="Copyleft Open-Source Protocol"
             onClick={() => {
               window.open('https://github.com/potatameister/PaperKnife/blob/main/LICENSE', '_blank')
             }}
@@ -162,40 +165,44 @@ export default function About({ theme, setTheme }: { theme?: Theme, setTheme?: (
           <SettingItem 
             icon={Zap} 
             title="Technical Protocol" 
-            subtitle="How it works under the hood"
+            subtitle="Architecture Overview"
             onClick={() => setShowProtocol(!showProtocol)}
           />
           {showProtocol && (
-            <div className="p-6 bg-gray-50 dark:bg-zinc-900/50 text-xs text-gray-500 dark:text-zinc-400 space-y-4 animate-in slide-in-from-top-2">
-               <p><strong className="text-rose-500 uppercase">Local-First:</strong> PaperKnife uses <code>pdf-lib</code> and <code>Web Workers</code> to process files in your RAM. Files are never uploaded.</p>
-               <p><strong className="text-rose-500 uppercase">Security:</strong> Passwords used for Protect/Unlock tools are never stored. They are used purely as cryptographic seeds.</p>
+            <div className="p-6 bg-gray-50 dark:bg-zinc-900/50 text-[11px] text-gray-500 dark:text-zinc-400 space-y-4 animate-in slide-in-from-top-2 border-t border-gray-100 dark:border-white/5">
+               <p><strong className="text-rose-500 uppercase tracking-tighter">RAM Processing:</strong> PaperKnife creates a private virtual buffer in your device's RAM. Your data never touches a disk until you click 'Save'.</p>
+               <p><strong className="text-rose-500 uppercase tracking-tighter">Cryptographic Seeds:</strong> Passwords act as transient AES-256 seeds. They are destroyed as soon as the encryption completes.</p>
             </div>
           )}
         </SettingGroup>
 
-        <SettingGroup title="About">
+        {/* Project */}
+        <SettingGroup title="Project">
           <SettingItem 
             icon={Github} 
             title="Source Code" 
-            subtitle="GitHub Repository"
+            subtitle="Fork & Contribute on GitHub"
             onClick={() => window.open('https://github.com/potatameister/PaperKnife', '_blank')}
           />
           <SettingItem 
             icon={Sparkles} 
             title="Credits" 
-            subtitle="Special Thanks"
-            onClick={() => window.location.href = '/PaperKnife/thanks'}
+            subtitle="Acknowledge the community"
+            onClick={() => {
+              window.open('https://potatameister.github.io/PaperKnife/thanks', '_blank')
+            }}
           />
           <SettingItem 
             icon={Heart} 
-            title="Sponsor" 
-            subtitle="Support development"
+            title="Sponsor PaperKnife" 
+            subtitle="Keep development ad-free"
             onClick={() => window.open('https://github.com/sponsors/potatameister', '_blank')}
           />
         </SettingGroup>
 
-        <div className="text-center py-10 opacity-20">
-           <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife v0.5.0-beta</p>
+        <div className="flex flex-col items-center gap-4 py-10 opacity-30">
+           <PaperKnifeLogo size={32} iconColor="#F43F5E" />
+           <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
         </div>
 
       </div>
