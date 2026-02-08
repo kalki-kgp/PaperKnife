@@ -64,7 +64,7 @@ export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
           onClick={handleQuickPick}
           className="w-full aspect-[2/1] bg-zinc-900 dark:bg-zinc-100 rounded-[2rem] relative overflow-hidden shadow-2xl group active:scale-[0.98] transition-all flex flex-col justify-between p-6"
         >
-           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-20 dark:opacity-30 group-active:opacity-40 transition-opacity" />
+           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-40 dark:opacity-30 group-active:opacity-50 transition-opacity" />
            
            <div className="relative z-10 flex justify-between items-start w-full">
               <div className="p-3 bg-white/10 dark:bg-black/5 rounded-2xl backdrop-blur-sm text-white dark:text-black">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Github, Heart, 
   ChevronDown, Layers, Lock, 
@@ -6,9 +6,13 @@ import {
   Terminal, Zap,
   ExternalLink, Award,
   Scissors, Cpu, ShieldCheck, Shield,
-  Sparkles
+  Sparkles, Settings, Trash2, Clock, Check
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { Capacitor } from '@capacitor/core'
+import { NativeToolLayout } from './tools/shared/NativeToolLayout'
+import { clearActivity } from '../utils/recentActivity'
+import { toast } from 'sonner'
 
 const TechSpec = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -36,6 +40,96 @@ const TechSpec = ({ title, icon: Icon, children }: { title: string, icon: any, c
 }
 
 export default function About() {
+  const isNative = Capacitor.isNativePlatform()
+  const [autoWipe, setAutoWipe] = useState(() => localStorage.getItem('autoWipe') === 'true')
+
+  const toggleAutoWipe = () => {
+    const newValue = !autoWipe
+    setAutoWipe(newValue)
+    localStorage.setItem('autoWipe', String(newValue))
+    toast.success(newValue ? 'Auto-Wipe Enabled' : 'Auto-Wipe Disabled')
+  }
+
+  const handleClearData = async () => {
+    await clearActivity()
+    toast.success('All local data cleared.')
+  }
+
+  // Native Settings View
+  if (isNative) {
+    return (
+      <NativeToolLayout 
+        title="Settings" 
+        description="Manage your privacy and app preferences."
+      >
+        <div className="space-y-8">
+          {/* Privacy Section */}
+          <section>
+            <h3 className="px-2 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Privacy Control</h3>
+            <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 overflow-hidden">
+              <div className="p-4 flex items-center justify-between border-b border-gray-50 dark:border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 rounded-xl flex items-center justify-center">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-gray-900 dark:text-white">Auto-Wipe</h4>
+                    <p className="text-[10px] text-gray-500 font-medium">Clear data on app exit</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={toggleAutoWipe}
+                  className={`w-12 h-7 rounded-full p-1 transition-colors ${autoWipe ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
+                >
+                  <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${autoWipe ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              <button 
+                onClick={handleClearData}
+                className="w-full p-4 flex items-center gap-4 active:bg-gray-50 dark:active:bg-zinc-800 transition-colors text-left"
+              >
+                <div className="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl flex items-center justify-center">
+                  <Trash2 size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-gray-900 dark:text-white">Nuke Data</h4>
+                  <p className="text-[10px] text-gray-500 font-medium">Instantly clear history & cache</p>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          {/* About Section */}
+          <section>
+            <h3 className="px-2 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">About PaperKnife</h3>
+            <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 p-6 space-y-6">
+               <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-zinc-900 dark:bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                     <Terminal size={32} className="text-white dark:text-black" />
+                  </div>
+                  <div>
+                     <h2 className="text-xl font-black tracking-tight text-gray-900 dark:text-white">PaperKnife Node</h2>
+                     <p className="text-xs font-medium text-gray-500">v0.5.0-beta • Build 2026</p>
+                  </div>
+               </div>
+               
+               <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
+                 PaperKnife is a local-first PDF utility designed for maximum privacy. No servers, no tracking, just your device's power.
+               </p>
+
+               <div className="flex gap-2">
+                 <a href="https://github.com/potatameister/PaperKnife" className="flex-1 py-3 bg-gray-100 dark:bg-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-center text-gray-600 dark:text-gray-300">GitHub</a>
+                 <Link to="/thanks" className="flex-1 py-3 bg-rose-50 dark:bg-rose-900/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-center text-rose-500">Credits</Link>
+               </div>
+            </div>
+          </section>
+        </div>
+      </NativeToolLayout>
+    )
+  }
+
+  // Web View (Documentation)
   return (
     <div className="min-h-full bg-[#FAFAFA] dark:bg-black text-gray-900 dark:text-zinc-100 selection:bg-rose-500 selection:text-white transition-colors duration-300">
       <main className="max-w-4xl mx-auto px-6 py-12 md:py-24">

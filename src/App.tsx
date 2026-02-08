@@ -10,6 +10,7 @@ import { Capacitor } from '@capacitor/core'
 import { Theme, ViewMode, Tool } from './types'
 import Layout from './components/Layout'
 import { PipelineProvider } from './utils/pipelineContext'
+import { clearActivity } from './utils/recentActivity'
 
 // Lazy load views
 const WebView = lazy(() => import('./components/WebView'))
@@ -122,6 +123,16 @@ function App() {
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
+
+  // Auto-Wipe Logic
+  useEffect(() => {
+    const shouldWipe = localStorage.getItem('autoWipe') === 'true'
+    if (shouldWipe) {
+      clearActivity().then(() => {
+        console.log('Auto-Wipe executed: Activity cleared.')
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const root = window.document.documentElement
