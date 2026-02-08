@@ -36,7 +36,6 @@ export default function RotateTool() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState('paperknife-rotated')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()

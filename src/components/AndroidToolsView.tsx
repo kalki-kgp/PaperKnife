@@ -4,6 +4,7 @@ import {
   Search, ChevronRight
 } from 'lucide-react'
 import { Tool, ToolCategory } from '../types'
+import { PaperKnifeLogo } from './Logo'
 
 export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
   const navigate = useNavigate()

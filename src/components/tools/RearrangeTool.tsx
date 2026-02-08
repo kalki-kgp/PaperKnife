@@ -51,7 +51,6 @@ export default function RearrangeTool() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState('paperknife-rearranged')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),

@@ -17,7 +17,6 @@ export default function RepairTool() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [originalFile, setOriginalFile] = useState<File | null>(null)
   const [customFileName, setCustomFileName] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Image as ImageIcon, Lock, Loader2, X, Sparkles, ArrowRight } from 'lucide-react'
+import { Image as ImageIcon, Lock, Loader2, X, Sparkles } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
@@ -20,10 +20,9 @@ export default function ExtractImagesTool() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
-  const [foundCount, setFoundCount] = useState(0)
+  const [extractedCount, setExtractedCount] = useState(0)
   const [customFileName, setCustomFileName] = useState('extracted-images')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -120,6 +119,7 @@ export default function ExtractImagesTool() {
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       const url = URL.createObjectURL(zipBlob)
       setDownloadUrl(url)
+      setExtractedCount(imageCounter)
       addActivity({ name: `${customFileName}.zip`, tool: 'Extract Images', size: zipBlob.size, resultUrl: url })
       toast.success(`Extracted ${imageCounter} images!`)
     } catch (error: any) { 
@@ -179,7 +179,7 @@ export default function ExtractImagesTool() {
                 )}
               </>
             ) : (
-              <SuccessState message={`Successfully extracted images!`} downloadUrl={downloadUrl} fileName={`${customFileName}.zip`} onStartOver={() => { setDownloadUrl(null); setProgress(0); setFoundCount(0); setPdfData(null); }} showPreview={false} />
+              <SuccessState message={`Successfully extracted ${extractedCount} images!`} downloadUrl={downloadUrl} fileName={`${customFileName}.zip`} onStartOver={() => { setDownloadUrl(null); setProgress(0); setExtractedCount(0); setPdfData(null); }} showPreview={false} />
             )}
             <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
           </div>

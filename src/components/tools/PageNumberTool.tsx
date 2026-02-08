@@ -27,7 +27,6 @@ export default function PageNumberTool() {
   const [startFrom] = useState(1)
   const [fontSize] = useState(12)
   const [color] = useState('#6B7280')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()

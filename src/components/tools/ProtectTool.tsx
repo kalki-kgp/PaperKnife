@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Lock, ShieldCheck, Loader2, ArrowRight } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Lock, ShieldCheck, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite'
 import { toast } from 'sonner'
@@ -31,7 +31,6 @@ export default function ProtectTool() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [unlockPassword, setUnlockPassword] = useState('')
   const [customFileName, setCustomFileName] = useState('paperknife-protected')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -113,23 +112,24 @@ export default function ProtectTool() {
             <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors"><X size={20} /></button>
           </div>
                     <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-gray-100 dark:border-white/5 space-y-6 shadow-sm">
-                      {!objectUrl ? (
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">New Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" placeholder="••••••••" /></div>
-                            <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">Confirm Password</label><input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" placeholder="••••••••" /></div>
-                          </div>
-                          <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
-                        </div>
-                      ) : (
-                        <SuccessState message="Encrypted Successfully" downloadUrl={objectUrl} fileName={`${customFileName || 'protected'}.pdf`} onStartOver={() => { clearUrls(); setPassword(''); setConfirmPassword(''); setPdfData(null); }} />
-                      )}
-                      <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-white/5 flex items-start gap-3"><Lock size={14} className="text-amber-500 shrink-0 mt-0.5" /><p className="text-[10px] text-amber-700 dark:text-amber-400 leading-relaxed font-medium">PaperKnife cannot recover forgotten passwords. Save it securely.</p></div>
-                    </div>
-                  </div>
-                )}
-                <PrivacyBadge />
-              </NativeToolLayout>
-            )
-          }
+            {!objectUrl ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">New Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" placeholder="••••••••" /></div>
+                  <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">Confirm Password</label><input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" placeholder="••••••••" /></div>
+                </div>
+                <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
+              </div>
+            ) : (
+              <SuccessState message="Encrypted Successfully" downloadUrl={objectUrl} fileName={`${customFileName || 'protected'}.pdf`} onStartOver={() => { clearUrls(); setPassword(''); setConfirmPassword(''); setPdfData(null); }} />
+            )}
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-white/5 flex items-start gap-3"><Lock size={14} className="text-amber-500 shrink-0 mt-0.5" /><p className="text-[10px] text-amber-700 dark:text-amber-400 leading-relaxed font-medium">PaperKnife cannot recover forgotten passwords. Save it securely.</p></div>
+            <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
+          </div>
+        </div>
+      )}
+      <PrivacyBadge />
+    </NativeToolLayout>
+  )
+}
           

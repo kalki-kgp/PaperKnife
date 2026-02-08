@@ -36,7 +36,6 @@ export default function MetadataTool() {
     creator: localStorage.getItem('defaultAuthor') || 'PaperKnife', 
     producer: localStorage.getItem('defaultAuthor') || 'PaperKnife' 
   })
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
