@@ -4,13 +4,13 @@ import {
   Shield, Download, 
   Moon, Sun, 
   History, Upload, ChevronRight, ChevronDown,
-  Plus, CheckCircle2, Home, Info, ArrowLeft,
+  Plus, Trash2, CheckCircle2, Home, Info, ArrowLeft,
   LayoutGrid
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { Theme, Tool, ToolCategory, ViewMode } from '../types'
 import { PaperKnifeLogo } from './Logo'
-import { ActivityEntry, getRecentActivity } from '../utils/recentActivity'
+import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -162,7 +162,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         <nav className="fixed bottom-0 left-0 right-0 h-[85px] bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-white/5 flex items-center justify-around px-2 z-[100] pb-safe transition-all">
           <button onClick={() => navigate('/')} className="flex flex-col items-center gap-1 flex-1 active:scale-90 transition-transform"><div className={`px-5 py-1 rounded-full transition-all ${location.pathname === '/' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}><Home size={22} fill={location.pathname === '/' ? "currentColor" : "none"} /></div><span className={`text-[9px] font-black uppercase ${location.pathname === '/' ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}>Home</span></button>
           <button onClick={() => navigate('/android-tools')} className="flex flex-col items-center gap-1 flex-1 active:scale-90 transition-transform"><div className={`px-5 py-1 rounded-full transition-all ${location.pathname === '/android-tools' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}><LayoutGrid size={22} fill={location.pathname === '/android-tools' ? "currentColor" : "none"} /></div><span className={`text-[9px] font-black uppercase ${location.pathname === '/android-tools' ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}>Tools</span></button>
-          <div className="flex-1 flex flex-col items-center -mt-12"><button onClick={() => { const input = document.createElement('input'); input.type = 'file'; input.accept = '.pdf'; input.onchange = (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) onFileDrop?.([file] as any) }; input.click() }} className="w-16 h-16 bg-rose-500 text-white rounded-[1.5rem] shadow-xl shadow-rose-500/30 flex items-center justify-center active:scale-95 active:rotate-12 transition-all border-[6px] border-[#F8F9FA] dark:border-black"><Plus size={36} strokeWidth={3} /></button><span className="text-[9px] font-black text-rose-500 mt-2 uppercase">Quick Pick</span></div>
+          <div className="flex-1 flex flex-col items-center -mt-12"><button onClick={() => { const input = document.createElement('input'); input.type = 'file'; input.accept = '.pdf'; input.onchange = (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) onFileDrop?.([file] as any) }; input.click() }} className="w-16 h-16 bg-rose-500 text-white rounded-[1.5rem] shadow-xl shadow-rose-500/30 flex items-center justify-center active:scale-95 active:rotate-12 transition-all border-[6px] border-[#FAFAFA] dark:border-black"><Plus size={36} strokeWidth={3} /></button><span className="text-[9px] font-black text-rose-500 mt-2 uppercase">Quick Pick</span></div>
           <button onClick={() => navigate('/android-history')} className="flex flex-col items-center gap-1 flex-1 active:scale-90 transition-transform"><div className={`px-5 py-1 rounded-full transition-all ${location.pathname === '/android-history' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}><History size={22} /></div><span className={`text-[9px] font-black uppercase ${location.pathname === '/android-history' ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}>History</span></button>
           <Link to="/about" className="flex flex-col items-center gap-1 flex-1 active:scale-90 transition-transform no-underline"><div className={`px-5 py-1 rounded-full transition-all ${location.pathname.includes('about') ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}><Shield size={22} fill={location.pathname.includes('about') ? "currentColor" : "none"} /></div><span className={`text-[9px] font-black uppercase ${location.pathname.includes('about') ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400'}`}>Privacy</span></Link>
         </nav>
@@ -171,7 +171,25 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
       {/* Sidebar History Drawer */}
       <aside className={`fixed top-0 right-0 h-screen w-full sm:w-80 bg-white dark:bg-zinc-950 border-l border-gray-100 dark:border-zinc-800 z-[150] shadow-2xl transition-transform duration-500 ease-out transform ${showHistory ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-6 h-full flex flex-col">
-          <div className="flex items-center justify-between mb-8"><div className="flex items-center gap-3"><History className="text-rose-500" size={24} /><h2 className="text-xl font-black dark:text-white">Activity</h2></div><button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors"><ChevronRight size={20} className="text-gray-400" /></button></div>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <History className="text-rose-500" size={24} />
+              <h2 className="text-xl font-black dark:text-white">Activity</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              {activity.length > 0 && (
+                <button 
+                  onClick={async () => { await clearActivity(); setActivity([]); }}
+                  className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-gray-400 hover:text-rose-500 rounded-xl transition-colors"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+              <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
+                <ChevronRight size={20} className="text-gray-400" />
+              </button>
+            </div>
+          </div>
           <div className="flex-1 overflow-y-auto space-y-3 scrollbar-hide">
             {activity.length === 0 ? (<div className="text-center py-20 opacity-40"><p className="text-xs font-bold uppercase tracking-widest text-gray-400">No recent files</p></div>) : (
               activity.map((item) => (

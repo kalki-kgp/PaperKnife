@@ -31,7 +31,7 @@ export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA] dark:bg-black transition-colors">
+    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors">
       
       {/* Pro-Grade Compact AppBar */}
       <header className="px-6 pt-safe pb-4 sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5">

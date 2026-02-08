@@ -34,13 +34,18 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
+html, body {
+  @apply bg-[#FAFAFA] dark:bg-black;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  @apply bg-[#FAFAFA] dark:bg-black text-gray-900 dark:text-zinc-100 transition-colors duration-300;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  @apply text-gray-900 dark:text-zinc-100 transition-colors duration-300;
+  overflow-x: hidden;
 }
 
 .pt-safe {
