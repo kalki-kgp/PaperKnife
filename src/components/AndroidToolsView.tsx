@@ -81,6 +81,11 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
           </section>
         ))}
       </main>
+
+      <footer className="text-center py-12 opacity-20">
+         <PaperKnifeLogo size={24} iconColor="#F43F5E" className="mx-auto mb-4" />
+         <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
+      </footer>
     </div>
   )
 }

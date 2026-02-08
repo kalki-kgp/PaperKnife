@@ -6,18 +6,20 @@ import {
   Layers, Zap, Scissors, Lock,
   Moon, Sun, Upload
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getRecentActivity, ActivityEntry } from '../utils/recentActivity'
 import { PaperKnifeLogo } from './Logo'
 
 interface AndroidViewProps {
   theme: 'light' | 'dark'
   toggleTheme: () => void
+  onFileSelect?: (file: File) => void
 }
 
-export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
+export default function AndroidView({ theme, toggleTheme, onFileSelect }: AndroidViewProps) {
   const navigate = useNavigate()
   const [history, setHistory] = useState<ActivityEntry[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     getRecentActivity(3).then(setHistory)
@@ -30,16 +32,22 @@ export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
     { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
   ]
 
-  const handleQuickPick = () => {
-    // Trigger the file input from Layout.tsx (this is handled via prop drilling usually, but here we rely on the FAB or direct tool navigation)
-    // Since this view is just the dashboard, we can navigate to tools or use the bottom nav FAB.
-    // For this specific "Hero" card, we'll simulate a click on the hidden FAB logic by navigating to a generic tool or just prompting the user.
-    // Better yet, let's just make it clear this is the dashboard.
-    navigate('/android-tools')
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && onFileSelect) {
+      onFileSelect(file)
+    }
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors">
+      <input 
+        type="file" 
+        accept=".pdf" 
+        ref={fileInputRef} 
+        onChange={handleFileChange} 
+        className="hidden" 
+      />
       
       {/* Titan Minimal Header */}
       <header className="px-6 pt-safe pb-2 sticky top-0 z-50 bg-[#FAFAFA]/90 dark:bg-black/90 backdrop-blur-xl">
@@ -61,7 +69,7 @@ export default function AndroidView({ theme, toggleTheme }: AndroidViewProps) {
         
         {/* Hero: Quick Action Card */}
         <button 
-          onClick={handleQuickPick}
+          onClick={() => fileInputRef.current?.click()}
           className="w-full aspect-[2/1] bg-zinc-900 dark:bg-zinc-100 rounded-[2rem] relative overflow-hidden shadow-2xl group active:scale-[0.98] transition-all flex flex-col justify-between p-6"
         >
            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-40 dark:opacity-30 group-active:opacity-50 transition-opacity" />

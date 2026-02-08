@@ -1,11 +1,12 @@
-import { useState, useRef } from 'react'
-import { Loader2, Lock, Image as ImageIcon, ArrowRight } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Loader2, Lock, Image as ImageIcon, ArrowRight, X, PenTool } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
 import { NativeToolLayout } from './shared/NativeToolLayout'
@@ -14,11 +15,20 @@ type SignaturePdfData = { file: File, pageCount: number, isLocked: boolean, pdfD
 
 export default function SignatureTool() {
   const fileInputRef = useRef<HTMLInputElement>(null); const signatureInputRef = useRef<HTMLInputElement>(null); const previewRef = useRef<HTMLDivElement>(null)
+  const { consumePipelineFile } = usePipeline()
   const [pdfData, setPdfData] = useState<SignaturePdfData | null>(null); const [signatureImg, setSignatureImg] = useState<string | null>(null); const [signatureFile, setSignatureFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false); const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [unlockPassword, setUnlockPassword] = useState(''); const [activePage] = useState(1); const [pos, setPos] = useState({ x: 50, y: 50 })
   const [size, setSize] = useState(150); const [thumbnail, setThumbnail] = useState<string | null>(null); const [isDraggingSig, setIsDraggingSig] = useState(false); const [isResizing, setIsResizing] = useState(false)
   const isNative = Capacitor.isNativePlatform()
+
+  useEffect(() => {
+    const pipelined = consumePipelineFile()
+    if (pipelined) {
+      const file = new File([pipelined.buffer as any], pipelined.name, { type: 'application/pdf' })
+      handleFile(file)
+    }
+  }, [])
 
   const handleUnlock = async () => {
     if (!pdfData || !unlockPassword) return; setIsProcessing(true)
@@ -85,13 +95,15 @@ export default function SignatureTool() {
                 )}
               </div>
               <div className="flex gap-4">
-                <button onClick={() => signatureInputRef.current?.click()} className="flex-1 p-4 bg-gray-100 dark:bg-zinc-800 rounded-2xl font-black uppercase text-xs">Upload Signature</button>
-                {!isNative && <ActionButton />}
+                <button onClick={() => signatureInputRef.current?.click()} className="flex-1 p-4 bg-gray-50 dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-100 dark:border-white/5 rounded-2xl font-black uppercase text-xs hover:border-rose-500 transition-all">
+                  <span className="flex items-center justify-center gap-2"><ImageIcon size={16}/> Upload Signature</span>
+                </button>
               </div>
             </>
           ) : (
-            <SuccessState message="Signed Successfully!" downloadUrl={downloadUrl} fileName={`signed-${pdfData.file.name}`} onStartOver={() => setDownloadUrl(null)} />
+            <SuccessState message="Signed Successfully!" downloadUrl={downloadUrl} fileName={`signed-${pdfData.file.name}`} onStartOver={() => { setDownloadUrl(null); setPdfData(null); setSignatureImg(null); }} />
           )}
+          <button onClick={() => { setPdfData(null); setSignatureImg(null); }} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
         </div>
       )}
       <PrivacyBadge />

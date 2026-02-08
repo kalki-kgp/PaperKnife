@@ -130,7 +130,9 @@ export default function WebView({ tools }: { tools: Tool[] }) {
   const [history, setHistory] = useState<ActivityEntry[]>([])
 
   useEffect(() => {
-    getRecentActivity(5).then(setHistory)
+    const limitSetting = localStorage.getItem('historyLimit')
+    const limit = limitSetting === '999' ? 50 : parseInt(limitSetting || '5')
+    getRecentActivity(limit).then(setHistory)
   }, [])
 
   const handleClearHistory = async () => {

@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { 
   Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
-  Wrench, ImagePlus, FileImage, Palette
+  Wrench, ImagePlus, FileImage, Palette, LayoutGrid, X
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -10,8 +10,9 @@ import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
 import { Theme, ViewMode, Tool } from './types'
 import Layout from './components/Layout'
-import { PipelineProvider } from './utils/pipelineContext'
+import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
+import ScrollToTop from './components/ScrollToTop'
 
 // Lazy load views
 const WebView = lazy(() => import('./components/WebView'))
@@ -61,48 +62,100 @@ const tools: Tool[] = [
 
 function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
   const navigate = useNavigate()
+  const { setPipelineFile } = usePipeline()
   
-  const actions = [
-    { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500' },
-    { title: 'Protect', icon: Lock, path: '/protect', color: 'text-blue-500' },
-    { title: 'Split', icon: Scissors, path: '/split', color: 'text-rose-500' },
-    { title: 'Metadata', icon: Tags, path: '/metadata', color: 'text-purple-500' },
+  const categories = [
+    { 
+      name: 'Essentials',
+      tools: [
+        { title: 'Merge', icon: Layers, path: '/merge', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+        { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+        { title: 'Split', icon: Scissors, path: '/split', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+        { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+      ]
+    },
+    {
+      name: 'Content & Layout',
+      tools: [
+        { title: 'Rotate', icon: RotateCw, path: '/rotate-pdf' },
+        { title: 'Rearrange', icon: ArrowUpDown, path: '/rearrange-pdf' },
+        { title: 'Metadata', icon: Tags, path: '/metadata' },
+        { title: 'Watermark', icon: Type, path: '/watermark' },
+      ]
+    },
+    {
+      name: 'Conversion & Tools',
+      tools: [
+        { title: 'Text', icon: FileText, path: '/pdf-to-text' },
+        { title: 'Images', icon: FileImage, path: '/pdf-to-image' },
+        { title: 'Grayscale', icon: Palette, path: '/grayscale' },
+        { title: 'Repair', icon: Wrench, path: '/repair' },
+      ]
+    }
   ]
 
+  const handleAction = async (path: string, title: string) => {
+    toast.loading(`Importing ${file.name}...`, { id: 'quick-load' })
+    
+    try {
+      const buffer = await file.arrayBuffer()
+      setPipelineFile({
+        buffer: new Uint8Array(buffer),
+        name: file.name
+      })
+
+      onClear()
+      navigate(path)
+      toast.success(`Opened in ${title}`, { id: 'quick-load' })
+    } catch (err) {
+      toast.error('Failed to process file', { id: 'quick-load' })
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/10">
-        <div className="p-8 text-center border-b border-gray-100 dark:border-zinc-800">
-          <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileText size={32} />
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="w-full max-w-md bg-[#FAFAFA] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border-t border-x border-white/10 sm:border animate-in slide-in-from-bottom-full duration-500 ease-out">
+        
+        {/* Header */}
+        <div className="p-8 pb-6 text-center relative">
+          <button onClick={onClear} className="absolute top-6 right-6 p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-rose-500 transition-colors"><X size={18}/></button>
+          <div className="w-20 h-20 bg-white dark:bg-zinc-900 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-xl border border-gray-100 dark:border-white/5">
+            <FileText size={40} className="text-rose-500" />
           </div>
-          <h3 className="text-xl font-black truncate dark:text-white">{file.name}</h3>
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">{(file.size / (1024*1024)).toFixed(2)} MB • Quick Actions</p>
+          <h3 className="text-xl font-black truncate dark:text-white px-8 leading-tight">{file.name}</h3>
+          <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">{(file.size / (1024*1024)).toFixed(2)} MB • Ready to Process</p>
         </div>
         
-        <div className="grid grid-cols-2 p-4 gap-3 bg-gray-50/50 dark:bg-black/20">
-          {actions.map(action => (
-            <button
-              key={action.title}
-              onClick={() => {
-                onClear()
-                navigate(action.path)
-                toast.success(`Opening ${action.title}...`)
-              }}
-              className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl hover:border-rose-500 transition-all group"
-            >
-              <action.icon className={`${action.color} group-hover:scale-110 transition-transform`} size={24} />
-              <span className="text-xs font-black uppercase tracking-widest dark:text-zinc-300">{action.title}</span>
-            </button>
-          ))}
+        <div className="px-6 pb-6 max-h-[60vh] overflow-y-auto scrollbar-hide space-y-6">
+           {categories.map(cat => (
+             <div key={cat.name}>
+               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 ml-2">{cat.name}</h4>
+               <div className="grid grid-cols-2 gap-3">
+                  {cat.tools.map(tool => (
+                    <button
+                      key={tool.title}
+                      onClick={() => handleAction(tool.path, tool.title)}
+                      className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-[1.5rem] border border-gray-100 dark:border-white/5 active:scale-95 transition-all shadow-sm group"
+                    >
+                      <div className={`p-2.5 rounded-xl ${'bg' in tool ? tool.bg : 'bg-gray-100 dark:bg-white/5'} ${'color' in tool ? tool.color : 'text-gray-500 dark:text-gray-400'} group-active:scale-110 transition-transform`}>
+                        <tool.icon size={20} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-sm font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
+                    </button>
+                  ))}
+               </div>
+             </div>
+           ))}
         </div>
 
-        <button 
-          onClick={onClear}
-          className="w-full py-6 text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-rose-500 bg-white dark:bg-zinc-900 border-t border-gray-100 dark:border-zinc-800 transition-colors"
-        >
-          Dismiss
-        </button>
+        <div className="p-6 bg-white dark:bg-zinc-900 border-t border-gray-100 dark:border-white/5">
+           <button 
+            onClick={() => { onClear(); navigate('/android-tools'); }}
+            className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
+           >
+             <LayoutGrid size={18} /> Browse All Tools
+           </button>
+        </div>
       </div>
     </div>
   )
@@ -134,8 +187,6 @@ function App() {
 
     if (isAutoWipeEnabled) {
       const elapsedMinutes = (now - lastSeen) / (1000 * 60)
-      
-      // If timer is 0 (Immediate) or elapsed time is greater than timer
       if (timerMinutes === 0 || (lastSeen > 0 && elapsedMinutes >= timerMinutes)) {
         clearActivity().then(() => {
           console.log(`Auto-Wipe triggered (${elapsedMinutes.toFixed(1)}m inactivity).`)
@@ -143,9 +194,8 @@ function App() {
       }
     }
 
-    // Update last seen now and on interval
     updateLastSeen()
-    const interval = setInterval(updateLastSeen, 30000) // Every 30s
+    const interval = setInterval(updateLastSeen, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -183,19 +233,10 @@ function App() {
     const handleIntentFile = async (uri: string) => {
       try {
         toast.loading('Importing file...', { id: 'intent-load' })
-        
-        // Read file from URI
-        const fileContent = await Filesystem.readFile({
-          path: uri
-        })
-
-        // Convert base64 to Blob
+        const fileContent = await Filesystem.readFile({ path: uri })
         const blob = await (await fetch(`data:application/pdf;base64,${fileContent.data}`)).blob()
-        
-        // Create File object
         const fileName = uri.split('/').pop() || 'imported-file.pdf'
         const file = new File([blob], fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`, { type: 'application/pdf' })
-
         setDroppedFile(file)
         toast.success('File imported successfully!', { id: 'intent-load' })
       } catch (error) {
@@ -229,11 +270,11 @@ function App() {
     setDroppedFile(file)
   }
 
-  // Detect if we are in a Capacitor environment
   const isCapacitor = Capacitor.isNativePlatform()
 
   return (
     <BrowserRouter basename={isCapacitor ? '/' : '/PaperKnife/'}>
+      <ScrollToTop />
       <PipelineProvider>
         <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
           <Toaster position="bottom-center" expand={true} richColors />
@@ -246,7 +287,7 @@ function App() {
                 viewMode === 'web' ? (
                   <WebView tools={tools} />
                 ) : (
-                  <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} />
+                  <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} onFileSelect={(file) => handleGlobalDrop([file] as any)} />
                 )
               } />
               <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />

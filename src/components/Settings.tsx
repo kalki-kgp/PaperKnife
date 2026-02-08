@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { 
   Trash2, Clock, Moon, Sun, Monitor,
-  ChevronRight, Info, Zap, User, DownloadCloud, ListFilter
+  ChevronRight, Info, Zap, User, DownloadCloud, ListFilter,
+  RotateCcw, ShieldCheck
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'
 import { Theme } from '../types'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
-import { hapticImpact, hapticSuccess } from '../utils/haptics'
+import { hapticImpact } from '../utils/haptics'
 
 const SettingItem = ({ 
   icon: Icon, 
@@ -24,73 +25,70 @@ const SettingItem = ({
   action?: React.ReactNode,
   onClick?: () => void,
   danger?: boolean
-}) => (
-  <button 
-    onClick={onClick}
-    disabled={!onClick}
-    className={`w-full flex items-center justify-between p-5 active:bg-gray-100 dark:active:bg-zinc-900 transition-colors text-left ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
-  >
-    <div className="flex items-center gap-4 flex-1">
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${danger ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}>
-        <Icon size={20} />
+}) => {
+  const Container = onClick ? 'button' : 'div'
+  return (
+    <Container 
+      onClick={onClick}
+      className={`w-full flex items-center justify-between p-5 transition-colors text-left ${onClick ? 'active:bg-gray-100 dark:active:bg-zinc-900 cursor-pointer' : 'cursor-default'}`}
+    >
+      <div className="flex items-center gap-4 flex-1">
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${danger ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}>
+          <Icon size={20} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className={`text-sm font-bold truncate ${danger ? 'text-rose-500' : 'text-gray-900 dark:text-white'}`}>{title}</h4>
+          {subtitle && <p className="text-[10px] text-gray-500 dark:text-zinc-500 font-medium line-clamp-1">{subtitle}</p>}
+        </div>
       </div>
-      <div className="min-w-0 flex-1">
-        <h4 className={`text-sm font-bold truncate ${danger ? 'text-rose-500' : 'text-gray-900 dark:text-white'}`}>{title}</h4>
-        {subtitle && <p className="text-[10px] text-gray-500 dark:text-zinc-500 font-medium line-clamp-1">{subtitle}</p>}
+      <div className="flex items-center gap-2 shrink-0">
+        {action}
+        {onClick && !action && <ChevronRight size={18} className="text-gray-300" />}
       </div>
-    </div>
-    <div className="flex items-center gap-2 shrink-0">
-      {action}
-      {onClick && !action && <ChevronRight size={18} className="text-gray-300" />}
-    </div>
-  </button>
-)
+    </Container>
+  )
+}
 
 const SettingGroup = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <div className="mb-8">
     <h3 className="px-6 mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">{title}</h3>
-    <div className="bg-white dark:bg-zinc-950 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5">
+    <div className="bg-white dark:bg-zinc-900/40 backdrop-blur-md border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5 shadow-sm">
       {children}
     </div>
   </div>
 )
 
-export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?: (t: Theme) => void }) {
+export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: (t: Theme) => void }) {
   const navigate = useNavigate()
-  const [autoWipe, setAutoWipe] = useState(() => localStorage.getItem('autoWipe') === 'true')
-  const [wipeTimer, setWipeTimer] = useState(() => localStorage.getItem('autoWipeTimer') || '15')
-  const [haptics, setHaptics] = useState(() => localStorage.getItem('hapticsEnabled') === 'true')
-  const [autoDownload, setAutoDownload] = useState(() => localStorage.getItem('autoDownload') === 'true')
-  const [historyLimit, setHistoryLimit] = useState(() => localStorage.getItem('historyLimit') || '10')
-  const [defaultAuthor, setDefaultAuthor] = useState(() => localStorage.getItem('defaultAuthor') || '')
+  
+  const [autoWipe, setAutoWipe] = useState(localStorage.getItem('autoWipe') === 'true')
+  const [wipeTimer, setWipeTimer] = useState(localStorage.getItem('autoWipeTimer') || '15')
+  const [haptics, setHaptics] = useState(localStorage.getItem('hapticsEnabled') === 'true')
+  const [autoDownload, setAutoDownload] = useState(localStorage.getItem('autoDownload') === 'true')
+  const [historyLimit, setHistoryLimit] = useState(localStorage.getItem('historyLimit') || '10')
+  const [defaultAuthor, setDefaultAuthor] = useState(localStorage.getItem('defaultAuthor') || '')
 
-  const toggleAutoWipe = () => {
-    const newValue = !autoWipe
-    setAutoWipe(newValue)
-    localStorage.setItem('autoWipe', String(newValue))
+  const handleToggle = (key: string, currentVal: boolean, setter: (v: boolean) => void) => {
+    const newVal = !currentVal
+    localStorage.setItem(key, String(newVal))
+    setter(newVal)
     hapticImpact()
-    toast.success(newValue ? 'Auto-Wipe Enabled' : 'Auto-Wipe Disabled')
+    toast.success(`${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} updated`)
   }
 
-  const toggleHaptics = () => {
-    const newValue = !haptics
-    setHaptics(newValue)
-    localStorage.setItem('hapticsEnabled', String(newValue))
-    if (newValue) hapticSuccess()
-    toast.success(newValue ? 'Haptics Enabled' : 'Haptics Disabled')
-  }
-
-  const toggleAutoDownload = () => {
-    const newValue = !autoDownload
-    setAutoDownload(newValue)
-    localStorage.setItem('autoDownload', String(newValue))
+  const handleSelect = (key: string, val: string, setter: (v: string) => void) => {
+    localStorage.setItem(key, val)
+    setter(val)
     hapticImpact()
-    toast.success(newValue ? 'Auto-Download Enabled' : 'Auto-Download Disabled')
+    toast.success('Setting saved')
   }
 
-  const handleAuthorChange = (val: string) => {
-    setDefaultAuthor(val)
-    localStorage.setItem('defaultAuthor', val)
+  const restoreDefaults = () => {
+    if (confirm("Restore all settings to factory defaults?")) {
+      localStorage.clear()
+      localStorage.setItem('theme', 'system')
+      window.location.reload()
+    }
   }
 
   return (
@@ -108,7 +106,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
               <button
                 key={t.id}
                 onClick={() => {
-                  setTheme?.(t.id as Theme)
+                  setTheme(t.id as Theme)
                   hapticImpact()
                 }}
                 className={`flex flex-col items-center gap-2 py-3 rounded-xl transition-all ${theme === t.id ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-gray-50 dark:bg-zinc-900 text-gray-400'}`}
@@ -124,7 +122,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
             subtitle="Vibrate on actions and success"
             action={
               <button 
-                onClick={toggleHaptics}
+                onClick={() => handleToggle('hapticsEnabled', haptics, setHaptics)}
                 className={`w-11 h-6 rounded-full p-1 transition-colors ${haptics ? 'bg-rose-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
               >
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${haptics ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -141,7 +139,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
             subtitle="Trigger save as soon as task finishes"
             action={
               <button 
-                onClick={toggleAutoDownload}
+                onClick={() => handleToggle('autoDownload', autoDownload, setAutoDownload)}
                 className={`w-11 h-6 rounded-full p-1 transition-colors ${autoDownload ? 'bg-rose-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
               >
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${autoDownload ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -159,7 +157,10 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
                 <input 
                   type="text"
                   value={defaultAuthor}
-                  onChange={(e) => handleAuthorChange(e.target.value)}
+                  onChange={(e) => {
+                    setDefaultAuthor(e.target.value)
+                    localStorage.setItem('defaultAuthor', e.target.value)
+                  }}
                   placeholder="Your name or company"
                   className="w-full mt-3 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-rose-500 transition-colors dark:text-white"
                 />
@@ -176,7 +177,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
             subtitle="Clear logs after inactivity"
             action={
               <button 
-                onClick={toggleAutoWipe}
+                onClick={() => handleToggle('autoWipe', autoWipe, setAutoWipe)}
                 className={`w-11 h-6 rounded-full p-1 transition-colors ${autoWipe ? 'bg-rose-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
               >
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${autoWipe ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -188,12 +189,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
                <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Wipe Delay</span>
                <select 
                 value={wipeTimer}
-                onChange={(e) => {
-                  const val = e.target.value
-                  setWipeTimer(val)
-                  localStorage.setItem('autoWipeTimer', val)
-                  toast.success(`Timer set to ${val}m`)
-                }}
+                onChange={(e) => handleSelect('autoWipeTimer', e.target.value, setWipeTimer)}
                 className="bg-transparent text-xs font-black text-gray-900 dark:text-white outline-none appearance-none cursor-pointer"
                >
                   <option value="1">1 Minute</option>
@@ -216,24 +212,26 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
              </div>
              <select 
               value={historyLimit}
-              onChange={(e) => {
-                const val = e.target.value
-                setHistoryLimit(val)
-                localStorage.setItem('historyLimit', val)
-                toast.success(`History limit set to ${val}`)
-              }}
+              onChange={(e) => handleSelect('historyLimit', e.target.value, setHistoryLimit)}
               className="bg-transparent text-xs font-black text-rose-500 outline-none appearance-none cursor-pointer"
              >
                 <option value="5">5 Files</option>
                 <option value="10">10 Files</option>
                 <option value="20">20 Files</option>
                 <option value="50">50 Files</option>
+                <option value="999">Unlimited</option>
              </select>
           </div>
           <SettingItem 
+            icon={RotateCcw} 
+            title="Restore Defaults" 
+            subtitle="Reset all configuration" 
+            onClick={restoreDefaults}
+          />
+          <SettingItem 
             icon={Trash2} 
             title="Nuke All Data" 
-            subtitle="Reset app to factory defaults" 
+            subtitle="Wipe history and storage" 
             danger
             onClick={async () => {
               if(confirm("DANGER: This will delete ALL history and settings. Proceed?")) {
@@ -250,8 +248,16 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
           <SettingItem 
             icon={Info} 
             title="About PaperKnife" 
-            subtitle="Version, License, and Protocol"
+            subtitle="v0.5.0-beta • Active"
             onClick={() => navigate('/about')}
+          />
+          <SettingItem 
+            icon={ShieldCheck} 
+            title="Privacy Policy" 
+            subtitle="Zero-data collection commitment"
+            onClick={() => {
+              alert("PRIVACY POLICY:\n\n1. NO SERVER: PaperKnife is 100% client-side.\n2. NO TRACKING: We do not use cookies or analytics.\n3. VOLATILE MEMORY: Data exists only in RAM.\n4. LOCAL STORAGE: Only settings are stored.")
+            }}
           />
         </SettingGroup>
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Palette, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
+import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
 import { NativeToolLayout } from './shared/NativeToolLayout'
@@ -14,6 +15,7 @@ type PdfData = { file: File, thumbnail?: string, pageCount: number, isLocked: bo
 
 export default function GrayscaleTool() {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { consumePipelineFile } = usePipeline()
   const [pdfData, setPdfData] = useState<PdfData | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -21,6 +23,14 @@ export default function GrayscaleTool() {
   const [customFileName, setCustomFileName] = useState('paperknife-grayscale')
   const [unlockPassword, setUnlockPassword] = useState('')
   const isNative = Capacitor.isNativePlatform()
+
+  useEffect(() => {
+    const pipelined = consumePipelineFile()
+    if (pipelined) {
+      const file = new File([pipelined.buffer as any], pipelined.name, { type: 'application/pdf' })
+      handleFile(file)
+    }
+  }, [])
 
   const handleUnlock = async () => {
     if (!pdfData || !unlockPassword) return
@@ -138,21 +148,29 @@ export default function GrayscaleTool() {
             <div className="flex-1 min-w-0"><h3 className="font-bold text-sm truncate dark:text-white">{pdfData.file.name}</h3><p className="text-[10px] text-gray-400 uppercase font-black">{pdfData.pageCount} Pages • {(pdfData.file.size / (1024*1024)).toFixed(1)} MB</p></div>
             <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors"><X size={20} /></button>
           </div>
-          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-8">
+          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-8 shadow-sm">
             {!downloadUrl ? (
               <>
-                <div className="text-center py-4">
-                   <p className="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
+                <div className="text-center py-2 px-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-white/5">
+                   <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
                      This tool converts all document pages to black-and-white. 
-                     <br/>Best for printing and reducing file size.
+                     Best for printing and reducing file size.
                    </p>
                 </div>
-                <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm" /></div>
-                {!isNative && <ActionButton />}
+                <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3 tracking-widest px-1">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
+                {isProcessing && (
+                  <div className="space-y-3">
+                    <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner">
+                       <div className="bg-rose-500 h-full transition-all" style={{ width: `${progress}%` }} />
+                    </div>
+                    <p className="text-[10px] text-center font-black text-gray-400 uppercase tracking-widest animate-pulse">Removing Chromatic Data...</p>
+                  </div>
+                )}
               </>
             ) : (
-              <SuccessState message="Grayscale Conversion Complete!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setDownloadUrl(null); setProgress(0); }} />
+              <SuccessState message="Grayscale Conversion Complete!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setDownloadUrl(null); setProgress(0); setPdfData(null); }} />
             )}
+            <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, MoreVertical } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import ToolHeader from './ToolHeader'
 
@@ -23,7 +23,7 @@ export const NativeToolLayout = ({
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors">
       {/* Ultra-Compact Native AppBar */}
-      <header className="px-4 pt-safe pb-1 flex items-center justify-between sticky top-0 z-50 bg-[#FAFAFA]/95 dark:bg-black/95 backdrop-blur-xl md:hidden">
+      <header className="px-4 pt-safe pb-1 flex items-center justify-between sticky top-0 z-50 bg-[#FAFAFA]/95 dark:bg-black/95 backdrop-blur-xl md:hidden border-b border-gray-100 dark:border-white/5">
         <div className="flex items-center gap-2 h-14">
           <button 
             onClick={onBack || (() => navigate(-1))}
@@ -33,9 +33,7 @@ export const NativeToolLayout = ({
           </button>
           <h1 className="text-lg font-black tracking-tight text-gray-900 dark:text-white ml-1">{title}</h1>
         </div>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full active:bg-zinc-100 dark:active:bg-zinc-900 transition-colors">
-          <MoreVertical size={20} className="text-zinc-400" />
-        </button>
+        <div className="w-10" />
       </header>
 
       {/* Main Content Area */}
@@ -51,9 +49,9 @@ export const NativeToolLayout = ({
         </div>
       </main>
 
-      {/* Grounded Bottom Action Bar (Native Only) */}
+      {/* Grounded Bottom Action Bar */}
       {actions && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-white/5 z-[100] pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-white/5 z-[100] pb-[calc(env(safe-area-inset-bottom)+1rem)] md:pb-6">
            <div className="max-w-md mx-auto">
              {actions}
            </div>

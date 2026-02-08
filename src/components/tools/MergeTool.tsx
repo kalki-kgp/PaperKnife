@@ -114,13 +114,15 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
       </div>
 
       <div className="flex items-center gap-1">
-        <button 
-          onClick={() => onRotate(id)}
-          className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-gray-400 hover:text-rose-500 transition-all hover:rotate-90 active:scale-90"
-          title="Rotate 90°"
-        >
-          <RotateCw size={18} />
-        </button>
+        {!file.isLocked && (
+          <button 
+            onClick={() => onRotate(id)}
+            className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-gray-400 hover:text-rose-500 transition-all hover:rotate-90 active:scale-90"
+            title="Rotate 90°"
+          >
+            <RotateCw size={18} />
+          </button>
+        )}
         <button onClick={() => onRemove(id)} className="p-2 hover:bg-rose-500/10 rounded-full text-gray-400 hover:text-rose-500 transition-all hover:scale-110 active:scale-90">
           <X size={18} />
         </button>
@@ -361,7 +363,7 @@ export default function MergeTool() {
     <button 
       onClick={mergePDFs}
       disabled={isProcessing || !canMerge}
-      className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-rose-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}
+      className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20`}
     >
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <>Merge PDFs <ArrowRight size={18} /></>}
     </button>
@@ -389,8 +391,8 @@ export default function MergeTool() {
         )}
 
         {hasRestorableWorkspace && (
-          <div className="mb-8 p-6 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-top duration-500">
-             <div className="flex items-center gap-4">
+          <div className="mb-8 p-6 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-top duration-500 shadow-sm">
+             <div className="flex items-center gap-4 text-left">
                 <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center text-indigo-500 shadow-sm">
                    <RefreshCw size={24} className="animate-spin-slow" />
                 </div>
@@ -423,46 +425,48 @@ export default function MergeTool() {
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                   {files.length} Files • {totalPages} Pages
                 </p>
-                <button onClick={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); }} className="text-[10px] font-black uppercase text-rose-500/60 hover:text-rose-500 transition-colors">Clear All</button>
+                <button onClick={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); }} className="text-[10px] font-black uppercase text-rose-500/60 hover:text-rose-500 transition-colors font-bold">Clear All</button>
               </div>
 
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={files.map(f => f.id)} strategy={verticalListSortingStrategy}>
-                  {files.map((file) => (
-                    <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} onRotate={rotateFile} onUnlock={handleUnlock} />
-                  ))}
+                  <div className="space-y-3">
+                    {files.map((file) => (
+                      <SortableItem key={file.id} id={file.id} file={file} onRemove={removeFile} onRotate={rotateFile} onUnlock={handleUnlock} />
+                    ))}
+                  </div>
                 </SortableContext>
               </DndContext>
 
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-2xl text-gray-400 font-bold text-sm flex items-center justify-center gap-2 hover:border-rose-500 hover:text-rose-500 transition-all"
+                className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-2xl text-gray-400 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:border-rose-500 hover:text-rose-500 transition-all"
               >
                 <Plus size={16} /> Add More Files
               </button>
 
               {!objectUrl && (
                 <div className="p-6 bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
-                   <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Filename</label>
+                   <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Output Filename</label>
                    <input 
                       type="text" 
                       value={customFileName}
                       onChange={(e) => setCustomFileName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 outline-none font-bold text-sm border border-transparent focus:border-rose-500 transition-colors"
+                      className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 outline-none font-bold text-sm border border-transparent focus:border-rose-500 transition-colors dark:text-white"
                    />
                 </div>
               )}
             </div>
           ) : (
             <div 
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !isProcessing && fileInputRef.current?.click()}
               className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
             >
-               <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+               <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner">
                   <Upload size={32} />
                </div>
                <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF Files</h3>
-               <p className="text-sm text-gray-400">Tap to browse or drag and drop here</p>
+               <p className="text-sm text-gray-400 font-medium">Tap to browse or drag and drop here</p>
             </div>
           )}
 

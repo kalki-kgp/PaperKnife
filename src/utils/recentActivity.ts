@@ -39,11 +39,19 @@ export const addActivity = async (entry: Omit<ActivityEntry, 'id' | 'timestamp'>
   await store.add(activity)
   
   // Cleanup: respect user setting
-  const limit = parseInt(localStorage.getItem('historyLimit') || '10')
-  const all = await getRecentActivity(limit + 10)
-  if (all.length > limit) {
-    const oldest = all.slice(limit)
-    oldest.forEach(o => store.delete(o.id))
+  const limitSetting = localStorage.getItem('historyLimit')
+  const limit = limitSetting === '999' ? 999999 : parseInt(limitSetting || '10')
+  
+  const request = store.getAll()
+  request.onsuccess = () => {
+    const results = request.result as ActivityEntry[]
+    if (results.length > limit) {
+      const sorted = results.sort((a, b) => b.timestamp - a.timestamp)
+      const oldest = sorted.slice(limit)
+      const deleteTx = db.transaction(STORE_NAME, 'readwrite')
+      const deleteStore = deleteTx.objectStore(STORE_NAME)
+      oldest.forEach(o => deleteStore.delete(o.id))
+    }
   }
 }
 

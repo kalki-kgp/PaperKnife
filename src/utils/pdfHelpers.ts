@@ -13,6 +13,12 @@ export interface PdfMetaData {
   isLocked: boolean
 }
 
+// Fixed cMapUrl for true offline usage (relative to base)
+const getCMapUrl = () => {
+  const isCapacitor = Capacitor.isNativePlatform();
+  return isCapacitor ? 'cmaps/' : '/PaperKnife/cmaps/';
+};
+
 /**
  * Universal file downloader that works on Web and Android
  */
@@ -115,19 +121,17 @@ export const loadPdfDocument = async (file: File) => {
   try {
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
-      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+      cMapUrl: getCMapUrl(),
       cMapPacked: true,
     });
     return await loadingTask.promise;
   } catch (error: any) {
-    // If it fails due to password, we'll handle it in the specific tool
     if (error.name === 'PasswordException') {
       throw error;
     }
-    // Fallback for some corrupted/non-standard PDFs
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
-      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+      cMapUrl: getCMapUrl(),
       cMapPacked: true,
       stopAtErrors: false,
     });
@@ -139,10 +143,8 @@ export const loadPdfDocument = async (file: File) => {
 export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0): Promise<string> => {
   try {
     const page = await pdf.getPage(pageNum);
-    // Standardize thumbnail size for better memory/performance balance
     const viewport = page.getViewport({ scale: scale });
     
-    // Use a fixed max dimension for thumbnails to prevent extreme memory usage
     const maxDimension = 300;
     const thumbnailScale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
     const thumbViewport = page.getViewport({ scale: scale * thumbnailScale * (window.devicePixelRatio || 1) });
@@ -155,7 +157,6 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
     canvas.height = thumbViewport.height;
     canvas.width = thumbViewport.width;
     
-    // White background for PDFs with transparency
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -166,8 +167,6 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
     }).promise;
     
     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-    
-    // Explicitly clear canvas memory if possible
     canvas.width = 0;
     canvas.height = 0;
     
@@ -182,7 +181,7 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
 export const generateThumbnail = async (file: File, pageNum: number = 1): Promise<string> => {
   try {
     const pdf = await loadPdfDocument(file);
-    return await renderPageThumbnail(pdf, pageNum, 0.8); // Smaller scale for grid thumbnails
+    return await renderPageThumbnail(pdf, pageNum, 0.8);
   } catch (error) {
     console.error('Thumbnail error:', error);
     return '';
@@ -193,7 +192,7 @@ export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
   try {
     const loadingTask = pdfjsLib.getDocument({
       data: await file.arrayBuffer(),
-      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+      cMapUrl: getCMapUrl(),
       cMapPacked: true,
     });
     
@@ -221,13 +220,11 @@ export const unlockPdf = async (file: File, password: string): Promise<PdfMetaDa
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
       password: password,
-      cMapUrl: `${window.location.origin}/PaperKnife/cmaps/`,
+      cMapUrl: getCMapUrl(),
       cMapPacked: true,
     });
 
     const pdf = await loadingTask.promise;
-    
-    // If we reach here, password is correct
     const firstPageThumb = await renderPageThumbnail(pdf, 1);
 
     return {

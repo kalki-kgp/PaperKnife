@@ -162,13 +162,13 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         </header>
       )}
 
-      <main className={`flex-1 min-w-0 ${isNative ? 'pb-24' : ''}`}>
+      <main className={`flex-1 min-w-0 ${showMobileNav ? 'pb-32' : ''}`}>
         {children}
       </main>
 
       {/* Titan Bottom Navigation (Solid, Grounded) */}
       {showMobileNav && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-zinc-800 flex items-end justify-between px-6 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3 z-[100] shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-zinc-800 flex items-end justify-between px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3 z-[100] shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
           <button 
             onClick={() => navigate('/')}
             className={`flex flex-col items-center gap-1.5 flex-1 transition-all ${location.pathname === '/' ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}

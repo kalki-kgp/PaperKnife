@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { 
-  History, Trash2, Download, CheckCircle2, 
-  Clock, Shield, Search
+  Download, 
+  Clock, Shield, Search, FileText, ChevronRight, X, Trash2, Calendar, HardDrive
 } from 'lucide-react'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'
@@ -11,13 +11,28 @@ export default function AndroidHistoryView() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    getRecentActivity().then(setHistory)
+    const limitSetting = localStorage.getItem('historyLimit')
+    const limit = limitSetting === '999' ? 100 : parseInt(limitSetting || '10')
+    getRecentActivity(limit).then(setHistory)
   }, [])
 
   const handleClear = async () => {
-    await clearActivity()
-    setHistory([])
-    toast.success('History cleared.')
+    toast('Wipe all history?', {
+      id: 'history-wipe-confirm',
+      action: {
+        label: 'Confirm',
+        onClick: async () => {
+          await clearActivity()
+          setHistory([])
+          toast.success('History wiped', { id: 'history-wipe-done' })
+          toast.dismiss('history-wipe-confirm')
+        }
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => toast.dismiss('history-wipe-confirm')
+      }
+    })
   }
 
   const filteredHistory = history.filter(item => 
@@ -33,85 +48,103 @@ export default function AndroidHistoryView() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp)
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  }
+
   return (
-    <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#1C1B1F] pb-32 transition-colors">
-      {/* Top App Bar */}
-      <header className="px-6 pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-6">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-             <div className="p-2.5 bg-rose-500 rounded-2xl shadow-lg shadow-rose-500/20">
-               <History size={20} className="text-white" />
-             </div>
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-500">Android Node</span>
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-black pb-32 transition-colors">
+      <header className="px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-6 sticky top-0 bg-[#FAFAFA]/90 dark:bg-black/90 backdrop-blur-xl z-50 border-b border-gray-100 dark:border-white/5">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col">
+            <h1 className="text-3xl font-black tracking-tighter dark:text-white">Workspace</h1>
+            <p className="text-[10px] font-black uppercase tracking-widest text-rose-500 opacity-80">Local Storage Active</p>
           </div>
           {history.length > 0 && (
             <button 
               onClick={handleClear}
-              className="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 active:bg-rose-50 dark:active:bg-rose-900/20 active:text-rose-500 transition-colors"
+              className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-2xl active:scale-90 transition-all shadow-sm"
             >
               <Trash2 size={20} />
             </button>
           )}
         </div>
-        
-        <h1 className="text-4xl font-black tracking-tighter dark:text-white mb-8">History</h1>
 
         <div className="relative group">
-          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-gray-500">
-            <Search size={20} />
+          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-rose-500 transition-colors">
+            <Search size={18} />
           </div>
           <input 
             type="text"
-            placeholder="Search history..."
+            placeholder="Search activity..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#EEE8F4] dark:bg-[#2B2930] border-none rounded-[1.75rem] py-4 pl-14 pr-6 text-base font-bold placeholder:text-gray-500 focus:bg-white dark:focus:bg-[#36343B] transition-all dark:text-white outline-none shadow-sm"
+            className="w-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-2xl py-4 pl-14 pr-6 text-sm font-bold placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-800 shadow-sm outline-none transition-all dark:text-white"
           />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-4 flex items-center text-gray-400"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
       </header>
 
-      <main className="px-4 space-y-4">
+      <main className="px-4 py-6 space-y-2">
         {filteredHistory.length === 0 ? (
-          <div className="py-20 text-center flex flex-col items-center animate-in fade-in duration-700">
-            <div className="w-20 h-20 bg-[#F3EDF7] dark:bg-[#2B2930] rounded-full flex items-center justify-center text-gray-400 mb-6">
+          <div className="py-24 text-center flex flex-col items-center animate-in fade-in duration-700">
+            <div className="w-20 h-20 bg-gray-50 dark:bg-zinc-900 rounded-[2.5rem] flex items-center justify-center text-gray-300 mb-6 border border-gray-100 dark:border-white/5">
               <Clock size={32} strokeWidth={1.5} />
             </div>
-            <h3 className="text-xl font-black dark:text-white tracking-tight">No files found</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] mt-2">Processed documents will appear here automatically.</p>
+            <h3 className="text-xl font-black dark:text-white tracking-tight">Vault Empty</h3>
+            <p className="text-xs text-gray-500 dark:text-zinc-500 max-w-[200px] mt-2 font-medium leading-relaxed">Documents processed on this node will appear here temporarily.</p>
           </div>
         ) : (
           filteredHistory.map((item) => (
-            <div key={item.id} className="p-4 bg-white dark:bg-[#2B2930] rounded-[1.5rem] border border-gray-100 dark:border-transparent flex items-center gap-4 active:scale-[0.98] transition-all shadow-sm">
-              <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-2xl flex items-center justify-center shrink-0">
-                <CheckCircle2 size={22} />
+            <div key={item.id} className="p-4 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 flex items-center gap-4 active:scale-[0.99] transition-all shadow-sm group">
+              <div className="w-12 h-12 bg-gray-50 dark:bg-zinc-800 text-gray-400 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20 group-hover:text-rose-500 rounded-2xl flex items-center justify-center shrink-0 transition-colors shadow-inner">
+                <FileText size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold truncate dark:text-white">{item.name}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">{item.tool}</span>
-                  <span className="text-gray-300 dark:text-gray-600">•</span>
-                  <span className="text-[10px] text-gray-400 font-bold">{formatSize(item.size)}</span>
+                <p className="text-xs font-black truncate dark:text-white mb-0.5">{item.name}</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 text-[9px] text-gray-400 font-black uppercase tracking-tighter bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                    {item.tool}
+                  </div>
+                  <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold">
+                    <HardDrive size={10} /> {formatSize(item.size)}
+                  </div>
+                  <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold">
+                    <Calendar size={10} /> {formatDate(item.timestamp)}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                  {item.resultUrl && (
                     <a 
                       href={item.resultUrl} 
                       download={item.name} 
-                      className="p-3 bg-rose-50 dark:bg-rose-900/30 rounded-full text-rose-500 active:scale-90 transition-transform"
+                      className="w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-rose-500/20 active:scale-90 transition-all"
                     >
-                      <Download size={20} />
+                      <Download size={18} />
                     </a>
                  )}
+                 <ChevronRight size={16} className="text-gray-200 dark:text-zinc-800" />
               </div>
             </div>
           ))
         )}
 
-        <div className="pt-10 flex flex-col items-center gap-2 pb-10 opacity-40">
-           <Shield size={16} className="text-emerald-500" />
-           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 text-center">
-             Encrypted History • Locally Stored Only
+        <div className="pt-12 flex flex-col items-center gap-3 pb-10 opacity-30">
+           <div className="flex items-center gap-2">
+             <Shield size={14} className="text-emerald-500" />
+             <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">Node Privacy Protocol</span>
+           </div>
+           <p className="text-[7px] font-medium text-gray-400 max-w-[200px] text-center">
+             Documents are processed locally in your private environment. Activity logs are stored on this device only.
            </p>
         </div>
       </main>
