@@ -34,6 +34,7 @@ const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
 const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const About = lazy(() => import('./components/About'))
 const Thanks = lazy(() => import('./components/Thanks'))
+const SettingsView = lazy(() => import('./components/Settings'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit' },
@@ -209,11 +210,11 @@ function App() {
               <Route path="/metadata" element={<MetadataTool />} />
               <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
               <Route path="/signature" element={<SignatureTool />} />
-              <Route path="/repair" element={<RepairTool />} />
-              <Route path="/about" element={<About theme={theme} setTheme={setTheme} />} />
-              <Route path="/thanks" element={<Thanks />} />
-            </Routes>
-          </Suspense>
+                              <Route path="/repair" element={<RepairTool />} />
+                              <Route path="/about" element={<About />} />
+                              <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
+                              <Route path="/thanks" element={<Thanks />} />
+                            </Routes>          </Suspense>
 
           {/* Chameleon Toggle (Dev Only) */}
           {import.meta.env.DEV && (

@@ -204,10 +204,10 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
           </button>
 
           <Link 
-            to="/about"
-            className={`flex flex-col items-center gap-1.5 flex-1 transition-all no-underline ${location.pathname.includes('about') ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
+            to="/settings"
+            className={`flex flex-col items-center gap-1.5 flex-1 transition-all no-underline ${location.pathname.includes('settings') ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
           >
-            <Settings size={24} strokeWidth={location.pathname.includes('about') ? 2.5 : 2} />
+            <Settings size={24} strokeWidth={location.pathname.includes('settings') ? 2.5 : 2} />
             <span className="text-[10px] font-bold">Settings</span>
           </Link>
         </nav>
