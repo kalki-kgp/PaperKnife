@@ -22,7 +22,24 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
 
   useEffect(() => {
     hapticSuccess()
-  }, [])
+    
+    // Auto-Download Logic
+    const shouldAutoDownload = localStorage.getItem('autoDownload') === 'true'
+    if (shouldAutoDownload) {
+      const triggerAutoDownload = async () => {
+        try {
+          const response = await fetch(downloadUrl)
+          const blob = await response.blob()
+          const buffer = await blob.arrayBuffer()
+          await downloadFile(new Uint8Array(buffer), fileName, 'application/pdf')
+          toast.success('Auto-saved to device')
+        } catch (e) {
+          console.error('Auto-download failed:', e)
+        }
+      }
+      triggerAutoDownload()
+    }
+  }, [downloadUrl, fileName])
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault()

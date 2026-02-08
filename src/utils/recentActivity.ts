@@ -38,10 +38,11 @@ export const addActivity = async (entry: Omit<ActivityEntry, 'id' | 'timestamp'>
   
   await store.add(activity)
   
-  // Cleanup: keep only last 10
-  const all = await getRecentActivity(20)
-  if (all.length > 10) {
-    const oldest = all.slice(10)
+  // Cleanup: respect user setting
+  const limit = parseInt(localStorage.getItem('historyLimit') || '10')
+  const all = await getRecentActivity(limit + 10)
+  if (all.length > limit) {
+    const oldest = all.slice(limit)
     oldest.forEach(o => store.delete(o.id))
   }
 }

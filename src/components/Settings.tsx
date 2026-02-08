@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { 
   Trash2, Clock, Moon, Sun, Monitor,
-  ChevronRight, Info, Zap, User
+  ChevronRight, Info, Zap, User, DownloadCloud, ListFilter
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -59,7 +59,9 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
   const navigate = useNavigate()
   const [autoWipe, setAutoWipe] = useState(() => localStorage.getItem('autoWipe') === 'true')
   const [wipeTimer, setWipeTimer] = useState(() => localStorage.getItem('autoWipeTimer') || '15')
-  const [haptics, setHaptics] = useState(() => localStorage.getItem('hapticsEnabled') !== 'false')
+  const [haptics, setHaptics] = useState(() => localStorage.getItem('hapticsEnabled') === 'true')
+  const [autoDownload, setAutoDownload] = useState(() => localStorage.getItem('autoDownload') === 'true')
+  const [historyLimit, setHistoryLimit] = useState(() => localStorage.getItem('historyLimit') || '10')
   const [defaultAuthor, setDefaultAuthor] = useState(() => localStorage.getItem('defaultAuthor') || '')
 
   const toggleAutoWipe = () => {
@@ -76,6 +78,14 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
     localStorage.setItem('hapticsEnabled', String(newValue))
     if (newValue) hapticSuccess()
     toast.success(newValue ? 'Haptics Enabled' : 'Haptics Disabled')
+  }
+
+  const toggleAutoDownload = () => {
+    const newValue = !autoDownload
+    setAutoDownload(newValue)
+    localStorage.setItem('autoDownload', String(newValue))
+    hapticImpact()
+    toast.success(newValue ? 'Auto-Download Enabled' : 'Auto-Download Disabled')
   }
 
   const handleAuthorChange = (val: string) => {
@@ -101,7 +111,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
                   setTheme?.(t.id as Theme)
                   hapticImpact()
                 }}
-                className={`flex flex-col items-center gap-2 py-3 rounded-xl transition-all ${theme === t.id ? 'bg-rose-500 text-white shadow-lg' : 'bg-gray-50 dark:bg-zinc-900 text-gray-400'}`}
+                className={`flex flex-col items-center gap-2 py-3 rounded-xl transition-all ${theme === t.id ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-gray-50 dark:bg-zinc-900 text-gray-400'}`}
               >
                 <t.icon size={18} />
                 <span className="text-[10px] font-bold uppercase">{t.label}</span>
@@ -123,9 +133,22 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
           />
         </SettingGroup>
 
-        {/* Defaults */}
-        <SettingGroup title="Tool Defaults">
-          <div className="p-5 bg-white dark:bg-zinc-950 space-y-4">
+        {/* Workflow */}
+        <SettingGroup title="Workflow Defaults">
+          <SettingItem 
+            icon={DownloadCloud} 
+            title="Auto-Download" 
+            subtitle="Trigger save as soon as task finishes"
+            action={
+              <button 
+                onClick={toggleAutoDownload}
+                className={`w-11 h-6 rounded-full p-1 transition-colors ${autoDownload ? 'bg-rose-500' : 'bg-gray-200 dark:bg-zinc-700'}`}
+              >
+                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${autoDownload ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            }
+          />
+          <div className="p-5 bg-white dark:bg-zinc-950 space-y-4 border-t border-gray-50 dark:border-white/5">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center text-gray-500">
                 <User size={20} />
@@ -150,7 +173,7 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
           <SettingItem 
             icon={Clock} 
             title="Auto-Wipe History" 
-            subtitle="Clear logs on app launch"
+            subtitle="Clear logs after inactivity"
             action={
               <button 
                 onClick={toggleAutoWipe}
@@ -181,6 +204,32 @@ export default function Settings({ theme, setTheme }: { theme?: Theme, setTheme?
                </select>
             </div>
           )}
+          <div className="p-4 px-6 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
+             <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center text-gray-500">
+                  <ListFilter size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-none">History Limit</h4>
+                  <p className="text-[10px] text-gray-500 mt-1">Number of recent files to keep</p>
+                </div>
+             </div>
+             <select 
+              value={historyLimit}
+              onChange={(e) => {
+                const val = e.target.value
+                setHistoryLimit(val)
+                localStorage.setItem('historyLimit', val)
+                toast.success(`History limit set to ${val}`)
+              }}
+              className="bg-transparent text-xs font-black text-rose-500 outline-none appearance-none cursor-pointer"
+             >
+                <option value="5">5 Files</option>
+                <option value="10">10 Files</option>
+                <option value="20">20 Files</option>
+                <option value="50">50 Files</option>
+             </select>
+          </div>
           <SettingItem 
             icon={Trash2} 
             title="Nuke All Data" 

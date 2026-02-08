@@ -106,23 +106,23 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
 
       {/* Web Header */}
       {!showMobileNav && (
-        <header className="flex items-center justify-between px-8 h-20 border-b border-gray-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100]">
-          <div className="flex items-center gap-4">
+        <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 border-b border-gray-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100]">
+          <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
             {!isHome && (
-              <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-rose-500 mr-1"><ArrowLeft size={20} /></button>
+              <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-rose-500 shrink-0"><ArrowLeft size={20} /></button>
             )}
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <PaperKnifeLogo size={28} />
-              <span className="font-black tracking-tighter text-xl dark:text-white">PaperKnife</span>
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
+              <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} />
+              <span className="font-black tracking-tighter text-lg md:text-xl dark:text-white hidden xs:block">PaperKnife</span>
             </Link>
-            <div className="h-6 w-[1px] bg-gray-200 dark:bg-zinc-800 mx-2" />
-            <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-black text-sm uppercase tracking-widest ${isDropdownOpen ? 'bg-rose-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
-                {isHome ? 'All Tools' : activeTool?.title || 'Tool'}
-                <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <div className="h-6 w-[1px] bg-gray-200 dark:bg-zinc-800 mx-1 md:mx-2 shrink-0" />
+            <div className="relative min-w-0" ref={dropdownRef}>
+              <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-xl transition-all font-black text-[10px] md:text-sm uppercase tracking-widest min-w-0 ${isDropdownOpen ? 'bg-rose-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
+                <span className="truncate">{isHome ? 'All Tools' : activeTool?.title || 'Tool'}</span>
+                <ChevronDown size={14} className={`transition-transform duration-300 shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-3 w-80 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[2rem] shadow-2xl py-4 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 max-h-[80vh] overflow-y-auto scrollbar-hide">
+                <div className="absolute top-full left-0 mt-3 w-72 md:w-80 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[2rem] shadow-2xl py-4 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 max-h-[80vh] overflow-y-auto scrollbar-hide">
                   {Object.entries(tools.filter(t => t.implemented).reduce((acc, tool) => { if (!acc[tool.category]) acc[tool.category] = []; acc[tool.category].push(tool); return acc }, {} as Record<string, Tool[]>)).map(([category, categoryTools]) => {
                     const colors = categoryColors[category as ToolCategory]
                     return (
@@ -146,10 +146,18 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/about" className={`p-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}><Info size={18} />About</Link>
-            <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-rose-500 transition-colors">{theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}</button>
-            <button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-rose-500' : 'text-gray-400 hover:text-rose-500'}`}><History size={20} />{activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-black" />}</button>
+          <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            <Link to="/about" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
+              <Info size={18} />
+              <span className="hidden sm:block">About</span>
+            </Link>
+            <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-rose-500 transition-colors">
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
+            <button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-rose-500' : 'text-gray-400 hover:text-rose-500'}`}>
+              <History size={20} />
+              {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-black" />}
+            </button>
           </div>
         </header>
       )}

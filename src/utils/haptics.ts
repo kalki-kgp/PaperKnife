@@ -2,7 +2,7 @@ import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 
 export const hapticImpact = async (style = ImpactStyle.Medium) => {
-  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') !== 'false') {
+  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') === 'true') {
     try {
       await Haptics.impact({ style });
     } catch (e) {
@@ -12,7 +12,7 @@ export const hapticImpact = async (style = ImpactStyle.Medium) => {
 };
 
 export const hapticSuccess = async () => {
-  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') !== 'false') {
+  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') === 'true') {
     try {
       await Haptics.notification({ type: NotificationType.Success });
     } catch (e) {
@@ -22,7 +22,7 @@ export const hapticSuccess = async () => {
 };
 
 export const hapticSelection = async () => {
-  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') !== 'false') {
+  if (Capacitor.isNativePlatform() && localStorage.getItem('hapticsEnabled') === 'true') {
     try {
       await Haptics.selectionStart();
     } catch (e) {

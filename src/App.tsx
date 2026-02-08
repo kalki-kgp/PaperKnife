@@ -33,6 +33,7 @@ const MetadataTool = lazy(() => import('./components/tools/MetadataTool'))
 const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
 const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
 const RepairTool = lazy(() => import('./components/tools/RepairTool'))
+const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesTool'))
 const About = lazy(() => import('./components/About'))
 const Thanks = lazy(() => import('./components/Thanks'))
 const SettingsView = lazy(() => import('./components/Settings'))
@@ -42,6 +43,7 @@ const tools: Tool[] = [
   { title: 'Split PDF', desc: 'Visually extract specific pages or ranges.', icon: Scissors, implemented: true, path: '/split', category: 'Edit' },
   { title: 'Compress PDF', desc: 'Optimize your file size for easier sharing.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize' },
   { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure' },
+  { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert' },
   { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit' },
   { title: 'Unlock PDF', desc: 'Remove passwords from your protected files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure' },
   { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert' },
@@ -262,6 +264,7 @@ function App() {
               <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
               <Route path="/signature" element={<SignatureTool />} />
               <Route path="/repair" element={<RepairTool />} />
+              <Route path="/extract-images" element={<ExtractImagesTool />} />
               <Route path="/about" element={<About />} />
               <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
               <Route path="/thanks" element={<Thanks />} />

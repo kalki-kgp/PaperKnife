@@ -48,6 +48,8 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
+        env:
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
 
       - name: Sign APK
         id: sign_app
