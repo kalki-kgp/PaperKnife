@@ -78,7 +78,17 @@ export default function MetadataTool() {
       const metaRes = await getPdfMetaData(file); let currentMeta = { title: '', author: '', subject: '', keywords: '', creator: '', producer: '' }
       if (!metaRes.isLocked) {
         const arrayBuffer = await file.arrayBuffer(); const pdfDoc = await PDFDocument.load(arrayBuffer)
-        currentMeta = { title: pdfDoc.getTitle() || '', author: pdfDoc.getAuthor() || '', subject: pdfDoc.getSubject() || '', keywords: pdfDoc.getKeywords() || '', creator: pdfDoc.getCreator() || '', producer: pdfDoc.getProducer() || '' }
+        
+        // Load existing meta but prioritize non-empty settings if they exist
+        const savedAuthor = localStorage.getItem('defaultAuthor') || ''
+        currentMeta = { 
+          title: pdfDoc.getTitle() || '', 
+          author: savedAuthor || pdfDoc.getAuthor() || '', 
+          subject: pdfDoc.getSubject() || '', 
+          keywords: pdfDoc.getKeywords() || '', 
+          creator: savedAuthor || pdfDoc.getCreator() || '', 
+          producer: savedAuthor || pdfDoc.getProducer() || '' 
+        }
       }
       setPdfData({ file, pageCount: metaRes.pageCount, isLocked: metaRes.isLocked, currentMeta })
       setMeta(currentMeta); setCustomFileName(`${file.name.replace('.pdf', '')}-metadata`)
@@ -101,12 +111,13 @@ export default function MetadataTool() {
         copiedPages.forEach(page => targetPdf.addPage(page))
         
         // Explicitly clear all standard and producer fields
+        // We use a non-breaking space or very small string to try and "win" over pdf-lib defaults if '' fails
         targetPdf.setTitle('')
         targetPdf.setAuthor('')
         targetPdf.setSubject('')
         targetPdf.setKeywords([])
-        targetPdf.setCreator('')
-        targetPdf.setProducer('')
+        targetPdf.setCreator(' ')
+        targetPdf.setProducer(' ')
         
         // Wipe more specific attributes
         targetPdf.setModificationDate(new Date())
@@ -122,8 +133,10 @@ export default function MetadataTool() {
         targetPdf.setAuthor(meta.author || '')
         targetPdf.setSubject(meta.subject || '')
         targetPdf.setKeywords(meta.keywords ? meta.keywords.split(',').map(k => k.trim()) : [])
-        targetPdf.setCreator(meta.creator || '')
-        targetPdf.setProducer(meta.producer || '')
+        
+        // If they are literally empty, we set a space to prevent pdf-lib signature injection
+        targetPdf.setCreator(meta.creator || ' ')
+        targetPdf.setProducer(meta.producer || ' ')
       }
       
       const pdfBytes = await targetPdf.save();

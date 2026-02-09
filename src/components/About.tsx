@@ -10,7 +10,7 @@
 
 import { 
   Heart, ShieldCheck, Code, Scale, 
-  Globe, Cpu, Layers, Terminal, Github, ExternalLink
+  Globe, Cpu, Layers, Terminal, Github
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
@@ -30,23 +30,23 @@ export default function About() {
              Light Mode: Black BG, Pink/White Icon
              Dark Mode: White BG, Pink/Black Icon 
           */}
-          <div className="w-24 h-24 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl transition-all bg-zinc-950 dark:bg-white">
+          <div className="w-24 h-24 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl transition-all bg-zinc-950 dark:bg-white text-white dark:text-black">
             <PaperKnifeLogo 
               size={48} 
-              className="dark:filter dark:invert-0" 
               iconColor="#F43F5E" 
+              partColor="currentColor"
             />
           </div>
           <h1 className="text-5xl font-black tracking-tighter dark:text-white mb-2 leading-none">PaperKnife</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-rose-500 opacity-80">v1.0.0-beta • Final Node</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-rose-500 opacity-80">v1.0.0-beta • Pro Node</p>
         </div>
         
         <div className="max-w-2xl mx-auto space-y-6 text-left md:text-center">
-          <h2 className="text-2xl font-black dark:text-white leading-tight">Your data belongs to you. Not some random cloud server.</h2>
+          <h2 className="text-2xl font-black dark:text-white leading-tight">Your data belongs to you. Not a cloud server.</h2>
           <p className="text-base text-gray-500 dark:text-zinc-400 font-medium leading-relaxed">
-            Most "free" PDF tools online work by uploading your private files—contracts, bank statements, and IDs—to their servers. We think that's a massive privacy risk. 
+            Most "free" PDF tools online work by uploading your private files—contracts, bank statements, and IDs—to their infrastructure. We think that's a massive privacy risk. 
             <br/><br/>
-            PaperKnife was built to be different. It's a professional-grade engine that runs <b>entirely inside your phone or browser</b>. Once the app loads, you could literally turn off your internet and it would still work perfectly.
+            PaperKnife is a professional-grade PDF engine that runs <b>entirely inside your phone or browser</b>. Once the app loads, you can turn off your network and it will still work perfectly.
           </p>
         </div>
       </section>
@@ -59,7 +59,7 @@ export default function About() {
           </div>
           <h4 className="text-xl font-black dark:text-white mb-3">Absolute Privacy</h4>
           <p className="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
-            We don't have a database. We don't have a backend. We don't have tracking scripts. Your files are loaded into your device's temporary memory (RAM), processed, and wiped the second you close the app.
+            We don't have a database. We don't have a backend. We don't have tracking scripts. Your files are loaded into your device's temporary memory (RAM), processed, and wiped the second you close the session.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function About() {
           <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-2xl flex items-center justify-center mb-6">
             <Cpu size={24} />
           </div>
-          <h4 className="text-xl font-black dark:text-white mb-3">Local Power</h4>
+          <h4 className="text-xl font-black dark:text-white mb-3">Local Compute</h4>
           <p className="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
             By leveraging high-performance Web Workers, PaperKnife uses your own device's CPU to do the heavy lifting. This means faster processing for you and zero risk of your data being intercepted over a network.
           </p>
@@ -83,13 +83,13 @@ export default function About() {
             
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-8">
                <div className="space-y-4">
-                  <h3 className="text-2xl font-black uppercase tracking-tighter">Open Source <br/>Integrity</h3>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter">Open Source <br/>Auditable</h3>
                   <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-xs">
                     PaperKnife is open-source. Anyone can audit the code to verify our privacy claims. We believe transparency is the only way to build true security.
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
                      <a href="https://github.com/potatameister/PaperKnife" target="_blank" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                        <Github size={14} /> Source
+                        <Github size={14} /> Source Code
                      </a>
                      <a href="https://github.com/potatameister/PaperKnife/blob/main/LICENSE" target="_blank" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
                         <Scale size={14} /> License
@@ -100,10 +100,10 @@ export default function About() {
                <div className="space-y-4 flex flex-col justify-end">
                   <div className="flex flex-col gap-3">
                      <a href="https://github.com/sponsors/potatameister" target="_blank" className="flex items-center justify-center gap-3 bg-rose-500 hover:bg-rose-600 text-white px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-rose-500/20 active:scale-95">
-                        <Heart size={16} fill="currentColor" /> Sponsor Project
+                        <Heart size={16} fill="currentColor" /> Sponsor
                      </a>
                      <Link to="/thanks" className="flex items-center justify-center gap-3 bg-white text-black px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95">
-                        <Globe size={16} /> Meet Supporters
+                        <Globe size={16} /> Credits
                      </Link>
                   </div>
                </div>
@@ -122,7 +122,7 @@ export default function About() {
           {[
             { title: 'Affero GPL v3', icon: Scale, desc: 'A copyleft license that ensures the project remains open and any network-hosted versions share their source code.', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
             { title: 'Core Orchestration', icon: Layers, desc: 'Powered by pdf-lib and PDF.js, providing lossless document manipulation and high-fidelity rendering.', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-            { title: 'Chameleon Runtime', icon: Terminal, desc: 'An adaptive UI architecture built with React and Tailwind that shifts perfectly between mobile and desktop.', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' }
+            { title: 'Local Architecture', icon: Terminal, desc: 'A stateless processing paradigm that utilizes client-side workers to handle complex document transformations.', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' }
           ].map((spec, i) => (
             <div key={i} className="p-6 flex gap-5">
               <div className={`w-12 h-12 ${spec.bg} ${spec.color} rounded-[1.25rem] flex items-center justify-center shrink-0`}>

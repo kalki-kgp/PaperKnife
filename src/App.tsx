@@ -305,10 +305,13 @@ function App() {
             }}
           />
           
-          {droppedFile && !showQuickDrop && (
+          {droppedFile && (
             <PdfPreview 
               file={droppedFile} 
-              onClose={() => setDroppedFile(null)} 
+              onClose={() => {
+                setDroppedFile(null)
+                setShowQuickDrop(false)
+              }} 
               onProcess={() => setShowQuickDrop(true)} 
             />
           )}

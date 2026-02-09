@@ -11,7 +11,6 @@ interface PdfPreviewProps {
 }
 
 export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps) {
-  const [pdf, setPdf] = useState<any>(null)
   const [totalPages, setTotalPages] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [pages, setPages] = useState<string[]>([])
@@ -24,7 +23,6 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
       setIsLoading(true)
       try {
         const doc = await loadPdfDocument(file)
-        setPdf(doc)
         const count = doc.numPages
         setTotalPages(count)
         
@@ -74,9 +72,9 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
             <X size={24} />
           </button>
           <div className="flex items-center gap-2.5">
-             {/* Dynamic Icon Logic: Dark Mode -> White BG, Pink/Black Icon */}
+             {/* Always uses "Dark Mode" style because preview header is dark */}
              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                <PaperKnifeLogo size={18} iconColor="#F43F5E" className="brightness-0" />
+                <PaperKnifeLogo size={18} iconColor="#F43F5E" partColor="#000000" />
              </div>
              <div className="min-w-0">
                 <h2 className="text-sm font-black text-white truncate max-w-[120px] leading-tight">{file.name}</h2>
