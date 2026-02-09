@@ -148,13 +148,24 @@ export default function MetadataTool() {
           </div>
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-6 shadow-sm">
             {!downloadUrl ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {['title', 'author', 'subject', 'keywords', 'creator', 'producer'].map(field => (
-                  <div key={field}>
-                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">{field}</label>
-                    <input type="text" value={(meta as any)[field]} onChange={(e) => setMeta({...meta, [field]: e.target.value})} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" />
-                  </div>
-                ))}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 px-1">Output Filename</label>
+                  <input 
+                    type="text" 
+                    value={customFileName} 
+                    onChange={(e) => setCustomFileName(e.target.value)} 
+                    className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" 
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {['title', 'author', 'subject', 'keywords', 'creator', 'producer'].map(field => (
+                    <div key={field}>
+                      <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1">{field}</label>
+                      <input type="text" value={(meta as any)[field]} onChange={(e) => setMeta({...meta, [field]: e.target.value})} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" />
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <SuccessState message={isDeepCleaning ? "Deep Clean Successful!" : "Metadata Updated!"} downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setDownloadUrl(null); setPdfData(null); }} />

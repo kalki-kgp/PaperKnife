@@ -248,7 +248,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
           <SettingItem 
             icon={Info} 
             title="About PaperKnife" 
-            subtitle="v0.5.0-beta • Active"
+            subtitle="v1.0.0-beta • Active"
             onClick={() => navigate('/about')}
           />
           <SettingItem 
@@ -260,7 +260,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
         </SettingGroup>
 
         <div className="flex flex-col items-center gap-2 py-10 opacity-20">
-           <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
+           <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v1.0.0-beta</p>
         </div>
 
       </div>

@@ -18,6 +18,7 @@ export default function SignatureTool() {
   const { consumePipelineFile } = usePipeline()
   const [pdfData, setPdfData] = useState<SignaturePdfData | null>(null); const [signatureImg, setSignatureImg] = useState<string | null>(null); const [signatureFile, setSignatureFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false); const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [customFileName, setCustomFileName] = useState('paperknife-signed')
   const [unlockPassword, setUnlockPassword] = useState(''); const [activePage] = useState(1); const [pos, setPos] = useState({ x: 50, y: 50 })
   const [size, setSize] = useState(150); const [thumbnail, setThumbnail] = useState<string | null>(null); const [isDraggingSig, setIsDraggingSig] = useState(false); const [isResizing, setIsResizing] = useState(false)
   const isNative = Capacitor.isNativePlatform()
@@ -63,7 +64,7 @@ export default function SignatureTool() {
       const page = pdfDoc.getPages()[activePage - 1]; const { width, height } = page.getSize(); const pdfX = (pos.x / 100) * width; const pdfY = height - ((pos.y / 100) * height) - (size * (sigImage.height / sigImage.width))
       page.drawImage(sigImage, { x: pdfX, y: pdfY, width: size, height: size * (sigImage.height / sigImage.width) })
       const pdfBytes = await pdfDoc.save(); const blob = new Blob([pdfBytes as any], { type: 'application/pdf' }); const url = URL.createObjectURL(blob)
-      setDownloadUrl(url); addActivity({ name: `signed-${pdfData.file.name}`, tool: 'Signature', size: blob.size, resultUrl: url })
+      setDownloadUrl(url); addActivity({ name: `${customFileName}.pdf`, tool: 'Signature', size: blob.size, resultUrl: url })
     } finally { setIsProcessing(false) }
   }
 
@@ -99,9 +100,18 @@ export default function SignatureTool() {
                   <span className="flex items-center justify-center gap-2"><ImageIcon size={16}/> Upload Signature</span>
                 </button>
               </div>
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 px-1">Output Filename</label>
+                <input 
+                  type="text" 
+                  value={customFileName} 
+                  onChange={(e) => setCustomFileName(e.target.value)} 
+                  className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" 
+                />
+              </div>
             </>
           ) : (
-            <SuccessState message="Signed Successfully!" downloadUrl={downloadUrl} fileName={`signed-${pdfData.file.name}`} onStartOver={() => { setDownloadUrl(null); setPdfData(null); setSignatureImg(null); }} />
+            <SuccessState message="Signed Successfully!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setDownloadUrl(null); setPdfData(null); setSignatureImg(null); }} />
           )}
           <button onClick={() => { setPdfData(null); setSignatureImg(null); }} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
         </div>

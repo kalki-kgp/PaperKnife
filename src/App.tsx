@@ -1,8 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { 
   Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
-  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown
+  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, LayoutGrid
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -14,53 +14,53 @@ import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
 import ScrollToTop from './components/ScrollToTop'
 
-// Main views - No lazy loading for critical navigation to prevent import errors on Android
+// Critical Views - No lazy loading to prevent dynamic import errors on Android
 import WebView from './components/WebView'
 import AndroidView from './components/AndroidView'
 import AndroidToolsView from './components/AndroidToolsView'
 import AndroidHistoryView from './components/AndroidHistoryView'
+import About from './components/About'
+import Thanks from './components/Thanks'
+import PrivacyPolicy from './components/PrivacyPolicy'
+import SettingsView from './components/Settings'
 
-// Lazy load tools
-const MergeTool = lazy(() => import('./components/tools/MergeTool'))
-const SplitTool = lazy(() => import('./components/tools/SplitTool'))
-const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
-const CompressTool = lazy(() => import('./components/tools/CompressTool'))
-const UnlockTool = lazy(() => import('./components/tools/UnlockTool'))
-const PdfToImageTool = lazy(() => import('./components/tools/PdfToImageTool'))
-const RotateTool = lazy(() => import('./components/tools/RotateTool'))
-const PdfToTextTool = lazy(() => import('./components/tools/PdfToTextTool'))
-const RearrangeTool = lazy(() => import('./components/tools/RearrangeTool'))
-const WatermarkTool = lazy(() => import('./components/tools/WatermarkTool'))
-const PageNumberTool = lazy(() => import('./components/tools/PageNumberTool'))
-const MetadataTool = lazy(() => import('./components/tools/MetadataTool'))
-const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
-const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
-const RepairTool = lazy(() => import('./components/tools/RepairTool'))
-const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesTool'))
-const GrayscaleTool = lazy(() => import('./components/tools/GrayscaleTool'))
-const About = lazy(() => import('./components/About'))
-const Thanks = lazy(() => import('./components/Thanks'))
-const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'))
-const SettingsView = lazy(() => import('./components/Settings'))
+// Tools - Also moving to static imports for stability in APK
+import MergeTool from './components/tools/MergeTool'
+import SplitTool from './components/tools/SplitTool'
+import ProtectTool from './components/tools/ProtectTool'
+import CompressTool from './components/tools/CompressTool'
+import UnlockTool from './components/tools/UnlockTool'
+import PdfToImageTool from './components/tools/PdfToImageTool'
+import RotateTool from './components/tools/RotateTool'
+import PdfToTextTool from './components/tools/PdfToTextTool'
+import RearrangeTool from './components/tools/RearrangeTool'
+import WatermarkTool from './components/tools/WatermarkTool'
+import PageNumberTool from './components/tools/PageNumberTool'
+import MetadataTool from './components/tools/MetadataTool'
+import ImageToPdfTool from './components/tools/ImageToPdfTool'
+import SignatureTool from './components/tools/SignatureTool'
+import RepairTool from './components/tools/RepairTool'
+import ExtractImagesTool from './components/tools/ExtractImagesTool'
+import GrayscaleTool from './components/tools/GrayscaleTool'
 
 const tools: Tool[] = [
-  { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit' },
-  { title: 'Split PDF', desc: 'Visually extract specific pages or ranges.', icon: Scissors, implemented: true, path: '/split', category: 'Edit' },
-  { title: 'Compress PDF', desc: 'Optimize your file size for easier sharing.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize' },
-  { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure' },
-  { title: 'Unlock PDF', desc: 'Remove passwords from your protected files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure' },
-  { title: 'Rotate PDF', desc: 'Fix page orientation permanently.', icon: RotateCw, implemented: true, path: '/rotate-pdf', category: 'Edit' },
-  { title: 'Rearrange PDF', desc: 'Drag and drop pages to reorder them.', icon: ArrowUpDown, implemented: true, path: '/rearrange-pdf', category: 'Edit' },
-  { title: 'Page Numbers', desc: 'Add numbering to your documents automatically.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit' },
-  { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit' },
-  { title: 'Metadata', desc: 'Edit document properties for better privacy.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure' },
-  { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit' },
-  { title: 'Grayscale', desc: 'Convert all document pages to black and white.', icon: Palette, implemented: true, path: '/grayscale', category: 'Optimize' },
-  { title: 'PDF to Image', desc: 'Convert document pages into high-quality images.', icon: FileImage, implemented: true, path: '/pdf-to-image', category: 'Convert' },
-  { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert' },
-  { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert' },
-  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert' },
-  { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize' },
+  { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+  { title: 'Split PDF', desc: 'Visually extract specific pages or ranges.', icon: Scissors, implemented: true, path: '/split', category: 'Edit', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  { title: 'Compress PDF', desc: 'Optimize your file size for easier sharing.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+  { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+  { title: 'Unlock PDF', desc: 'Remove passwords from your protected files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure', color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+  { title: 'Rotate PDF', desc: 'Fix page orientation permanently.', icon: RotateCw, implemented: true, path: '/rotate-pdf', category: 'Edit', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
+  { title: 'Rearrange PDF', desc: 'Drag and drop pages to reorder them.', icon: ArrowUpDown, implemented: true, path: '/rearrange-pdf', category: 'Edit', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+  { title: 'Page Numbers', desc: 'Add numbering to your documents automatically.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit', color: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-900/20' },
+  { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+  { title: 'Metadata', desc: 'Edit document properties for better privacy.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure', color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
+  { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20' },
+  { title: 'Grayscale', desc: 'Convert all document pages to black and white.', icon: Palette, implemented: true, path: '/grayscale', category: 'Optimize', color: 'text-zinc-500', bg: 'bg-zinc-50 dark:bg-zinc-900/20' },
+  { title: 'PDF to Image', desc: 'Convert document pages into high-quality images.', icon: FileImage, implemented: true, path: '/pdf-to-image', category: 'Convert', color: 'text-lime-500', bg: 'bg-lime-50 dark:bg-lime-900/20' },
+  { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert', color: 'text-teal-500', bg: 'bg-teal-50 dark:bg-teal-900/20' },
+  { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert', color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
+  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert', color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/20' },
+  { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
 ]
 
 function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
@@ -68,14 +68,8 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
   const { setPipelineFile } = usePipeline()
   const [showMore, setShowMore] = useState(false)
   
-  const essentials = [
-    { title: 'Merge', icon: Layers, path: '/merge', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
-    { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-    { title: 'Split', icon: Scissors, path: '/split', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-  ]
-
-  const otherTools = tools.filter(t => !essentials.some(e => e.path === t.path))
+  const essentials = tools.slice(0, 4)
+  const otherTools = tools.slice(4)
 
   const handleAction = async (path: string, title: string) => {
     toast.loading(`Importing ${file.name}...`, { id: 'quick-load' })
@@ -129,7 +123,7 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
                      <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
                        <tool.icon size={18} strokeWidth={2.5} />
                      </div>
-                     <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
+                     <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title.split(' ')[0]}</span>
                    </button>
                  ))}
               </div>
@@ -138,24 +132,24 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
            <div>
               <button 
                 onClick={() => setShowMore(!showMore)}
-                className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-rose-500 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-rose-500 transition-colors shadow-sm"
               >
-                <span>All Tools</span>
+                <span>Full Tool Catalog</span>
                 <ChevronDown size={14} className={`transition-transform duration-300 ${showMore ? 'rotate-180' : ''}`} />
               </button>
               
               {showMore && (
-                <div className="grid grid-cols-2 gap-2.5 mt-3 animate-in slide-in-from-top-2 duration-300">
+                <div className="grid grid-cols-2 gap-2.5 mt-3 animate-in slide-in-from-top-2 duration-300 pb-2">
                    {otherTools.map(tool => (
                      <button
                        key={tool.title}
                        onClick={() => tool.path && handleAction(tool.path, tool.title)}
                        className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-white/5 active:bg-gray-50 dark:active:bg-zinc-800 active:scale-95 transition-all shadow-sm group"
                      >
-                       <div className="p-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 group-active:scale-110 transition-transform">
+                       <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
                          <tool.icon size={18} strokeWidth={2.5} />
                        </div>
-                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
+                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title.split(' ')[0]}</span>
                      </button>
                    ))}
                 </div>

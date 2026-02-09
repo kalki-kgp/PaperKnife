@@ -21,6 +21,7 @@ export default function PdfToTextTool() {
   const [progress, setProgress] = useState(0)
   const [extractionMode, setExtractionMode] = useState<ExtractionMode>('text')
   const [unlockPassword, setUnlockPassword] = useState('')
+  const [customFileName, setCustomFileName] = useState('paperknife-extracted')
   const [copied, setCopied] = useState(false)
   const isNative = Capacitor.isNativePlatform()
 
@@ -47,7 +48,11 @@ export default function PdfToTextTool() {
     try {
       const meta = await getPdfMetaData(file)
       if (meta.isLocked) { setPdfData({ file, pageCount: 0, isLocked: true }) }
-      else { const pdfDoc = await loadPdfDocument(file); setPdfData({ file, pageCount: meta.pageCount, isLocked: false, pdfDoc }) }
+      else { 
+        const pdfDoc = await loadPdfDocument(file)
+        setPdfData({ file, pageCount: meta.pageCount, isLocked: false, pdfDoc }) 
+        setCustomFileName(`${file.name.replace('.pdf', '')}-extracted`)
+      }
       setExtractedText('')
     } catch (err) { console.error(err) } finally { setIsProcessing(false) }
   }
@@ -81,7 +86,7 @@ export default function PdfToTextTool() {
   }
 
   const handleDownload = async () => {
-    await downloadFile(extractedText, `${pdfData?.file.name.replace('.pdf', '')}-extracted.txt`, 'text/plain')
+    await downloadFile(extractedText, `${customFileName}.txt`, 'text/plain')
   }
 
   const ActionButton = () => (
@@ -136,6 +141,15 @@ export default function PdfToTextTool() {
                     )}
                     <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-900/20 text-center">
                       <p className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-widest">Select mode and tap Extract</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 px-1">Output Filename</label>
+                      <input 
+                        type="text" 
+                        value={customFileName} 
+                        onChange={(e) => setCustomFileName(e.target.value)} 
+                        className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" 
+                      />
                     </div>
                   </div>
                 )}

@@ -5,7 +5,7 @@ import {
   FileText,
   Layers, Zap, Scissors, Lock,
   Moon, Sun, Upload, Cpu, ShieldCheck,
-  Palette, FileImage, LayoutGrid
+  Palette, FileImage, LayoutGrid, Sparkles, Clock
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { getRecentActivity, ActivityEntry } from '../utils/recentActivity'
@@ -33,13 +33,6 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
     { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
   ]
 
-  const categories = [
-    { name: 'Edit', icon: Palette, color: 'bg-rose-500' },
-    { name: 'Convert', icon: FileImage, color: 'bg-emerald-500' },
-    { name: 'Optimize', icon: Zap, color: 'bg-amber-500' },
-    { name: 'Secure', icon: Lock, color: 'bg-indigo-500' },
-  ]
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && onFileSelect) {
@@ -48,7 +41,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors">
+    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors pb-32">
       <input 
         type="file" 
         accept=".pdf" 
@@ -73,134 +66,125 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
         </div>
       </header>
 
-      <main className="px-4 py-4 space-y-6 flex-1 overflow-y-auto pb-32">
+      <main className="px-4 py-4 space-y-6 flex-1 overflow-y-auto">
         
-        {/* Hero: Quick Action Card */}
-        <button 
-          onClick={() => fileInputRef.current?.click()}
-          className="w-full aspect-[2/1] bg-zinc-900 dark:bg-zinc-100 rounded-[2.5rem] relative overflow-hidden shadow-2xl group active:scale-[0.98] transition-all flex flex-col justify-between p-6"
-        >
-           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-40 dark:opacity-30 group-active:opacity-50 transition-opacity" />
-           
-           <div className="relative z-10 flex justify-between items-start w-full">
-              <div className="p-3 bg-white/10 dark:bg-black/5 rounded-2xl backdrop-blur-sm text-white dark:text-black">
-                 <Upload size={28} />
+        {/* New Hero: Sleek Upload Section */}
+        <section className="relative">
+           <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full bg-zinc-900 dark:bg-zinc-100 rounded-[2.5rem] p-8 text-left relative overflow-hidden shadow-2xl group active:scale-[0.98] transition-all"
+           >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-40 dark:opacity-20 group-active:opacity-60 transition-opacity" />
+              
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                 <div className="flex justify-between items-start mb-12">
+                    <div className="p-4 bg-white/10 dark:bg-black/5 rounded-2xl backdrop-blur-md text-white dark:text-black">
+                       <Upload size={32} strokeWidth={2.5} />
+                    </div>
+                    <div className="px-4 py-2 bg-rose-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/40">
+                       PRO READY
+                    </div>
+                 </div>
+                 <div>
+                    <h2 className="text-4xl font-black text-white dark:text-black tracking-tight leading-none mb-2">Select PDF</h2>
+                    <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Fast, local, and encrypted processing.</p>
+                 </div>
               </div>
-              <div className="px-3 py-1.5 bg-white/10 dark:bg-black/5 rounded-full backdrop-blur-md">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-white dark:text-black">Local Node</span>
-              </div>
-           </div>
-
-           <div className="relative z-10 text-left">
-              <h2 className="text-3xl font-black text-white dark:text-black tracking-tight leading-none mb-1">Select File</h2>
-              <p className="text-sm font-medium text-zinc-400 dark:text-zinc-600">Tap to process a PDF instantly</p>
-           </div>
-        </button>
-
-        {/* Categories Scroller */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-           {categories.map(cat => (
-             <button 
-              key={cat.name}
-              onClick={() => navigate('/android-tools')}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 rounded-full border border-gray-100 dark:border-zinc-800 shadow-sm shrink-0 active:scale-95 transition-transform"
-             >
-                <div className={`w-2 h-2 rounded-full ${cat.color}`} />
-                <span className="text-xs font-bold dark:text-white">{cat.name}</span>
-             </button>
-           ))}
-        </div>
-
-        {/* Engine Status Card */}
-        <section className="bg-emerald-500 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-lg shadow-emerald-500/20">
-           <div className="absolute top-0 right-0 p-8 text-white/10 -mr-4 -mt-4">
-              <ShieldCheck size={100} />
-           </div>
-           <div className="relative z-10">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest mb-4 opacity-80">
-                 <Cpu size={14} /> Privacy Engine Active
-              </div>
-              <h3 className="text-xl font-black mb-2 uppercase tracking-tight">Zero-Server Node</h3>
-              <p className="text-xs font-medium text-emerald-100 leading-relaxed max-w-[200px]">
-                 All processing is happening locally on your device. No data is being transmitted.
-              </p>
-           </div>
+           </button>
         </section>
 
-        {/* Essentials Grid */}
-        <section>
-          <div className="flex items-center justify-between px-2 mb-3">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Essentials</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {quickActions.map((action) => (
+        {/* Engine Dashboard */}
+        <section className="grid grid-cols-2 gap-3">
+           <div className="col-span-2 px-2 flex items-center justify-between">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Core Dashboard</h3>
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">
+                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                 OFFLINE NODE
+              </div>
+           </div>
+           
+           {quickActions.map((action) => (
               <button
                 key={action.title}
                 onClick={() => navigate(action.path)}
-                className="p-4 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 flex flex-col gap-3 shadow-sm active:scale-95 transition-all"
+                className="p-5 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col gap-4 shadow-sm active:scale-95 transition-all group"
               >
-                <div className={`w-10 h-10 ${action.bg} ${action.color} rounded-2xl flex items-center justify-center`}>
-                  <action.icon size={20} strokeWidth={2.5} />
+                <div className={`w-12 h-12 ${action.bg} ${action.color} rounded-2xl flex items-center justify-center group-active:scale-110 transition-transform`}>
+                  <action.icon size={24} strokeWidth={2.5} />
                 </div>
-                <span className="text-sm font-bold text-gray-900 dark:text-white text-left">{action.title}</span>
+                <div className="text-left">
+                   <span className="text-sm font-bold text-gray-900 dark:text-white block">{action.title}</span>
+                   <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tight">System Tool</span>
+                </div>
               </button>
             ))}
-            {/* More Tools Card */}
+
             <button
               onClick={() => navigate('/android-tools')}
-              className="p-4 bg-gray-900 dark:bg-white rounded-[2rem] border border-transparent flex flex-col gap-3 shadow-sm active:scale-95 transition-all col-span-2 relative overflow-hidden group"
+              className="p-5 bg-rose-500 text-white rounded-[2rem] flex flex-col gap-4 shadow-lg shadow-rose-500/20 active:scale-95 transition-all col-span-2 relative overflow-hidden group"
             >
-               <div className="absolute right-0 top-0 p-6 opacity-10 group-active:scale-110 transition-transform">
-                  <LayoutGrid size={64} className="text-white dark:text-black" />
+               <div className="absolute right-0 top-0 p-8 opacity-20 -mr-4 -mt-4 group-active:scale-110 transition-transform">
+                  <LayoutGrid size={80} />
                </div>
-               <div className="w-10 h-10 bg-white/10 dark:bg-black/10 rounded-2xl flex items-center justify-center text-white dark:text-black relative z-10">
-                  <LayoutGrid size={20} strokeWidth={2.5} />
+               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center relative z-10">
+                  <Sparkles size={24} strokeWidth={2.5} />
                </div>
                <div className="text-left relative z-10">
-                  <span className="text-sm font-bold text-white dark:text-black block">More Tools</span>
-                  <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500">Explore full catalog</span>
+                  <span className="text-lg font-black block">More Engines</span>
+                  <span className="text-xs font-bold opacity-80 uppercase tracking-widest">Explore Full Catalog</span>
                </div>
             </button>
-          </div>
         </section>
 
-        {/* Recent Activity List */}
-        <section>
-          <div className="flex items-center justify-between px-2 mb-3">
-             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Recent Activity</h3>
-             {history.length > 0 && <button onClick={() => navigate('/android-history')} className="text-[10px] font-bold text-rose-500">View All</button>}
+        {/* History Section - Persistent */}
+        <section className="pb-10">
+          <div className="flex items-center justify-between px-2 mb-4">
+             <div className="flex items-center gap-2">
+                <Clock size={14} className="text-gray-400" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Activity Stream</h3>
+             </div>
+             {history.length > 0 && (
+                <button onClick={() => navigate('/android-history')} className="text-[10px] font-black uppercase text-rose-500">View All</button>
+             )}
           </div>
           
           {history.length > 0 ? (
-            <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 p-2 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-2 shadow-sm">
               {history.map((item) => (
                 <button 
                   key={item.id} 
                   onClick={() => navigate('/android-history')}
-                  className="w-full p-3 flex items-center gap-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+                  className="w-full p-4 flex items-center gap-4 rounded-[1.75rem] active:bg-gray-50 dark:active:bg-white/5 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gray-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center shrink-0 text-gray-500 dark:text-gray-400">
-                    <FileText size={18} />
+                  <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center shrink-0 text-gray-400 dark:text-zinc-500">
+                    <FileText size={20} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-xs font-bold truncate text-gray-900 dark:text-white">{item.name}</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">{item.tool}</p>
+                    <p className="text-sm font-bold truncate text-gray-900 dark:text-white">{item.name}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.tool} • {new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                   </div>
-                  <ChevronRight size={14} className="text-gray-300" />
+                  <ChevronRight size={16} className="text-gray-300" />
                 </button>
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-[2rem]">
-               <p className="text-xs font-bold text-gray-400">No recent files</p>
+            <div className="p-12 text-center border-4 border-dashed border-gray-100 dark:border-white/5 rounded-[2.5rem]">
+               <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                  <ShieldCheck size={32} />
+               </div>
+               <h4 className="text-sm font-bold text-gray-400 dark:text-zinc-600 mb-1">Vault is Empty</h4>
+               <p className="text-[10px] font-medium text-gray-300 dark:text-zinc-700 uppercase tracking-[0.2em]">Start processing to see activity</p>
             </div>
           )}
         </section>
 
-        {/* Privacy Badge */}
-        <div className="flex flex-col items-center gap-2 py-6 opacity-50">
-           <Shield size={16} className="text-emerald-500" />
-           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Privacy Guard Active</p>
+        {/* Status Badge */}
+        <div className="flex flex-col items-center gap-3 py-8 opacity-40">
+           <Shield className="text-emerald-500" size={20} />
+           <div className="text-center">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] dark:text-white">Active Privacy Shield</p>
+              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">Local Processing Enabled</p>
+           </div>
         </div>
 
       </main>

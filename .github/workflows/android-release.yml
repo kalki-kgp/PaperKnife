@@ -70,12 +70,12 @@ jobs:
       - name: Rename APK
         run: |
           ls -R android/app/build/outputs/apk/release
-          cp android/app/build/outputs/apk/release/*-signed.apk paperknife-v0.5.0-beta.apk
+          cp android/app/build/outputs/apk/release/*-signed.apk paperknife-v1.0.0-beta.apk
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: PaperKnife-Android-v0.5.0-beta
-          path: paperknife-v0.5.0-beta.apk
+          name: PaperKnife-Android-v1.0.0-beta
+          path: paperknife-v1.0.0-beta.apk
           if-no-files-found: error
           compression-level: 0

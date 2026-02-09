@@ -1,222 +1,117 @@
-import { useState } from 'react'
 import { 
-  Heart, 
-  ChevronDown, 
-  Code, 
-  Zap,
-  ShieldCheck,
-  Sparkles, Github, Scale, ExternalLink, Terminal
+  Heart, ShieldCheck, Zap, Code, Github, Scale, 
+  Globe, Cpu, Smartphone, Layers
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
 import { PaperKnifeLogo } from './Logo'
 
-const TechSpec = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  return (
-    <div className="border-b border-gray-100 dark:border-white/5 last:border-0">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-5 flex items-center justify-between text-left group"
-      >
-        <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isOpen ? 'bg-rose-500 text-white' : 'bg-gray-50 dark:bg-zinc-900 text-gray-400'}`}>
-            <Icon size={18} strokeWidth={2} />
-          </div>
-          <h4 className="font-bold text-sm text-gray-900 dark:text-white">{title}</h4>
-        </div>
-        <ChevronDown size={18} className={`text-gray-300 transition-transform duration-300 ${isOpen ? 'rotate-180 text-rose-500' : ''}`} />
-      </button>
-      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="pb-6 pl-14 pr-4 text-xs text-gray-500 dark:text-zinc-400 leading-relaxed space-y-3">
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function About() {
   const isNative = Capacitor.isNativePlatform()
 
   const content = (
-    <div className="space-y-12 animate-in fade-in duration-700">
-      
-      {/* Hero */}
-      <section className={isNative ? 'text-center py-4' : 'mb-24'}>
-        {!isNative && (
-          <div className="flex items-center gap-2 text-rose-500 font-black text-[10px] uppercase tracking-[0.4em] mb-6">
-            <Terminal size={14} /> Documentation v0.9.5
+    <div className="animate-in fade-in duration-700 pb-20">
+      {/* Hero Section */}
+      <section className="text-center py-12 px-6">
+        <div className="inline-flex flex-col items-center mb-8">
+          <div className="w-24 h-24 bg-rose-500 text-white rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl shadow-rose-500/30">
+            <PaperKnifeLogo size={48} iconColor="#FFFFFF" />
           </div>
-        )}
-        <h2 className={isNative ? "text-4xl font-black tracking-tighter dark:text-white mb-4" : "text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1] mb-8"}>
-          The Free <br/>
-          <span className="text-rose-500">Privacy</span> Engine.
-        </h2>
-        <p className="text-lg text-gray-500 dark:text-zinc-400 leading-relaxed font-medium max-w-2xl mx-auto">
-          PaperKnife is a high-integrity PDF utility that executes entirely within your browser's private runtime. No data ever leaves your device.
+          <h1 className="text-5xl font-black tracking-tighter dark:text-white mb-2 leading-none">PaperKnife</h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-rose-500 opacity-80">Orchestration Engine v1.0.0-beta</p>
+        </div>
+        <p className="text-lg text-gray-500 dark:text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed">
+          The industry-standard for private PDF manipulation. Built on the principle of <b>Absolute Sovereignty</b>—where your data never leaves the local runtime.
         </p>
       </section>
 
-      {/* Protocol Section */}
-      <section>
-        <div className="flex items-center gap-4 mb-8">
+      {/* Architecture Cards */}
+      <section className="px-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        {[
+          { title: 'Chameleon UI', icon: Smartphone, desc: 'Responsive design that adapts between desktop density and mobile agility.' },
+          { title: 'Local Compute', icon: Cpu, desc: 'Heavy-lifting happens on your hardware, not a remote server farm.' },
+          { title: 'Stateless Ops', icon: Globe, desc: 'Zero persistence of your documents. When you close, we forget.' }
+        ].map((item, i) => (
+          <div key={i} className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
+            <div className="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl flex items-center justify-center mb-4">
+              <item.icon size={20} />
+            </div>
+            <h4 className="font-bold text-sm dark:text-white mb-2">{item.title}</h4>
+            <p className="text-xs text-gray-500 dark:text-zinc-500 leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* Technical Protocol Group */}
+      <section className="mb-12">
+        <div className="px-6 mb-6 flex items-center gap-4">
           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-500">Technical Protocol</h3>
           <div className="h-[1px] flex-1 bg-gray-100 dark:bg-white/5" />
         </div>
-
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 px-2 md:px-6 shadow-sm">
-          <TechSpec title="Zero-Server Logic" icon={ShieldCheck}>
-            <p>PaperKnife operates on a <strong>Local-First</strong> principle. When you select a file, it is loaded into your browser's private heap memory as an <code>ArrayBuffer</code>. No part of your file is ever uploaded, cached on a server, or transmitted over a network.</p>
-          </TechSpec>
-          <TechSpec title="Local Compute" icon={Zap}>
-            <p>By leveraging Web Workers and <code>pdf-lib</code>, we execute complex PDF manipulation directly on your device CPU. This ensures 100% privacy and full offline capability.</p>
-          </TechSpec>
-          <TechSpec title="Secure Encryption" icon={Code}>
-            <p>Our protection tools use <strong>GPL v3</strong> compliant cryptographic implementations. Passwords are used only as transient seeds and are destroyed immediately after use.</p>
-          </TechSpec>
-        </div>
-      </section>
-
-      {/* License & Source */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col justify-between">
-          <div>
-            <Scale className="text-rose-500 mb-4" size={32} />
-            <h4 className="text-xl font-black dark:text-white mb-2">GPL v3 License</h4>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
-              Copyleft open-source protocol. This ensures that PaperKnife remains free and open forever.
-            </p>
-          </div>
-          <a href="https://github.com/potatameister/PaperKnife/blob/main/LICENSE" target="_blank" className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:translate-x-1 transition-transform">
-            Read License <ExternalLink size={12} />
-          </a>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col justify-between">
-          <div>
-            <Github className="text-gray-900 dark:text-white mb-4" size={32} />
-            <h4 className="text-xl font-black dark:text-white mb-2">Open Source</h4>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
-              Verify our privacy claims yourself. The entire engine is available for audit on GitHub.
-            </p>
-          </div>
-          <a href="https://github.com/potatameister/PaperKnife" target="_blank" className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white hover:translate-x-1 transition-transform">
-            View Source <ExternalLink size={12} />
-          </a>
-        </div>
-      </section>
-
-      {/* Support Section */}
-      <section className="bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 p-12 text-rose-500/10 pointer-events-none">
-          <Heart size={120} fill="currentColor" />
-        </div>
-        <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
-          <div className="flex-1 space-y-6 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 text-rose-500 font-black uppercase tracking-[0.2em] text-[10px]">
-              <Sparkles size={14} /> PaperKnife Supporter
+        
+        <div className="bg-white dark:bg-zinc-900 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5 shadow-sm">
+          {[
+            { title: 'Zero-Server Logic', icon: ShieldCheck, desc: 'Files are loaded into volatile RAM as ArrayBuffers. No part of your document is ever uploaded or cached on any network infrastructure.', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+            { title: 'Direct DOM Rendering', icon: Layers, desc: 'PDF previews are generated using PDF.js workers, rendering directly to HTML5 Canvas without intermediary server-side rasterization.', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+            { title: 'OpenLink Encryption', icon: Code, desc: 'Security tools utilize standard cryptographic primitives compliant with GPL v3. Passwords are destroyed immediately after session termination.', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' }
+          ].map((spec, i) => (
+            <div key={i} className="p-6 flex gap-5">
+              <div className={`w-12 h-12 ${spec.bg} ${spec.color} rounded-[1.25rem] flex items-center justify-center shrink-0`}>
+                <spec.icon size={22} />
+              </div>
+              <div>
+                <h4 className="text-sm font-black dark:text-white uppercase tracking-tight mb-1">{spec.title}</h4>
+                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">{spec.desc}</p>
+              </div>
             </div>
-            <h3 className="text-3xl font-black uppercase tracking-tighter">Help Grow the <br/>Engine.</h3>
-            <p className="text-sm text-zinc-400 max-w-sm leading-relaxed font-medium">
-              Your support keeps PaperKnife independent and completely ad-free for everyone.
-            </p>
-          </div>
-          <div className="w-full md:w-fit flex flex-col gap-3">
-            <a href="https://github.com/sponsors/potatameister" target="_blank" className="inline-flex items-center justify-center gap-3 bg-rose-500 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform">
-              <Heart size={16} fill="currentColor" /> Sponsor
-            </a>
-            <Link to="/thanks" className="inline-flex items-center justify-center gap-3 bg-white/10 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs active:scale-95 transition-transform text-white">
-              Credits
-            </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      <footer className="text-center py-10 opacity-20">
+      {/* Links & License */}
+      <section className="px-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+        <div className="p-8 bg-zinc-900 rounded-[2.5rem] text-white flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10 -mr-4 -mt-4 group-hover:scale-110 transition-transform">
+            <Scale size={80} />
+          </div>
+          <div className="relative z-10">
+            <Scale className="text-rose-500 mb-4" size={32} />
+            <h4 className="text-xl font-black mb-2 leading-tight">GPL v3 <br/>Open Source</h4>
+            <p className="text-xs text-zinc-400 leading-relaxed mb-6 font-medium">Verified privacy claims via public audit. The entire engine is open for inspection.</p>
+          </div>
+          <a href="https://github.com/potatameister/PaperKnife" target="_blank" className="relative z-10 text-[10px] font-black uppercase tracking-widest text-rose-500 flex items-center gap-2 hover:translate-x-1 transition-transform">
+            View Source Code <Github size={12} />
+          </a>
+        </div>
+
+        <div className="p-8 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-white/5 flex flex-col justify-between group relative overflow-hidden shadow-sm">
+          <div className="absolute top-0 right-0 p-8 opacity-10 dark:opacity-5 -mr-4 -mt-4 group-hover:scale-110 transition-transform">
+            <Heart size={80} />
+          </div>
+          <div className="relative z-10">
+            <Heart className="text-rose-500 mb-4" size={32} />
+            <h4 className="text-xl font-black dark:text-white mb-2 leading-tight">Community <br/>Driven</h4>
+            <p className="text-xs text-gray-500 dark:text-zinc-500 leading-relaxed mb-6 font-medium">Independent, ad-free, and supported by users who believe in data privacy.</p>
+          </div>
+          <Link to="/thanks" className="relative z-10 text-[10px] font-black uppercase tracking-widest text-rose-500 flex items-center gap-2 hover:translate-x-1 transition-transform">
+            Meet Supporters <Globe size={12} />
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-12 opacity-30">
          <PaperKnifeLogo size={24} iconColor="#F43F5E" className="mx-auto mb-4" />
-         <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
+         <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v1.0.0-beta</p>
       </footer>
     </div>
   )
 
   if (isNative) {
     return (
-      <NativeToolLayout title="About" description="Technical Specification" actions={null}>
-        <div className="animate-in fade-in duration-500 pb-32">
-          {/* Hero section for Native */}
-          <section className="text-center py-8">
-            <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="w-20 h-20 bg-rose-500 text-white rounded-3xl flex items-center justify-center shadow-xl shadow-rose-500/20">
-                <PaperKnifeLogo size={40} iconColor="#FFFFFF" />
-              </div>
-              <h1 className="text-4xl font-black tracking-tighter dark:text-white leading-none">PaperKnife</h1>
-            </div>
-            <p className="text-xs font-black uppercase tracking-[0.4em] text-rose-500 mb-6">Privacy Engine v0.5.0</p>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 font-medium px-6 leading-relaxed">
-              PaperKnife is a professional-grade PDF orchestration engine. It is built on the principle of <b>Absolute Sovereignty</b>—meaning your data never crosses a network boundary.
-            </p>
-          </section>
-
-          {/* Detailed Specs for Native */}
-          <section className="mb-8 px-4">
-             <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-gray-100 dark:border-white/5 shadow-sm space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">The Architecture</h3>
-                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
-                   PaperKnife uses a "Chameleon" runtime that adapts to your environment. On Android, it leverages a high-performance WebView container with direct access to local filesystem primitives, ensuring that even large PDF files can be processed without memory overflows.
-                </p>
-                <div className="h-[1px] w-full bg-gray-50 dark:bg-white/5" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Core Engine</h3>
-                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
-                   Under the hood, we use <code>pdf-lib</code> for low-level document manipulation and <code>pdfjs-dist</code> for high-fidelity rendering. This combination allows for lossless merging and precise visual splitting.
-                </p>
-             </div>
-          </section>
-
-          {/* Native Protocol List */}
-          <section className="mb-8">
-            <h3 className="px-6 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Security Protocol</h3>
-            <div className="bg-white dark:bg-zinc-900 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5 shadow-sm">
-              <div className="p-5 flex gap-4">
-                <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-xl flex items-center justify-center shrink-0"><ShieldCheck size={20} /></div>
-                <div><h4 className="text-sm font-bold dark:text-white">Zero-Server Logic</h4><p className="text-xs text-gray-500 dark:text-zinc-500 mt-1 leading-relaxed">Files are loaded into volatile RAM. No part of your document is ever uploaded or cached.</p></div>
-              </div>
-              <div className="p-5 flex gap-4">
-                <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-xl flex items-center justify-center shrink-0"><Zap size={20} /></div>
-                <div><h4 className="text-sm font-bold dark:text-white">Local Compute</h4><p className="text-xs text-gray-500 dark:text-zinc-500 mt-1 leading-relaxed">PDF manipulation happens on your device CPU. Full offline capability guaranteed.</p></div>
-              </div>
-              <div className="p-5 flex gap-4">
-                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 rounded-xl flex items-center justify-center shrink-0"><Code size={20} /></div>
-                <div><h4 className="text-sm font-bold dark:text-white">GPL v3 Compliance</h4><p className="text-xs text-gray-500 dark:text-zinc-500 mt-1 leading-relaxed">Open-source cryptographic implementations. Passwords are destroyed after use.</p></div>
-              </div>
-            </div>
-          </section>
-
-          {/* Native Links */}
-          <section className="px-4 grid grid-cols-2 gap-3 mb-8">
-             <a href="https://github.com/potatameister/PaperKnife" target="_blank" className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col items-center text-center shadow-sm">
-                <Github size={24} className="mb-3 dark:text-white" />
-                <span className="text-[10px] font-black uppercase tracking-widest dark:text-white">Source Code</span>
-             </a>
-             <Link to="/thanks" className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col items-center text-center shadow-sm">
-                <Heart size={24} className="mb-3 text-rose-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest dark:text-white">Credits</span>
-             </Link>
-          </section>
-
-          <div className="px-4">
-             <a href="https://github.com/sponsors/potatameister" target="_blank" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black p-5 rounded-[2rem] flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-transform">
-                <Sparkles size={18} className="text-rose-500" />
-                <span className="font-black uppercase tracking-widest text-xs">Sponsor Project</span>
-             </a>
-          </div>
-
-          <footer className="text-center py-12 opacity-20">
-             <PaperKnifeLogo size={24} iconColor="#F43F5E" className="mx-auto mb-4" />
-             <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
-          </footer>
-        </div>
+      <NativeToolLayout title="About Engine" description="System specifications" actions={null}>
+        {content}
       </NativeToolLayout>
     )
   }
