@@ -1,4 +1,4 @@
-import { Shield, Lock, EyeOff, ServerOff, Database, History } from 'lucide-react'
+import { Shield, EyeOff, ServerOff, Database, History } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
 
