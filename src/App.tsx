@@ -23,6 +23,7 @@ import About from './components/About'
 import Thanks from './components/Thanks'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import SettingsView from './components/Settings'
+import PdfPreview from './components/PdfPreview'
 
 // Tools - Also moving to static imports for stability in APK
 import MergeTool from './components/tools/MergeTool'
@@ -63,7 +64,7 @@ const tools: Tool[] = [
   { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
 ]
 
-function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
+function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => void, onBack?: () => void }) {
   const navigate = useNavigate()
   const { setPipelineFile } = usePipeline()
   const [showMore, setShowMore] = useState(false)
@@ -98,6 +99,11 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
         <div className="p-6 pb-2">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center gap-3">
+                {onBack && (
+                  <button onClick={onBack} className="p-2 -ml-2 text-gray-400 hover:text-rose-500 transition-colors">
+                    <ChevronDown className="rotate-90" size={20} />
+                  </button>
+                )}
                 <div className="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
                    <FileText size={20} />
                 </div>
@@ -166,6 +172,7 @@ function App() {
     return Capacitor.isNativePlatform() ? 'android' : 'web'
   })
   const [droppedFile, setDroppedFile] = useState<File | null>(null)
+  const [showQuickDrop, setShowQuickDrop] = useState(false)
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as Theme
@@ -268,6 +275,7 @@ function App() {
       return
     }
     setDroppedFile(file)
+    setShowQuickDrop(false) // Show preview first
   }
 
   const isCapacitor = Capacitor.isNativePlatform()
@@ -287,7 +295,24 @@ function App() {
             }}
           />
           
-          {droppedFile && <QuickDropModal file={droppedFile} onClear={() => setDroppedFile(null)} />}
+          {droppedFile && !showQuickDrop && (
+            <PdfPreview 
+              file={droppedFile} 
+              onClose={() => setDroppedFile(null)} 
+              onProcess={() => setShowQuickDrop(true)} 
+            />
+          )}
+
+          {droppedFile && showQuickDrop && (
+            <QuickDropModal 
+              file={droppedFile} 
+              onClear={() => {
+                setDroppedFile(null)
+                setShowQuickDrop(false)
+              }} 
+              onBack={() => setShowQuickDrop(false)}
+            />
+          )}
 
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>

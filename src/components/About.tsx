@@ -29,9 +29,9 @@ export default function About() {
       {/* Architecture Cards */}
       <section className="px-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
         {[
-          { title: 'Chameleon UI', icon: Smartphone, desc: 'Responsive design that adapts between desktop density and mobile agility.' },
           { title: 'Local Compute', icon: Cpu, desc: 'Heavy-lifting happens on your hardware, not a remote server farm.' },
-          { title: 'Stateless Ops', icon: Globe, desc: 'Zero persistence of your documents. When you close, we forget.' }
+          { title: 'Zero-Server Logic', icon: ShieldCheck, desc: 'Files are loaded into volatile RAM. No part of your document is ever uploaded.' },
+          { title: 'Stateless Ops', icon: Globe, desc: 'Zero persistence of your documents. When you close the session, we forget.' }
         ].map((item, i) => (
           <div key={i} className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
             <div className="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl flex items-center justify-center mb-4">

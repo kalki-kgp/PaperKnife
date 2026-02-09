@@ -43,8 +43,8 @@ export default function MetadataTool() {
       setMeta(prev => ({ 
         ...prev, 
         author: savedAuthor, 
-        creator: savedAuthor || 'PaperKnife',
-        producer: savedAuthor || 'PaperKnife'
+        creator: savedAuthor,
+        producer: savedAuthor
       }))
     }
   }, [])
@@ -93,15 +93,36 @@ export default function MetadataTool() {
       const arrayBuffer = await pdfData.file.arrayBuffer()
       const sourcePdf = await PDFDocument.load(arrayBuffer, { password: pdfData.password || undefined, ignoreEncryption: true } as any)
       let targetPdf: PDFDocument
+      
       if (deepClean) {
+        // Deep Clean: Reconstruct the PDF to strip hidden layers/metadata/scripts
         targetPdf = await PDFDocument.create()
         const copiedPages = await targetPdf.copyPages(sourcePdf, sourcePdf.getPageIndices())
         copiedPages.forEach(page => targetPdf.addPage(page))
-      } else { targetPdf = sourcePdf }
-      targetPdf.setTitle(meta.title); targetPdf.setAuthor(meta.author); targetPdf.setSubject(meta.subject)
-      targetPdf.setKeywords(meta.keywords.split(',').map(k => k.trim()))
-      targetPdf.setCreator(meta.creator || meta.author || 'PaperKnife'); targetPdf.setProducer(meta.producer || meta.author || 'PaperKnife')
-      const pdfBytes = await targetPdf.save(); const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
+        
+        // Explicitly clear standard metadata fields
+        targetPdf.setTitle('')
+        targetPdf.setAuthor('')
+        targetPdf.setSubject('')
+        targetPdf.setKeywords([])
+        targetPdf.setCreator('')
+        targetPdf.setProducer('')
+        
+        // Remove the XMP metadata stream if it exists
+        const dict = targetPdf.catalog.get(targetPdf.context.obj('Metadata'))
+        if (dict) targetPdf.catalog.delete(targetPdf.context.obj('Metadata'))
+      } else { 
+        targetPdf = sourcePdf 
+        // Only set if field is not empty, otherwise we leave it or clear it
+        targetPdf.setTitle(meta.title || '')
+        targetPdf.setAuthor(meta.author || '')
+        targetPdf.setSubject(meta.subject || '')
+        targetPdf.setKeywords(meta.keywords ? meta.keywords.split(',').map(k => k.trim()) : [])
+        targetPdf.setCreator(meta.creator || '')
+        targetPdf.setProducer(meta.producer || '')
+      }
+      
+      const pdfBytes = await targetPdf.save()
       const url = URL.createObjectURL(blob); setDownloadUrl(url)
       addActivity({ name: `${customFileName}.pdf`, tool: 'Metadata', size: blob.size, resultUrl: url })
     } catch (error: any) { toast.error(`Error: ${error.message}`) } finally { setIsProcessing(false); setIsDeepCleaning(false) }

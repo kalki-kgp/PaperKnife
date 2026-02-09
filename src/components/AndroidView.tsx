@@ -66,40 +66,77 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
         </div>
       </header>
 
-      <main className="px-4 py-4 space-y-6 flex-1 overflow-y-auto">
+      <main className="px-4 py-2 space-y-5 flex-1 overflow-y-auto scrollbar-hide">
         
-        {/* New Hero: Sleek Upload Section */}
+        {/* Compact Hero: Sleek Upload Section */}
         <section className="relative">
            <button 
             onClick={() => fileInputRef.current?.click()}
-            className="w-full bg-zinc-900 dark:bg-zinc-100 rounded-[2.5rem] p-8 text-left relative overflow-hidden shadow-2xl group active:scale-[0.98] transition-all"
+            className="w-full bg-zinc-900 dark:bg-zinc-100 rounded-[2rem] p-6 text-left relative overflow-hidden shadow-xl group active:scale-[0.98] transition-all"
            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-40 dark:opacity-20 group-active:opacity-60 transition-opacity" />
+              <div className="absolute top-0 right-0 w-48 h-48 bg-rose-500 rounded-full blur-[60px] -mr-16 -mt-16 opacity-40 dark:opacity-20 group-active:opacity-60 transition-opacity" />
               
               <div className="relative z-10 flex flex-col h-full justify-between">
-                 <div className="flex justify-between items-start mb-12">
-                    <div className="p-4 bg-white/10 dark:bg-black/5 rounded-2xl backdrop-blur-md text-white dark:text-black">
-                       <Upload size={32} strokeWidth={2.5} />
+                 <div className="flex justify-between items-start mb-8">
+                    <div className="p-3 bg-white/10 dark:bg-black/5 rounded-xl backdrop-blur-md text-white dark:text-black">
+                       <Upload size={24} strokeWidth={2.5} />
                     </div>
-                    <div className="px-4 py-2 bg-rose-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/40">
-                       PRO READY
+                    <div className="px-3 py-1.5 bg-rose-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/40">
+                       100% LOCAL
                     </div>
                  </div>
                  <div>
-                    <h2 className="text-4xl font-black text-white dark:text-black tracking-tight leading-none mb-2">Select PDF</h2>
-                    <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Fast, local, and encrypted processing.</p>
+                    <h2 className="text-3xl font-black text-white dark:text-black tracking-tight leading-none mb-1.5">Select PDF</h2>
+                    <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-tight">Tap to begin local session</p>
                  </div>
               </div>
            </button>
         </section>
 
+        {/* History Section - Now prioritized below Select */}
+        <section>
+          <div className="flex items-center justify-between px-2 mb-3">
+             <div className="flex items-center gap-2">
+                <Clock size={12} className="text-gray-400" />
+                <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Recent Stream</h3>
+             </div>
+             {history.length > 0 && (
+                <button onClick={() => navigate('/android-history')} className="text-[9px] font-black uppercase text-rose-500">History</button>
+             )}
+          </div>
+          
+          {history.length > 0 ? (
+            <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 p-1 shadow-sm">
+              {history.slice(0, 3).map((item) => (
+                <button 
+                  key={item.id} 
+                  onClick={() => navigate('/android-history')}
+                  className="w-full p-3.5 flex items-center gap-3.5 rounded-[1.5rem] active:bg-gray-50 dark:active:bg-white/5 transition-colors"
+                >
+                  <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-xl flex items-center justify-center shrink-0 text-gray-400 dark:text-zinc-500">
+                    <FileText size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-xs font-bold truncate text-gray-900 dark:text-white leading-tight">{item.name}</p>
+                    <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-0.5">{item.tool} • {new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                  </div>
+                  <ChevronRight size={14} className="text-gray-300" />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="py-8 px-4 text-center border-2 border-dashed border-gray-100 dark:border-white/5 rounded-[2rem]">
+               <p className="text-[9px] font-black text-gray-300 dark:text-zinc-700 uppercase tracking-[0.2em]">Vault is Empty</p>
+            </div>
+          )}
+        </section>
+
         {/* Engine Dashboard */}
-        <section className="grid grid-cols-2 gap-3">
-           <div className="col-span-2 px-2 flex items-center justify-between">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Core Dashboard</h3>
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">
-                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                 OFFLINE NODE
+        <section className="grid grid-cols-2 gap-2.5">
+           <div className="col-span-2 px-2 mb-1 flex items-center justify-between">
+              <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Core Engines</h3>
+              <div className="flex items-center gap-1.5 text-[8px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-md uppercase tracking-widest">
+                 Live RAM Node
               </div>
            </div>
            
@@ -107,84 +144,39 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
               <button
                 key={action.title}
                 onClick={() => navigate(action.path)}
-                className="p-5 bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col gap-4 shadow-sm active:scale-95 transition-all group"
+                className="p-4 bg-white dark:bg-zinc-900 rounded-[1.75rem] border border-gray-100 dark:border-white/5 flex flex-col gap-3 shadow-sm active:scale-95 transition-all group"
               >
-                <div className={`w-12 h-12 ${action.bg} ${action.color} rounded-2xl flex items-center justify-center group-active:scale-110 transition-transform`}>
-                  <action.icon size={24} strokeWidth={2.5} />
+                <div className={`w-10 h-10 ${action.bg} ${action.color} rounded-xl flex items-center justify-center group-active:scale-110 transition-transform`}>
+                  <action.icon size={20} strokeWidth={2.5} />
                 </div>
                 <div className="text-left">
-                   <span className="text-sm font-bold text-gray-900 dark:text-white block">{action.title}</span>
-                   <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tight">System Tool</span>
+                   <span className="text-xs font-bold text-gray-900 dark:text-white block">{action.title}</span>
+                   <span className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">System Utility</span>
                 </div>
               </button>
             ))}
 
             <button
               onClick={() => navigate('/android-tools')}
-              className="p-5 bg-rose-500 text-white rounded-[2rem] flex flex-col gap-4 shadow-lg shadow-rose-500/20 active:scale-95 transition-all col-span-2 relative overflow-hidden group"
+              className="p-4 bg-rose-500 text-white rounded-[1.75rem] flex flex-col gap-3 shadow-lg shadow-rose-500/20 active:scale-95 transition-all col-span-2 relative overflow-hidden group"
             >
-               <div className="absolute right-0 top-0 p-8 opacity-20 -mr-4 -mt-4 group-active:scale-110 transition-transform">
-                  <LayoutGrid size={80} />
+               <div className="absolute right-0 top-0 p-6 opacity-20 -mr-4 -mt-4 group-active:scale-110 transition-transform">
+                  <LayoutGrid size={64} />
                </div>
-               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center relative z-10">
-                  <Sparkles size={24} strokeWidth={2.5} />
+               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center relative z-10">
+                  <Sparkles size={20} strokeWidth={2.5} />
                </div>
                <div className="text-left relative z-10">
-                  <span className="text-lg font-black block">More Engines</span>
-                  <span className="text-xs font-bold opacity-80 uppercase tracking-widest">Explore Full Catalog</span>
+                  <span className="text-sm font-black block">More Engines</span>
+                  <span className="text-[9px] font-bold opacity-80 uppercase tracking-widest">Full Catalog Access</span>
                </div>
             </button>
         </section>
 
-        {/* History Section - Persistent */}
-        <section className="pb-10">
-          <div className="flex items-center justify-between px-2 mb-4">
-             <div className="flex items-center gap-2">
-                <Clock size={14} className="text-gray-400" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Activity Stream</h3>
-             </div>
-             {history.length > 0 && (
-                <button onClick={() => navigate('/android-history')} className="text-[10px] font-black uppercase text-rose-500">View All</button>
-             )}
-          </div>
-          
-          {history.length > 0 ? (
-            <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-2 shadow-sm">
-              {history.map((item) => (
-                <button 
-                  key={item.id} 
-                  onClick={() => navigate('/android-history')}
-                  className="w-full p-4 flex items-center gap-4 rounded-[1.75rem] active:bg-gray-50 dark:active:bg-white/5 transition-colors"
-                >
-                  <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center shrink-0 text-gray-400 dark:text-zinc-500">
-                    <FileText size={20} />
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-bold truncate text-gray-900 dark:text-white">{item.name}</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.tool} • {new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                  </div>
-                  <ChevronRight size={16} className="text-gray-300" />
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="p-12 text-center border-4 border-dashed border-gray-100 dark:border-white/5 rounded-[2.5rem]">
-               <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                  <ShieldCheck size={32} />
-               </div>
-               <h4 className="text-sm font-bold text-gray-400 dark:text-zinc-600 mb-1">Vault is Empty</h4>
-               <p className="text-[10px] font-medium text-gray-300 dark:text-zinc-700 uppercase tracking-[0.2em]">Start processing to see activity</p>
-            </div>
-          )}
-        </section>
-
-        {/* Status Badge */}
-        <div className="flex flex-col items-center gap-3 py-8 opacity-40">
-           <Shield className="text-emerald-500" size={20} />
-           <div className="text-center">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] dark:text-white">Active Privacy Shield</p>
-              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">Local Processing Enabled</p>
-           </div>
+        {/* Minimal Footer */}
+        <div className="flex flex-col items-center gap-2 py-6 opacity-30">
+           <PaperKnifeLogo size={18} iconColor="#F43F5E" />
+           <p className="text-[8px] font-black uppercase tracking-[0.4em] dark:text-white text-center">Encrypted Session Node <br/> v1.0.0-beta</p>
         </div>
 
       </main>

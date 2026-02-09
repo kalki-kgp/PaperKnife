@@ -7,6 +7,7 @@ export default function Thanks() {
   const isNative = Capacitor.isNativePlatform()
 
   const links = [
+    { name: 'pdf-lib', url: 'https://github.com/Hopding/pdf-lib', desc: 'The core engine of PaperKnife, providing the low-level PDF manipulation capabilities that power every tool.' },
     { name: 'Termux', url: 'https://github.com/termux/termux-app', desc: 'The powerful terminal emulator for Android that made development on-the-go possible.' },
     { name: 'OpenCode', url: 'https://github.com/opencode', desc: 'The open-source community fostering collaboration and innovation.' },
     { name: 'Gemini CLI', url: 'https://github.com/google-gemini/gemini-cli', desc: 'The AI agent that assisted in the architectural design and implementation of PaperKnife.' },
@@ -63,7 +64,7 @@ export default function Thanks() {
 
       <footer className="text-center py-10 opacity-20">
          <PaperKnifeLogo size={24} iconColor="#F43F5E" className="mx-auto mb-4" />
-         <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v0.5.0-beta</p>
+         <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Node v1.0.0-beta</p>
       </footer>
     </div>
   )
