@@ -1,5 +1,5 @@
 import { 
-  Heart, ShieldCheck, Zap, Code, Github, Scale, 
+  Heart, ShieldCheck, Code, Github, Scale, 
   Globe, Cpu, Smartphone, Layers
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
