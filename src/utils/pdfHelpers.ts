@@ -147,10 +147,18 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
     
     const maxDimension = 300;
     const thumbnailScale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
-    const thumbViewport = page.getViewport({ scale: scale * thumbnailScale * (window.devicePixelRatio || 1) });
+    
+    // Higher scale for better quality on high-DPI mobile screens
+    const renderScale = scale * thumbnailScale * (Math.min(window.devicePixelRatio, 2) || 1);
+    const thumbViewport = page.getViewport({ scale: renderScale });
 
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d', { alpha: false });
+    // For mobile performance, we use a simpler context
+    const context = canvas.getContext('2d', { 
+      alpha: false,
+      desynchronized: true,
+      willReadFrequently: false 
+    });
     
     if (!context) throw new Error('Canvas context not available');
     
@@ -160,13 +168,18 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
     
-    await page.render({ 
+    const renderTask = page.render({ 
       canvasContext: context, 
       viewport: thumbViewport, 
       intent: 'display'
-    }).promise;
+    });
+
+    await renderTask.promise;
     
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    // Using image/jpeg for smaller memory footprint on mobile
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Clean up canvas memory immediately
     canvas.width = 0;
     canvas.height = 0;
     

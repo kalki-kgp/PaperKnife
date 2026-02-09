@@ -111,7 +111,9 @@ export default function ExtractImagesTool() {
       }
       
       if (imageCounter === 0) {
-        toast.error('No embedded images found in this PDF.')
+        toast.error('No embedded images found.', {
+          description: 'The file might be heavily compressed or uses non-standard image encoding.'
+        })
         setIsProcessing(false)
         return
       }
@@ -163,10 +165,17 @@ export default function ExtractImagesTool() {
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-8 shadow-sm">
             {!downloadUrl ? (
               <>
-                <div className="text-center py-2 px-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-white/5">
-                   <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
-                     This tool scans every page and recovers high-quality source images. Perfect for saving photos from documents.
-                   </p>
+                <div className="space-y-4">
+                  <div className="text-center py-2 px-4 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-white/5">
+                    <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
+                      This tool scans every page and recovers high-quality source images. Perfect for saving photos from documents.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20 text-center">
+                    <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest">
+                      Note: If no images are detected, the file may have been compressed using rasterization (printing to PDF).
+                    </p>
+                  </div>
                 </div>
                 <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3 tracking-widest px-1">Output ZIP Name</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
                 {isProcessing && (

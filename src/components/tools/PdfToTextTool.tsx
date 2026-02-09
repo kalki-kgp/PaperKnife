@@ -126,7 +126,18 @@ export default function PdfToTextTool() {
                   <div className="space-y-2"><div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner"><div className="bg-rose-500 h-full transition-all" style={{ width: `${progress}%` }} /></div><p className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse px-1">Scanning Document...</p></div>
                 )}
                 {!isProcessing && (
-                  <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-900/20 text-center"><p className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-widest">Select mode and tap Extract above</p></div>
+                  <div className="space-y-4">
+                    {extractionMode === 'ocr' && (
+                      <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20">
+                         <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest text-center">
+                            Note: Deep OCR is CPU-intensive and may take a few minutes depending on your device performance.
+                         </p>
+                      </div>
+                    )}
+                    <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-900/20 text-center">
+                      <p className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-widest">Select mode and tap Extract</p>
+                    </div>
+                  </div>
                 )}
               </>
             ) : (

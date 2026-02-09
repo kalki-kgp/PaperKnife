@@ -144,23 +144,40 @@ export default function About() {
   if (isNative) {
     return (
       <NativeToolLayout title="About" description="Technical Specification" actions={null}>
-        <div className="animate-in fade-in duration-500 pb-32">
+        <div className="animate-in fade-in duration-500 pb-32 bg-[#FAFAFA] dark:bg-black">
           {/* Hero section for Native */}
           <section className="text-center py-8">
-            <div className="w-20 h-20 bg-rose-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-rose-500/20">
-              <PaperKnifeLogo size={40} iconColor="#FFFFFF" />
+            <div className="flex flex-col items-center gap-4 mb-6">
+              <div className="w-20 h-20 bg-rose-500 text-white rounded-3xl flex items-center justify-center shadow-xl shadow-rose-500/20">
+                <PaperKnifeLogo size={40} iconColor="#FFFFFF" />
+              </div>
+              <h1 className="text-4xl font-black tracking-tighter dark:text-white leading-none">PaperKnife</h1>
             </div>
-            <h1 className="text-4xl font-black tracking-tighter dark:text-white mb-2">PaperKnife</h1>
             <p className="text-xs font-black uppercase tracking-[0.4em] text-rose-500 mb-6">Privacy Engine v0.5.0</p>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 font-medium px-4">
-              A high-integrity PDF utility that executes entirely within your device's private runtime.
+            <p className="text-sm text-gray-500 dark:text-zinc-400 font-medium px-6 leading-relaxed">
+              PaperKnife is a professional-grade PDF orchestration engine. It is built on the principle of <b>Absolute Sovereignty</b>—meaning your data never crosses a network boundary.
             </p>
+          </section>
+
+          {/* Detailed Specs for Native */}
+          <section className="mb-8 px-4">
+             <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-gray-100 dark:border-white/5 shadow-sm space-y-4">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">The Architecture</h3>
+                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
+                   PaperKnife uses a "Chameleon" runtime that adapts to your environment. On Android, it leverages a high-performance WebView container with direct access to local filesystem primitives, ensuring that even large PDF files can be processed without memory overflows.
+                </p>
+                <div className="h-[1px] w-full bg-gray-50 dark:bg-white/5" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Core Engine</h3>
+                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
+                   Under the hood, we use <code>pdf-lib</code> for low-level document manipulation and <code>pdfjs-dist</code> for high-fidelity rendering. This combination allows for lossless merging and precise visual splitting.
+                </p>
+             </div>
           </section>
 
           {/* Native Protocol List */}
           <section className="mb-8">
             <h3 className="px-6 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Security Protocol</h3>
-            <div className="bg-white dark:bg-zinc-900 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5">
+            <div className="bg-white dark:bg-zinc-900 border-y border-gray-100 dark:border-white/5 divide-y divide-gray-50 dark:divide-white/5 shadow-sm">
               <div className="p-5 flex gap-4">
                 <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-xl flex items-center justify-center shrink-0"><ShieldCheck size={20} /></div>
                 <div><h4 className="text-sm font-bold dark:text-white">Zero-Server Logic</h4><p className="text-xs text-gray-500 dark:text-zinc-500 mt-1 leading-relaxed">Files are loaded into volatile RAM. No part of your document is ever uploaded or cached.</p></div>

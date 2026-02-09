@@ -29,6 +29,10 @@ export default function PdfToImageTool() {
   useEffect(() => {
     const pipelined = consumePipelineFile()
     if (pipelined) {
+      if (pipelined.type && pipelined.type !== 'application/pdf') {
+        toast.error('The file from the previous tool is not a PDF and cannot be used here.')
+        return
+      }
       const file = new File([pipelined.buffer as any], pipelined.name, { type: 'application/pdf' })
       handleFile(file)
     }
@@ -78,6 +82,12 @@ export default function PdfToImageTool() {
       }
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       const url = URL.createObjectURL(zipBlob); setDownloadUrl(url)
+      const zipBuffer = new Uint8Array(await zipBlob.arrayBuffer())
+      setPipelineFile({
+        buffer: zipBuffer,
+        name: `${customFileName}.zip`,
+        type: 'application/zip'
+      })
       addActivity({ name: `${customFileName}.zip`, tool: 'PDF to Image', size: zipBlob.size, resultUrl: url })
     } catch (error: any) { toast.error(`Error: ${error.message}`) } finally { setIsProcessing(false) }
   }

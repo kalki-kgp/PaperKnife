@@ -96,6 +96,10 @@ export default function CompressTool() {
   useEffect(() => {
     const pipelined = consumePipelineFile()
     if (pipelined) {
+      if (pipelined.type && pipelined.type !== 'application/pdf') {
+        toast.error('The file from the previous tool is not a PDF and cannot be used here.')
+        return
+      }
       const file = new File([pipelined.buffer as any], pipelined.name, { type: 'application/pdf' })
       handleFiles([file])
     }
@@ -142,13 +146,24 @@ export default function CompressTool() {
       canvas.width = 0; canvas.height = 0
     }
     return new Promise((resolve, reject) => {
-      const worker = new Worker(new URL('../../utils/pdfWorker.ts', import.meta.url), { type: 'module' })
-      worker.postMessage({ type: 'COMPRESS_PDF_ASSEMBLY', payload: { pages: pagesData, quality } }, pagesData.map(p => p.imageBytes.buffer) as any)
-      worker.onmessage = (e) => {
-        if (e.data.type === 'SUCCESS') {
-          const blob = new Blob([e.data.payload], { type: 'application/pdf' })
-          resolve({ url: createUrl(blob), size: blob.size, buffer: e.data.payload }); worker.terminate()
-        } else { reject(new Error(e.data.payload)); worker.terminate() }
+      try {
+        const worker = new Worker(new URL('../../utils/pdfWorker.ts', import.meta.url), { type: 'module' })
+        worker.postMessage({ type: 'COMPRESS_PDF_ASSEMBLY', payload: { pages: pagesData, quality } }, pagesData.map(p => p.imageBytes.buffer) as any)
+        
+        worker.onmessage = (e) => {
+          if (e.data.type === 'SUCCESS') {
+            const blob = new Blob([e.data.payload], { type: 'application/pdf' })
+            resolve({ url: createUrl(blob), size: blob.size, buffer: e.data.payload }); worker.terminate()
+          } else if (e.data.type === 'ERROR') {
+            reject(new Error(e.data.payload)); worker.terminate()
+          }
+        }
+
+        worker.onerror = (err) => {
+          reject(new Error('Worker failed to start or execution error.')); worker.terminate()
+        }
+      } catch (e: any) {
+        reject(new Error(`Failed to start worker: ${e.message}`))
       }
     })
   }
@@ -168,7 +183,12 @@ export default function CompressTool() {
         addActivity({ name: item.file.name.replace('.pdf', '-compressed.pdf'), tool: 'Compress', size, resultUrl: url })
         if (pendingFiles.length === 1) {
            const originalBuffer = await pendingFiles[0].file.arrayBuffer()
-           setPipelineFile({ buffer, name: item.file.name.replace('.pdf', '-compressed.pdf'), originalBuffer: new Uint8Array(originalBuffer) })
+           setPipelineFile({ 
+             buffer, 
+             name: item.file.name.replace('.pdf', '-compressed.pdf'), 
+             type: 'application/pdf',
+             originalBuffer: new Uint8Array(originalBuffer) 
+           })
         }
       } catch (err) { setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'error' } : f)) }
       setGlobalProgress(Math.round(((i + 1) / pendingFiles.length) * 100))

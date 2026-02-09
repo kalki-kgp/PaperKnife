@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { 
   Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
-  Wrench, ImagePlus, FileImage, Palette, LayoutGrid, X
+  Wrench, ImagePlus, FileImage, Palette, LayoutGrid, X, ChevronDown
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -14,11 +14,13 @@ import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
 import ScrollToTop from './components/ScrollToTop'
 
-// Lazy load views
-const WebView = lazy(() => import('./components/WebView'))
-const AndroidView = lazy(() => import('./components/AndroidView'))
-const AndroidToolsView = lazy(() => import('./components/AndroidToolsView'))
-const AndroidHistoryView = lazy(() => import('./components/AndroidHistoryView'))
+// Main views - No lazy loading for critical navigation to prevent import errors on Android
+import WebView from './components/WebView'
+import AndroidView from './components/AndroidView'
+import AndroidToolsView from './components/AndroidToolsView'
+import AndroidHistoryView from './components/AndroidHistoryView'
+
+// Lazy load tools
 const MergeTool = lazy(() => import('./components/tools/MergeTool'))
 const SplitTool = lazy(() => import('./components/tools/SplitTool'))
 const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
@@ -64,26 +66,20 @@ const tools: Tool[] = [
 function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
   const navigate = useNavigate()
   const { setPipelineFile } = usePipeline()
+  const [showMore, setShowMore] = useState(false)
   
-  const categories = [
-    { 
-      name: 'Essential Tools',
-      tools: [
-        { title: 'Merge', icon: Layers, path: '/merge', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
-        { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-        { title: 'Split', icon: Scissors, path: '/split', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-        { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-      ]
-    },
-    {
-      name: 'Utility & Layout',
-      tools: [
-        { title: 'Rotate', icon: RotateCw, path: '/rotate-pdf' },
-        { title: 'Rearrange', icon: ArrowUpDown, path: '/rearrange-pdf' },
-        { title: 'Metadata', icon: Tags, path: '/metadata' },
-        { title: 'Watermark', icon: Type, path: '/watermark' },
-      ]
-    }
+  const essentials = [
+    { title: 'Merge', icon: Layers, path: '/merge', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+    { title: 'Compress', icon: Zap, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { title: 'Split', icon: Scissors, path: '/split', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+  ]
+
+  const moreTools = [
+    { title: 'Rotate', icon: RotateCw, path: '/rotate-pdf', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
+    { title: 'Metadata', icon: Tags, path: '/metadata', color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
+    { title: 'Watermark', icon: Type, path: '/watermark', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+    { title: 'Rearrange', icon: ArrowUpDown, path: '/rearrange-pdf', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
   ]
 
   const handleAction = async (path: string, title: string) => {
@@ -93,7 +89,8 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
       const buffer = await file.arrayBuffer()
       setPipelineFile({
         buffer: new Uint8Array(buffer),
-        name: file.name
+        name: file.name,
+        type: file.type || (file.name.endsWith('.zip') ? 'application/zip' : 'application/pdf')
       })
 
       onClear()
@@ -124,26 +121,51 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
           </div>
         </div>
         
-        <div className="px-6 pb-6 max-h-[60vh] overflow-y-auto scrollbar-hide space-y-6">
-           {categories.map(cat => (
-             <div key={cat.name}>
-               <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-[0.2em] mb-3 ml-1">{cat.name}</h4>
-               <div className="grid grid-cols-2 gap-2.5">
-                  {cat.tools.map(tool => (
-                    <button
-                      key={tool.title}
-                      onClick={() => handleAction(tool.path, tool.title)}
-                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-white/5 active:bg-gray-50 dark:active:bg-zinc-800 active:scale-95 transition-all shadow-sm group"
-                    >
-                      <div className={`p-2 rounded-xl ${'bg' in tool ? tool.bg : 'bg-gray-100 dark:bg-white/5'} ${'color' in tool ? tool.color : 'text-gray-500 dark:text-gray-400'} group-active:scale-110 transition-transform`}>
-                        <tool.icon size={18} strokeWidth={2.5} />
-                      </div>
-                      <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
-                    </button>
-                  ))}
-               </div>
-             </div>
-           ))}
+        <div className="px-6 pb-6 space-y-4">
+           <div>
+              <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-[0.2em] mb-3 ml-1">Essentials</h4>
+              <div className="grid grid-cols-2 gap-2.5">
+                 {essentials.map(tool => (
+                   <button
+                     key={tool.title}
+                     onClick={() => handleAction(tool.path, tool.title)}
+                     className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-white/5 active:bg-gray-50 dark:active:bg-zinc-800 active:scale-95 transition-all shadow-sm group"
+                   >
+                     <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
+                       <tool.icon size={18} strokeWidth={2.5} />
+                     </div>
+                     <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
+                   </button>
+                 ))}
+              </div>
+           </div>
+
+           <div>
+              <button 
+                onClick={() => setShowMore(!showMore)}
+                className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-rose-500 transition-colors"
+              >
+                <span>More Tools</span>
+                <ChevronDown size={14} className={`transition-transform duration-300 ${showMore ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showMore && (
+                <div className="grid grid-cols-2 gap-2.5 mt-3 animate-in slide-in-from-top-2 duration-300">
+                   {moreTools.map(tool => (
+                     <button
+                       key={tool.title}
+                       onClick={() => handleAction(tool.path, tool.title)}
+                       className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-white/5 active:bg-gray-50 dark:active:bg-zinc-800 active:scale-95 transition-all shadow-sm group"
+                     >
+                       <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
+                         <tool.icon size={18} strokeWidth={2.5} />
+                       </div>
+                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
+                     </button>
+                   ))}
+                </div>
+              )}
+           </div>
         </div>
 
         <div className="p-6 pt-0">
@@ -275,7 +297,15 @@ function App() {
       <ScrollToTop />
       <PipelineProvider>
         <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
-          <Toaster position="bottom-center" expand={true} richColors />
+          <Toaster 
+            position="bottom-center" 
+            expand={true} 
+            richColors 
+            duration={2000}
+            toastOptions={{
+              className: 'dark:bg-zinc-900 dark:text-white dark:border-white/10'
+            }}
+          />
           
           {droppedFile && <QuickDropModal file={droppedFile} onClear={() => setDroppedFile(null)} />}
 

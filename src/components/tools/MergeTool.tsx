@@ -151,6 +151,10 @@ export default function MergeTool() {
   useEffect(() => {
     const pipelined = consumePipelineFile()
     if (pipelined) {
+      if (pipelined.type && pipelined.type !== 'application/pdf') {
+        toast.error('The file from the previous tool is not a PDF and cannot be used here.')
+        return
+      }
       const file = new File([pipelined.buffer as any], pipelined.name, { type: 'application/pdf' })
       handleFiles([file])
       toast.success(`Imported ${file.name} from pipeline`)
@@ -333,7 +337,8 @@ export default function MergeTool() {
           
           setPipelineFile({
             buffer: payload,
-            name: fileName
+            name: fileName,
+            type: 'application/pdf'
           })
           
           addActivity({

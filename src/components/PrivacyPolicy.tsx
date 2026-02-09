@@ -1,4 +1,4 @@
-import { Shield, EyeOff, ServerOff, Database, History } from 'lucide-react'
+import { Shield, EyeOff, ServerOff, Database, History, ExternalLink } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
 
@@ -67,9 +67,16 @@ export default function PrivacyPolicy() {
 
       <div className="p-8 bg-zinc-900 rounded-[2.5rem] text-white">
         <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Integrity Pledge</h3>
-        <p className="text-sm text-zinc-400 leading-relaxed font-medium">
+        <p className="text-sm text-zinc-400 leading-relaxed font-medium mb-6">
           As an open-source project, PaperKnife's source code is publicly available for auditing. We believe that privacy is a fundamental human right, and our architecture reflects that.
         </p>
+        <a 
+          href="https://github.com/potatameister/PaperKnife" 
+          target="_blank" 
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-400 transition-colors"
+        >
+          Audit Source Code on GitHub <ExternalLink size={12} />
+        </a>
       </div>
     </div>
   )

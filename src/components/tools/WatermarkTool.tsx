@@ -24,7 +24,7 @@ export default function WatermarkTool() {
   const [opacity, setOpacity] = useState(0.3)
   const [fontSize, setFontSize] = useState(50)
   const [rotation, setRotation] = useState(-45)
-  const [color, setColor] = useState('#F43F5E')
+  const [color, setColor] = useState('#000000')
 
   useEffect(() => {
     const pipelined = consumePipelineFile()

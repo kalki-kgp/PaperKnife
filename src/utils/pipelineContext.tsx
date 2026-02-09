@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 interface PipelinedFile {
   buffer: Uint8Array
   name: string
+  type?: string
   originalBuffer?: Uint8Array // To store the source before processing (e.g. for comparison)
 }
 

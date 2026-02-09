@@ -32,9 +32,22 @@ export default function MetadataTool() {
     author: localStorage.getItem('defaultAuthor') || '', 
     subject: '', 
     keywords: '', 
-    creator: localStorage.getItem('defaultAuthor') || 'PaperKnife', 
-    producer: localStorage.getItem('defaultAuthor') || 'PaperKnife' 
+    creator: localStorage.getItem('defaultAuthor') || '', 
+    producer: localStorage.getItem('defaultAuthor') || '' 
   })
+
+  useEffect(() => {
+    // Refresh meta if default author changes in storage (e.g. after first mount)
+    const savedAuthor = localStorage.getItem('defaultAuthor') || ''
+    if (!pdfData && savedAuthor) {
+      setMeta(prev => ({ 
+        ...prev, 
+        author: savedAuthor, 
+        creator: savedAuthor || 'PaperKnife',
+        producer: savedAuthor || 'PaperKnife'
+      }))
+    }
+  }, [])
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -87,7 +100,7 @@ export default function MetadataTool() {
       } else { targetPdf = sourcePdf }
       targetPdf.setTitle(meta.title); targetPdf.setAuthor(meta.author); targetPdf.setSubject(meta.subject)
       targetPdf.setKeywords(meta.keywords.split(',').map(k => k.trim()))
-      targetPdf.setCreator(meta.creator || 'PaperKnife'); targetPdf.setProducer(meta.producer || 'PaperKnife')
+      targetPdf.setCreator(meta.creator || meta.author || 'PaperKnife'); targetPdf.setProducer(meta.producer || meta.author || 'PaperKnife')
       const pdfBytes = await targetPdf.save(); const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob); setDownloadUrl(url)
       addActivity({ name: `${customFileName}.pdf`, tool: 'Metadata', size: blob.size, resultUrl: url })
