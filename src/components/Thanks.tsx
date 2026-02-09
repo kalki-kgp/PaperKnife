@@ -29,12 +29,12 @@ export default function Thanks() {
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24">
         {/* Supporter Placeholder - Moved to Top */}
-        <div className="p-8 bg-zinc-900 rounded-[2.5rem] border border-white/5 flex flex-col justify-center items-center text-center space-y-4 group">
+        <div className="p-8 bg-zinc-900 dark:bg-white rounded-[2.5rem] border border-white/5 flex flex-col justify-center items-center text-center space-y-4 group">
           <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center animate-pulse group-hover:scale-110 transition-transform">
             <Heart size={32} fill="currentColor" />
           </div>
-          <h3 className="text-xl font-black tracking-tight text-white">Future Supporters</h3>
-          <p className="text-xs text-gray-400 max-w-[200px] leading-relaxed">
+          <h3 className="text-xl font-black tracking-tight text-white dark:text-black">Future Supporters</h3>
+          <p className="text-xs text-gray-400 dark:text-gray-500 max-w-[200px] leading-relaxed">
             This space is reserved for the heroes who keep this project alive.
           </p>
         </div>

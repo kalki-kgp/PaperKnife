@@ -127,7 +127,7 @@ export default function CompressTool() {
     } else { toast.error('Incorrect password') }
   }
 
-  const compressSingleFile = async (item: CompressPdfFile, quality: CompressionQuality): Promise<{ url: string, size: number, buffer: Uint8Array }> => {
+  const compressSingleFile = async (item: CompressPdfFile, quality: CompressionQuality, onProgress?: (p: number) => void): Promise<{ url: string, size: number, buffer: Uint8Array }> => {
     let pdfDoc = item.pdfDoc || await loadPdfDocument(item.file)
     const scaleMap = { high: 1.0, medium: 1.5, low: 2.0 }; const qualityMap = { high: 0.3, medium: 0.5, low: 0.7 }
     const scale = scaleMap[quality]; const jpegQuality = qualityMap[quality]
@@ -143,6 +143,9 @@ export default function CompressTool() {
       const bytes = new Uint8Array(binaryString.length)
       for (let j = 0; j < binaryString.length; j++) bytes[j] = binaryString.charCodeAt(j)
       pagesData.push({ imageBytes: bytes, width: viewport.width, height: viewport.height })
+      
+      // Update progress during rasterization phase
+      if (onProgress) onProgress(Math.round((i / item.pageCount) * 50)) // First 50% is rasterization
       canvas.width = 0; canvas.height = 0
     }
     return new Promise((resolve, reject) => {
@@ -151,7 +154,9 @@ export default function CompressTool() {
         worker.postMessage({ type: 'COMPRESS_PDF_ASSEMBLY', payload: { pages: pagesData, quality } }, pagesData.map(p => p.imageBytes.buffer) as any)
         
         worker.onmessage = (e) => {
-          if (e.data.type === 'SUCCESS') {
+          if (e.data.type === 'PROGRESS') {
+             if (onProgress) onProgress(50 + Math.round(e.data.payload * 0.5)) // Second 50% is assembly
+          } else if (e.data.type === 'SUCCESS') {
             const blob = new Blob([e.data.payload], { type: 'application/pdf' })
             resolve({ url: createUrl(blob), size: blob.size, buffer: e.data.payload }); worker.terminate()
           } else if (e.data.type === 'ERROR') {
@@ -173,11 +178,15 @@ export default function CompressTool() {
     if (pendingFiles.length === 0) return
     setIsProcessing(true); setGlobalProgress(0)
     const results = []
+    
+    // If single file, track detailed progress
+    const isSingle = pendingFiles.length === 1
+    
     for (let i = 0; i < pendingFiles.length; i++) {
       const item = pendingFiles[i]
       setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'processing' } : f))
       try {
-        const { url, size, buffer } = await compressSingleFile(item, quality)
+        const { url, size, buffer } = await compressSingleFile(item, quality, isSingle ? setGlobalProgress : undefined)
         results.push({ name: item.file.name.replace('.pdf', '-compressed.pdf'), buffer })
         setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'completed', resultUrl: url, resultSize: size } : f))
         addActivity({ name: item.file.name.replace('.pdf', '-compressed.pdf'), tool: 'Compress', size, resultUrl: url })
@@ -191,7 +200,8 @@ export default function CompressTool() {
            })
         }
       } catch { setFiles(prev => prev.map(f => f.id === item.id ? { ...f, status: 'error' } : f)) }
-      setGlobalProgress(Math.round(((i + 1) / pendingFiles.length) * 100))
+      
+      if (!isSingle) setGlobalProgress(Math.round(((i + 1) / pendingFiles.length) * 100))
     }
     if (results.length > 1) {
       const zip = new JSZip(); results.forEach(res => zip.file(res.name, res.buffer))

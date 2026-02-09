@@ -131,7 +131,6 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
         <section>
           <div className="flex items-center justify-between px-2 mb-3">
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Essentials</h3>
-            <button onClick={() => navigate('/android-tools')} className="text-xs font-bold text-rose-500">View All</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action) => (
@@ -146,13 +145,33 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
                 <span className="text-sm font-bold text-gray-900 dark:text-white text-left">{action.title}</span>
               </button>
             ))}
+            {/* More Tools Card */}
+            <button
+              onClick={() => navigate('/android-tools')}
+              className="p-4 bg-gray-900 dark:bg-white rounded-[2rem] border border-transparent flex flex-col gap-3 shadow-sm active:scale-95 transition-all col-span-2 relative overflow-hidden group"
+            >
+               <div className="absolute right-0 top-0 p-6 opacity-10 group-active:scale-110 transition-transform">
+                  <LayoutGrid size={64} className="text-white dark:text-black" />
+               </div>
+               <div className="w-10 h-10 bg-white/10 dark:bg-black/10 rounded-2xl flex items-center justify-center text-white dark:text-black relative z-10">
+                  <LayoutGrid size={20} strokeWidth={2.5} />
+               </div>
+               <div className="text-left relative z-10">
+                  <span className="text-sm font-bold text-white dark:text-black block">More Tools</span>
+                  <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500">Explore full catalog</span>
+               </div>
+            </button>
           </div>
         </section>
 
         {/* Recent Activity List */}
-        {history.length > 0 && (
-          <section>
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-2 mb-3">Recent Activity</h3>
+        <section>
+          <div className="flex items-center justify-between px-2 mb-3">
+             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Recent Activity</h3>
+             {history.length > 0 && <button onClick={() => navigate('/android-history')} className="text-[10px] font-bold text-rose-500">View All</button>}
+          </div>
+          
+          {history.length > 0 ? (
             <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-zinc-800 p-2 shadow-sm">
               {history.map((item) => (
                 <button 
@@ -171,8 +190,12 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
                 </button>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="p-8 text-center border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-[2rem]">
+               <p className="text-xs font-bold text-gray-400">No recent files</p>
+            </div>
+          )}
+        </section>
 
         {/* Privacy Badge */}
         <div className="flex flex-col items-center gap-2 py-6 opacity-50">

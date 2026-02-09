@@ -48,19 +48,19 @@ const tools: Tool[] = [
   { title: 'Split PDF', desc: 'Visually extract specific pages or ranges.', icon: Scissors, implemented: true, path: '/split', category: 'Edit' },
   { title: 'Compress PDF', desc: 'Optimize your file size for easier sharing.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize' },
   { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure' },
-  { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert' },
-  { title: 'Grayscale', desc: 'Convert all document pages to black and white.', icon: Palette, implemented: true, path: '/grayscale', category: 'Optimize' },
-  { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit' },
   { title: 'Unlock PDF', desc: 'Remove passwords from your protected files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure' },
-  { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert' },
-  { title: 'PDF to Image', desc: 'Convert document pages into high-quality images.', icon: FileImage, implemented: true, path: '/pdf-to-image', category: 'Convert' },
   { title: 'Rotate PDF', desc: 'Fix page orientation permanently.', icon: RotateCw, implemented: true, path: '/rotate-pdf', category: 'Edit' },
-  { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit' },
-  { title: 'Page Numbers', desc: 'Add numbering to your documents automatically.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit' },
-  { title: 'Metadata', desc: 'Edit document properties for better privacy.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure' },
-  { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize' },
-  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert' },
   { title: 'Rearrange PDF', desc: 'Drag and drop pages to reorder them.', icon: ArrowUpDown, implemented: true, path: '/rearrange-pdf', category: 'Edit' },
+  { title: 'Page Numbers', desc: 'Add numbering to your documents automatically.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit' },
+  { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit' },
+  { title: 'Metadata', desc: 'Edit document properties for better privacy.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure' },
+  { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit' },
+  { title: 'Grayscale', desc: 'Convert all document pages to black and white.', icon: Palette, implemented: true, path: '/grayscale', category: 'Optimize' },
+  { title: 'PDF to Image', desc: 'Convert document pages into high-quality images.', icon: FileImage, implemented: true, path: '/pdf-to-image', category: 'Convert' },
+  { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert' },
+  { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert' },
+  { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert' },
+  { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize' },
 ]
 
 function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) {
@@ -75,12 +75,7 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
     { title: 'Protect', icon: Lock, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
   ]
 
-  const moreTools = [
-    { title: 'Rotate', icon: RotateCw, path: '/rotate-pdf', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-    { title: 'Metadata', icon: Tags, path: '/metadata', color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
-    { title: 'Watermark', icon: Type, path: '/watermark', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
-    { title: 'Rearrange', icon: ArrowUpDown, path: '/rearrange-pdf', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-  ]
+  const otherTools = tools.filter(t => !essentials.some(e => e.path === t.path))
 
   const handleAction = async (path: string, title: string) => {
     toast.loading(`Importing ${file.name}...`, { id: 'quick-load' })
@@ -121,7 +116,7 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
           </div>
         </div>
         
-        <div className="px-6 pb-6 space-y-4">
+        <div className="px-6 pb-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
            <div>
               <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-[0.2em] mb-3 ml-1">Essentials</h4>
               <div className="grid grid-cols-2 gap-2.5">
@@ -145,19 +140,19 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
                 onClick={() => setShowMore(!showMore)}
                 className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-rose-500 transition-colors"
               >
-                <span>More Tools</span>
+                <span>All Tools</span>
                 <ChevronDown size={14} className={`transition-transform duration-300 ${showMore ? 'rotate-180' : ''}`} />
               </button>
               
               {showMore && (
                 <div className="grid grid-cols-2 gap-2.5 mt-3 animate-in slide-in-from-top-2 duration-300">
-                   {moreTools.map(tool => (
+                   {otherTools.map(tool => (
                      <button
                        key={tool.title}
-                       onClick={() => handleAction(tool.path, tool.title)}
+                       onClick={() => tool.path && handleAction(tool.path, tool.title)}
                        className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-white/5 active:bg-gray-50 dark:active:bg-zinc-800 active:scale-95 transition-all shadow-sm group"
                      >
-                       <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
+                       <div className="p-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 group-active:scale-110 transition-transform">
                          <tool.icon size={18} strokeWidth={2.5} />
                        </div>
                        <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
@@ -166,15 +161,6 @@ function QuickDropModal({ file, onClear }: { file: File, onClear: () => void }) 
                 </div>
               )}
            </div>
-        </div>
-
-        <div className="p-6 pt-0">
-           <button 
-            onClick={() => { onClear(); navigate('/android-tools'); }}
-            className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-xl"
-           >
-             <LayoutGrid size={16} /> Explore All Capabilities
-           </button>
         </div>
       </div>
     </div>

@@ -144,7 +144,7 @@ export default function About() {
   if (isNative) {
     return (
       <NativeToolLayout title="About" description="Technical Specification" actions={null}>
-        <div className="animate-in fade-in duration-500 pb-32 bg-[#FAFAFA] dark:bg-black">
+        <div className="animate-in fade-in duration-500 pb-32">
           {/* Hero section for Native */}
           <section className="text-center py-8">
             <div className="flex flex-col items-center gap-4 mb-6">

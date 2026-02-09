@@ -65,7 +65,7 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
                   <button
                     key={i}
                     onClick={() => tool.implemented && tool.path && navigate(tool.path)}
-                    className="flex items-center gap-4 p-4 bg-white dark:bg-[#2B2930] rounded-2xl border border-gray-100 dark:border-transparent active:bg-[#EEE8F4] dark:active:bg-[#36343B] transition-all shadow-sm"
+                    className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 active:bg-gray-50 dark:active:bg-black transition-all shadow-sm"
                   >
                     <div className={`w-12 h-12 ${colors.bg} ${colors.icon} rounded-xl flex items-center justify-center shrink-0`}>
                       <Icon size={24} strokeWidth={1.5} />
