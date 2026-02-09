@@ -122,8 +122,10 @@ export default function MetadataTool() {
         targetPdf.setProducer(meta.producer || '')
       }
       
-      const pdfBytes = await targetPdf.save()
-      const url = URL.createObjectURL(blob); setDownloadUrl(url)
+      const pdfBytes = await targetPdf.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      setDownloadUrl(url)
       addActivity({ name: `${customFileName}.pdf`, tool: 'Metadata', size: blob.size, resultUrl: url })
     } catch (error: any) { toast.error(`Error: ${error.message}`) } finally { setIsProcessing(false); setIsDeepCleaning(false) }
   }

@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Plus, ChevronLeft, ChevronRight, Loader2, FileText, Share2, Download } from 'lucide-react'
-import * as pdfjsLib from 'pdfjs-dist'
 import { loadPdfDocument, renderPageThumbnail, shareFile, downloadFile } from '../utils/pdfHelpers'
 import { PaperKnifeLogo } from './Logo'
 import { Capacitor } from '@capacitor/core'

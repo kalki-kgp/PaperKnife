@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { 
-  Shield, 
   ChevronRight,
   FileText,
   Layers, Zap, Scissors, Lock,
-  Moon, Sun, Upload, ShieldCheck,
+  Moon, Sun, Upload,
   LayoutGrid, Sparkles, Clock
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
