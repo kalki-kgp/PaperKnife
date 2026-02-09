@@ -104,7 +104,13 @@ npx cap open android
 
 This project is licensed under the **GNU Affero General Public License v3 (AGPL v3)**. 
 
-PaperKnife is a privacy-first utility. To ensure the integrity and transparency of all versions of this software, any modified versions hosted on a network must provide a link to their source code.
+### Why AGPL v3?
+PaperKnife is a privacy-first utility. We chose the AGPL v3 to ensure:
+*   **Absolute Transparency:** Any version of PaperKnife hosted on a network (as a website or service) **must** provide a way for users to download the source code.
+*   **Open Core:** Modified versions cannot be turned into proprietary "black box" services.
+*   **User Sovereignty:** You have the legal right to verify exactly how your data is being handled.
+
+For more details, see the [LICENSE](LICENSE) file.
 
 ---
 *Built with ❤️ by [potatameister](https://github.com/potatameister)*
