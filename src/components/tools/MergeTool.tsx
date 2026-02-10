@@ -229,6 +229,9 @@ export default function MergeTool() {
 
     setFiles(prev => [...prev, ...newFiles])
     clearUrls()
+    
+    // Clear input value to allow selecting the same file again
+    if (fileInputRef.current) fileInputRef.current.value = ''
 
     for (const pdfFile of newFiles) {
       getPdfMetaData(pdfFile.file).then(meta => {
@@ -463,16 +466,16 @@ export default function MergeTool() {
               )}
             </div>
           ) : (
-            <div 
+            <button 
               onClick={() => !isProcessing && fileInputRef.current?.click()}
-              className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+              className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
             >
                <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner">
                   <Upload size={32} />
                </div>
                <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF Files</h3>
                <p className="text-sm text-gray-400 font-medium">Tap to browse or drag and drop here</p>
-            </div>
+            </button>
           )}
 
           {files.length > 0 && !objectUrl && !isNative && (
@@ -496,7 +499,7 @@ export default function MergeTool() {
                 message="PDFs Merged Successfully!"
                 downloadUrl={objectUrl}
                 fileName={`${customFileName || 'merged'}.pdf`}
-                onStartOver={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); }}
+                onStartOver={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); setIsProcessing(false); }}
               />
             </div>
           )}

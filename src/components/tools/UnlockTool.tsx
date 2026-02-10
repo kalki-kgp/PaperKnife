@@ -47,6 +47,7 @@ export default function UnlockTool() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) handleFile(e.target.files[0])
+    if (e.target) e.target.value = ''
   }
 
   const performUnlock = async () => {
@@ -74,11 +75,14 @@ export default function UnlockTool() {
     <NativeToolLayout title="Unlock PDF" description="Remove passwords and restrictions permanently. Processed locally." actions={pdfData && !objectUrl && <ActionButton />}>
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
       {!pdfData ? (
-        <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
+        <button 
+          onClick={() => !isProcessing && fileInputRef.current?.click()} 
+          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+        >
           <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><Unlock size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select Locked PDF</h3>
           <p className="text-sm text-gray-400">Tap to browse files</p>
-        </div>
+        </button>
       ) : (
         <div className="space-y-6 animate-in fade-in duration-500">
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center gap-6 shadow-sm">
@@ -106,7 +110,7 @@ export default function UnlockTool() {
                 </div>
               </div>
             ) : (
-              <SuccessState message="Encryption Removed!" downloadUrl={objectUrl} fileName={`${customFileName || 'unlocked'}.pdf`} onStartOver={() => { clearUrls(); setPassword(''); setPdfData(null); }} />
+              <SuccessState message="Encryption Removed!" downloadUrl={objectUrl} fileName={`${customFileName || 'unlocked'}.pdf`} onStartOver={() => { clearUrls(); setPassword(''); setPdfData(null); setIsProcessing(false); }} />
             )}
           </div>
         </div>

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import { Loader2, Scissors, Check, Plus, Lock, ArrowRight, X } from 'lucide-react'
+import { Loader2, Scissors, Check, Plus, Lock, ArrowRight, X, Zap } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
 
-import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
+import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, renderGridThumbnail, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
@@ -28,18 +28,19 @@ const LazyThumbnail = ({ pdfDoc, pageNum }: { pdfDoc: any, pageNum: number }) =>
     if (!pdfDoc || src) return
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        renderPageThumbnail(pdfDoc, pageNum, 1.0).then(setSrc)
+        // Use optimized grid thumbnail for faster loading/lower memory
+        renderGridThumbnail(pdfDoc, pageNum).then(setSrc)
         observer.disconnect()
       }
-    }, { rootMargin: '200px' })
+    }, { rootMargin: '400px' }) // Load ahead for smoother scrolling
     if (imgRef.current) observer.observe(imgRef.current)
     return () => observer.disconnect()
   }, [pdfDoc, pageNum, src])
 
   if (src) return <img src={src} className="w-full h-full object-cover animate-in fade-in duration-300" alt={`Page ${pageNum}`} />
   return (
-    <div ref={imgRef} className="w-full h-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400">
-      <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+    <div ref={imgRef} className="w-full h-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center text-xs font-bold text-gray-400">
+      <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent dark:border-zinc-700 rounded-full animate-spin" />
     </div>
   )
 }
@@ -102,6 +103,7 @@ export default function SplitTool() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) handleFile(e.target.files[0])
+    if (e.target) e.target.value = ''
   }
 
   const togglePage = (pageNum: number) => {
@@ -179,7 +181,10 @@ export default function SplitTool() {
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
 
       {!pdfData ? (
-        <div onClick={() => !isLoadingMeta && fileInputRef.current?.click()} className={`border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group ${isLoadingMeta ? 'opacity-50 cursor-wait' : ''}`}>
+        <button 
+          onClick={() => !isLoadingMeta && fileInputRef.current?.click()} 
+          className={`w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group ${isLoadingMeta ? 'opacity-50 cursor-wait' : ''}`}
+        >
           {isLoadingMeta ? (
             <div className="flex flex-col items-center">
               <Loader2 size={48} className="text-rose-500 animate-spin mb-4" />
@@ -194,7 +199,7 @@ export default function SplitTool() {
               <p className="text-sm text-gray-400 font-medium">Tap to start splitting</p>
             </>
           )}
-        </div>
+        </button>
       ) : pdfData.isLocked ? (
         <div className="max-w-md mx-auto relative z-[100]">
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-2xl text-center">
@@ -229,6 +234,18 @@ export default function SplitTool() {
             </div>
             <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors"><X size={20} /></button>
           </div>
+
+          {pdfData.pageCount > 50 && (
+            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 p-4 rounded-2xl flex items-center gap-3 text-amber-600 dark:text-amber-400 animate-in fade-in duration-500">
+               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center shrink-0">
+                  <Zap size={16} />
+               </div>
+               <div className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-widest leading-none mb-1">Heavy Document</p>
+                  <p className="text-[11px] font-medium leading-tight">Visual selection for large files may be slower. Use range selection for speed.</p>
+               </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-500">
             <div className="lg:col-span-2 space-y-6">
@@ -266,12 +283,12 @@ export default function SplitTool() {
                     <div>
                       <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Split Mode</label>
                       <div className="grid grid-cols-2 gap-2 bg-gray-50 dark:bg-black p-1 rounded-2xl">
-                        <button onClick={() => { setSplitMode('single'); clearUrls(); }} className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase transition-all ${splitMode === 'single' ? 'bg-white dark:bg-zinc-800 text-rose-500 shadow-sm' : 'text-gray-400'}`}>Single</button>
-                        <button onClick={() => { setSplitMode('individual'); clearUrls(); }} className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase transition-all ${splitMode === 'individual' ? 'bg-white dark:bg-zinc-800 text-rose-500 shadow-sm' : 'text-gray-400'}`}>ZIP</button>
+                        <button onClick={() => { setSplitMode('single'); clearUrls(); }} className={`py-2 px-3 rounded-xl text-[9px] font-black uppercase transition-all ${splitMode === 'single' ? 'bg-white dark:bg-zinc-800 text-rose-500 shadow-sm' : 'text-gray-400'}`}>One Document</button>
+                        <button onClick={() => { setSplitMode('individual'); clearUrls(); }} className={`py-2 px-3 rounded-xl text-[9px] font-black uppercase transition-all ${splitMode === 'individual' ? 'bg-white dark:bg-zinc-800 text-rose-500 shadow-sm' : 'text-gray-400'}`}>Separate Files</button>
                       </div>
-                      <p className="text-[8px] text-gray-400 mt-2 px-1 leading-relaxed">
-                        <b>Single:</b> Combines all selected pages into one new PDF file.<br/>
-                        <b>ZIP:</b> Saves each selected page as its own separate PDF inside a ZIP archive.
+                      <p className="text-[8px] text-gray-400 mt-2 px-1 leading-relaxed font-bold uppercase tracking-tight">
+                        <b>One Document:</b> Merges selected pages into one PDF.<br/>
+                        <b>Separate Files:</b> Each page becomes its own PDF (ZIP).
                       </p>
                     </div>
                     <div>
@@ -297,7 +314,7 @@ export default function SplitTool() {
                         message="Split Successful!"
                         downloadUrl={objectUrl}
                         fileName={`${customFileName || 'split'}.${splitMode === 'single' ? 'pdf' : 'zip'}`}
-                        onStartOver={() => clearUrls()}
+                        onStartOver={() => { clearUrls(); setPdfData(null); setIsProcessing(false); }}
                         showPreview={splitMode === 'single'}
                       />
                     )}

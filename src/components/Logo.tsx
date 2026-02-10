@@ -8,7 +8,7 @@ export const PaperKnifeLogo = ({ size = 24, className = "", iconColor, partColor
     className={className}
   >
     <path d="M4 4L21 12H9L4 4Z" fill={iconColor || "#F43F5E"} />
-    <path d="M4 20L21 12H9L4 20Z" fill={partColor || "currentColor"} className={!partColor ? "fill-zinc-900 dark:fill-zinc-100 transition-colors duration-300" : ""} />
+    <path d="M4 20L21 12H9L4 20Z" fill={partColor || "currentColor"} className={!partColor ? "fill-zinc-950 dark:fill-white transition-colors duration-300" : ""} />
     <path d="M9 12L21 12" stroke="white" strokeWidth="1" strokeOpacity="0.2" />
   </svg>
 )

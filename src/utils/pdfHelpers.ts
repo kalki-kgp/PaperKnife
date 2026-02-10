@@ -155,47 +155,66 @@ export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale: scale });
     
-    const maxDimension = 300;
+    // High-quality preview (1200px)
+    const maxDimension = 1200; 
     const thumbnailScale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
-    
-    // Higher scale for better quality on high-DPI mobile screens
-    const renderScale = scale * thumbnailScale * (Math.min(window.devicePixelRatio, 2) || 1);
+    const dpr = window.devicePixelRatio || 1;
+    const renderScale = scale * thumbnailScale * Math.min(dpr, 2);
     const thumbViewport = page.getViewport({ scale: renderScale });
 
     const canvas = document.createElement('canvas');
-    // For mobile performance, we use a simpler context
-    const context = canvas.getContext('2d', { 
-      alpha: false,
-      desynchronized: true,
-      willReadFrequently: false 
-    });
-    
+    const context = canvas.getContext('2d', { alpha: true });
     if (!context) throw new Error('Canvas context not available');
     
     canvas.height = thumbViewport.height;
     canvas.width = thumbViewport.width;
-    
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
     
-    const renderTask = page.render({ 
-      canvasContext: context, 
-      viewport: thumbViewport, 
-      intent: 'display'
-    });
-
-    await renderTask.promise;
+    await page.render({ canvasContext: context, viewport: thumbViewport, intent: 'print' }).promise;
+    const dataUrl = canvas.toDataURL('image/webp', 0.8) || canvas.toDataURL('image/jpeg', 0.9);
     
-    // Using image/jpeg for smaller memory footprint on mobile
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-    
-    // Clean up canvas memory immediately
+    // Memory cleanup
     canvas.width = 0;
     canvas.height = 0;
-    
     return dataUrl;
   } catch (error) {
     console.error(`Error rendering page ${pageNum}:`, error);
+    return '';
+  }
+};
+
+/**
+ * ULTRA-FAST: Render a small thumbnail for grids/lists
+ * Uses lower dimension and higher compression to save RAM on 100+ page docs
+ */
+export const renderGridThumbnail = async (pdf: any, pageNum: number): Promise<string> => {
+  try {
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 0.5 }); // Lower initial scale
+    
+    const maxDimension = 400; // Small but crisp for grids
+    const thumbnailScale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
+    const thumbViewport = page.getViewport({ scale: thumbnailScale });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    if (!context) return '';
+    
+    canvas.height = thumbViewport.height;
+    canvas.width = thumbViewport.width;
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    
+    await page.render({ canvasContext: context, viewport: thumbViewport, intent: 'display' }).promise;
+    
+    // Higher compression for grid thumbnails
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+    
+    canvas.width = 0;
+    canvas.height = 0;
+    return dataUrl;
+  } catch (error) {
     return '';
   }
 };

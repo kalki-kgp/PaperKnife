@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { 
-  Download, 
-  Moon, Sun, 
-  History, Upload, ChevronRight, ChevronDown,
-  Plus, Trash2, CheckCircle2, Home, Info, ArrowLeft,
-  LayoutGrid, Settings
+  Download as DownloadIcon, 
+  Moon as MoonIcon, 
+  Sun as SunIcon, 
+  History as HistoryIcon, 
+  Upload as UploadIcon, 
+  ChevronRight as ChevronRightIcon, 
+  ChevronDown as ChevronDownIcon,
+  Plus as PlusIcon, 
+  Trash2 as Trash2Icon, 
+  CheckCircle2 as CheckCircleIcon, 
+  Home as HomeIcon, 
+  Info as InfoIcon, 
+  ArrowLeft as ArrowLeftIcon,
+  LayoutGrid as LayoutGridIcon, 
+  Settings as SettingsIcon,
+  Github as GHIcon,
+  Heart as HeartIcon
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { Theme, Tool, ToolCategory, ViewMode } from '../types'
@@ -89,13 +101,17 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
   }, [onFileDrop])
 
   const activeTool = tools.find(t => {
-    const path = `/${t.title.split(' ')[0].toLowerCase()}`
-    return location.pathname.includes(path)
+    const pathPart = t.title.split(' ')[0].toLowerCase()
+    return location.pathname.includes(`/${pathPart}`)
   })
 
-  const isHome = location.pathname === '/' || location.pathname === '/PaperKnife/'
-  const isMainView = isHome || ['/android-tools', '/android-history', '/settings'].includes(location.pathname)
-  const shouldShowNav = showMobileNav && isMainView
+  const isHome = location.pathname === '/' || location.pathname === '/PaperKnife' || location.pathname === '/PaperKnife/'
+  const isMainView = isHome || 
+    location.pathname.endsWith('/android-tools') || 
+    location.pathname.endsWith('/android-history') || 
+    location.pathname.endsWith('/settings')
+
+  const shouldShowNav = showMobileNav && isMainView && !activeTool
 
   return (
     <div className={`min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-black text-gray-900 dark:text-zinc-100 transition-colors duration-300`}>
@@ -103,7 +119,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
       {isDragging && (
         <div className="fixed inset-0 z-[200] bg-rose-500/10 backdrop-blur-sm flex items-center justify-center pointer-events-none">
           <div className="bg-white dark:bg-zinc-900 p-12 rounded-[3rem] shadow-2xl border-4 border-dashed border-rose-500 animate-in zoom-in duration-300">
-            <Upload size={64} className="text-rose-500 animate-bounce" />
+            <UploadIcon size={64} className="text-rose-500 animate-bounce" />
             <p className="mt-4 font-black uppercase tracking-widest text-rose-500 text-center text-sm">Drop PDF to start</p>
           </div>
         </div>
@@ -114,17 +130,17 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 border-b border-gray-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100]">
           <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
             {!isHome && (
-              <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-rose-500 shrink-0"><ArrowLeft size={20} /></button>
+              <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-rose-500 shrink-0"><ArrowLeftIcon size={20} /></button>
             )}
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
-              <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} />
+              <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} iconColor="#F43F5E" />
               <span className="font-black tracking-tighter text-lg md:text-xl dark:text-white hidden xs:block">PaperKnife</span>
             </Link>
             <div className="h-6 w-[1px] bg-gray-200 dark:bg-zinc-800 mx-1 md:mx-2 shrink-0" />
             <div className="relative min-w-0" ref={dropdownRef}>
               <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-xl transition-all font-black text-[10px] md:text-sm uppercase tracking-widest min-w-0 ${isDropdownOpen ? 'bg-rose-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
                 <span className="truncate">{isHome ? 'All Tools' : activeTool?.title || 'Tool'}</span>
-                <ChevronDown size={14} className={`transition-transform duration-300 shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDownIcon size={14} className={`transition-transform duration-300 shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               {isDropdownOpen && (
                 <div className="absolute top-full left-0 mt-3 w-72 md:w-80 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[2rem] shadow-2xl py-4 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 max-h-[80vh] overflow-y-auto scrollbar-hide">
@@ -153,14 +169,14 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
             <Link to="/about" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
-              <Info size={18} />
+              <InfoIcon size={18} />
               <span className="hidden sm:block">About</span>
             </Link>
             <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-rose-500 transition-colors">
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              {theme === 'light' ? <MoonIcon size={20} /> : <SunIcon size={20} />}
             </button>
             <button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-rose-500' : 'text-gray-400 hover:text-rose-500'}`}>
-              <History size={20} />
+              <HistoryIcon size={20} />
               {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-black" />}
             </button>
           </div>
@@ -171,6 +187,70 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         {children}
       </main>
 
+      {/* Web Footer - Hidden in Android/Native mode */}
+      {!showMobileNav && (
+        <footer className="border-t border-gray-100 dark:border-zinc-900 mt-20 bg-white dark:bg-black transition-colors relative z-10">
+          <div className="max-w-7xl mx-auto px-6 py-20">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+              <div className="md:col-span-2">
+                <div className="flex items-center gap-2 text-gray-900 dark:text-white mb-6">
+                  <PaperKnifeLogo size={24} iconColor="#F43F5E" partColor="currentColor" />
+                  <span className="font-black tracking-tighter text-xl">PaperKnife</span>
+                </div>
+                <h3 className="text-2xl font-black tracking-tighter dark:text-white mb-4 leading-tight">
+                  Stop Uploading <br/>
+                  <span className="text-rose-500">Your Privacy.</span>
+                </h3>
+                <p className="text-gray-500 dark:text-zinc-400 text-sm max-w-sm leading-relaxed mb-8 font-medium">
+                  Professional PDF tools that live entirely on your device. Zero servers, zero surveillance, absolute sovereignty.
+                </p>
+                <div className="flex gap-4">
+                  <a href="https://github.com/potatameister/PaperKnife" target="_blank" rel="noopener noreferrer" className="p-3 bg-gray-50 dark:bg-zinc-900 rounded-2xl hover:bg-rose-500 hover:text-white transition-all text-gray-600 dark:text-zinc-400 group">
+                    <GHIcon size={20} className="group-hover:scale-110 transition-transform" />
+                  </a>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-6">Resources</h4>
+                <ul className="space-y-4 text-sm font-bold text-gray-600 dark:text-zinc-400">
+                  <li><Link to="/" className="hover:text-rose-500 transition-colors">All Tools</Link></li>
+                  <li><Link to="/about" className="hover:text-rose-500 transition-colors">Privacy Protocol</Link></li>
+                  <li><Link to="/thanks" className="hover:text-rose-500 transition-colors">Special Thanks</Link></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-6">Support</h4>
+                <ul className="space-y-4 text-sm font-bold text-gray-600 dark:text-zinc-400">
+                  <li><a href="https://github.com/sponsors/potatameister" target="_blank" className="flex items-center gap-2 hover:text-rose-500 transition-colors"><HeartIcon size={14} className="text-rose-500" /> Sponsor Project</a></li>
+                  <li><a href="https://github.com/potatameister/PaperKnife/issues" target="_blank" className="flex items-center gap-2 hover:text-rose-500 transition-colors">Report an Issue</a></li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="pt-8 border-t border-gray-100 dark:border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-600">
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+                <p>© 2026 PaperKnife.</p>
+                <p className="hidden md:block opacity-30">•</p>
+                <p>Made by <a href="https://github.com/potatameister" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline underline-offset-4">potatameister</a></p>
+              </div>
+              
+              {/* Offline Indicator */}
+              <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-full border border-emerald-100 dark:border-emerald-900/20">
+                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                 <span className="text-[9px] text-emerald-600 dark:text-emerald-400">100% Offline • Privacy Protection</span>
+              </div>
+
+              <div className="flex gap-8">
+                <Link to="/privacy" className="hover:text-rose-500 transition-colors">Privacy</Link>
+                <a href="https://github.com/potatameister/PaperKnife/blob/main/LICENSE" target="_blank" className="hover:text-rose-500 transition-colors">License</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
+
       {/* Titan Bottom Navigation (Solid, Grounded) */}
       {shouldShowNav && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-zinc-800 flex items-end justify-between px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3 z-[100] shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
@@ -178,7 +258,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             onClick={() => navigate('/')}
             className={`flex flex-col items-center gap-1.5 flex-1 transition-all ${location.pathname === '/' ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
           >
-            <Home size={24} strokeWidth={location.pathname === '/' ? 2.5 : 2} />
+            <HomeIcon size={24} strokeWidth={location.pathname === '/' ? 2.5 : 2} />
             <span className="text-[10px] font-bold">Home</span>
           </button>
 
@@ -186,7 +266,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             onClick={() => navigate('/android-tools')}
             className={`flex flex-col items-center gap-1.5 flex-1 transition-all ${location.pathname === '/android-tools' ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
           >
-            <LayoutGrid size={24} strokeWidth={location.pathname === '/android-tools' ? 2.5 : 2} />
+            <LayoutGridIcon size={24} strokeWidth={location.pathname === '/android-tools' ? 2.5 : 2} />
             <span className="text-[10px] font-bold">Tools</span>
           </button>
 
@@ -206,7 +286,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
                }}
                className="w-14 h-14 bg-rose-500 text-white rounded-2xl shadow-xl shadow-rose-500/40 flex items-center justify-center active:scale-90 transition-transform ring-4 ring-white dark:ring-black"
              >
-               <Plus size={32} strokeWidth={3} />
+               <PlusIcon size={32} strokeWidth={3} />
              </button>
           </div>
           
@@ -214,7 +294,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             onClick={() => navigate('/android-history')}
             className={`flex flex-col items-center gap-1.5 flex-1 transition-all ${location.pathname === '/android-history' ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
           >
-            <History size={24} strokeWidth={location.pathname === '/android-history' ? 2.5 : 2} />
+            <HistoryIcon size={24} strokeWidth={location.pathname === '/android-history' ? 2.5 : 2} />
             <span className="text-[10px] font-bold">History</span>
           </button>
 
@@ -222,7 +302,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
             to="/settings"
             className={`flex flex-col items-center gap-1.5 flex-1 transition-all no-underline ${location.pathname.includes('settings') ? 'text-rose-500' : 'text-gray-400 dark:text-zinc-600'}`}
           >
-            <Settings size={24} strokeWidth={location.pathname.includes('settings') ? 2.5 : 2} />
+            <SettingsIcon size={24} strokeWidth={location.pathname.includes('settings') ? 2.5 : 2} />
             <span className="text-[10px] font-bold">Settings</span>
           </Link>
         </nav>
@@ -233,7 +313,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
         <div className="p-6 h-full flex flex-col">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <History className="text-rose-500" size={24} />
+              <HistoryIcon className="text-rose-500" size={24} />
               <h2 className="text-xl font-black dark:text-white">Activity</h2>
             </div>
             <div className="flex items-center gap-2">
@@ -242,20 +322,20 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
                   onClick={async () => { await clearActivity(); setActivity([]); }}
                   className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-gray-400 hover:text-rose-500 rounded-xl transition-colors"
                 >
-                  <Trash2 size={18} />
+                  <Trash2Icon size={18} />
                 </button>
               )}
               <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
-                <ChevronRight size={20} className="text-gray-400" />
+                <ChevronRightIcon size={20} className="text-gray-400" />
               </button>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto space-y-3 scrollbar-hide">
-            {activity.length === 0 ? (<div className="text-center py-20 opacity-40"><p className="text-xs font-bold uppercase tracking-widest text-gray-400">No recent files</p></div>) : (
+            {activity.length === 0 ? (<div className="text-center py-20 opacity-40"><p className="text-xs font-bold uppercase tracking_widest text-gray-400">No recent files</p></div>) : (
               activity.map((item) => (
                 <div key={item.id} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl border border-gray-100 dark:border-zinc-800 group relative">
-                  <div className="flex items-center gap-3 mb-2"><div className="w-8 h-8 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-lg flex items-center justify-center"><CheckCircle2 size={16} /></div><div className="flex-1 min-w-0"><p className="text-xs font-bold truncate dark:text-white">{item.name}</p><p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">{item.tool}</p></div></div>
-                  <div className="flex items-center justify-between text-[9px] text-gray-400 font-bold"><span>{new Date(item.timestamp).toLocaleTimeString()}</span>{item.resultUrl && (<a href={item.resultUrl} download={item.name} className="text-rose-500 hover:underline flex items-center gap-1"><Download size={10} /> Redownload</a>)}</div>
+                  <div className="flex items-center gap-3 mb-2"><div className="w-8 h-8 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-lg flex items-center justify-center"><CheckCircleIcon size={16} /></div><div className="flex-1 min-w-0"><p className="text-xs font-bold truncate dark:text-white">{item.name}</p><p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">{item.tool}</p></div></div>
+                  <div className="flex items-center justify-between text-[9px] text-gray-400 font-bold"><span>{new Date(item.timestamp).toLocaleTimeString()}</span>{item.resultUrl && (<a href={item.resultUrl} download={item.name} className="text-rose-500 hover:underline flex items-center gap-1"><DownloadIcon size={10} /> Redownload</a>)}</div>
                 </div>
               ))
             )}

@@ -111,6 +111,10 @@ export default function CompressTool() {
       file, pageCount: 0, isLocked: false, status: 'pending' as const
     }))
     setFiles(prev => [...prev, ...newFiles]); setShowSuccess(false); clearUrls()
+    
+    // Clear input value to allow selecting the same file again
+    if (fileInputRef.current) fileInputRef.current.value = ''
+
     for (const f of newFiles) {
       getPdfMetaData(f.file).then(meta => {
         setFiles(prev => prev.map(item => item.id === f.id ? { ...item, pageCount: meta.pageCount, isLocked: meta.isLocked, thumbnail: meta.thumbnail } : item))
@@ -239,11 +243,14 @@ export default function CompressTool() {
       <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files && handleFiles(e.target.files)} />
       
       {files.length === 0 ? (
-        <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
+        <button 
+          onClick={() => !isProcessing && fileInputRef.current?.click()} 
+          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+        >
           <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner"><Zap size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDFs</h3>
           <p className="text-sm text-gray-400 font-medium">Tap to start batch compression</p>
-        </div>
+        </button>
       ) : !showSuccess ? (
         <div className="space-y-6 animate-in fade-in duration-500">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -272,12 +279,12 @@ export default function CompressTool() {
             <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-widest px-1">Compression Strategy</h4>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { id: 'high', label: 'Pro', desc: 'Sharpest' },
-                { id: 'medium', label: 'Balanced', desc: 'Standard' },
-                { id: 'low', label: 'Extreme', desc: 'Smallest' }
+                { id: 'high', label: 'High Quality', desc: '100% Clarity' },
+                { id: 'medium', label: 'Standard', desc: 'Recommended' },
+                { id: 'low', label: 'Smallest', desc: 'Max Save' }
               ].map((lvl) => (
                 <button key={lvl.id} onClick={() => setQuality(lvl.id as CompressionQuality)} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${quality === lvl.id ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-white/5'}`}>
-                  <span className={`font-black uppercase text-[10px] ${quality === lvl.id ? 'text-rose-500' : 'text-gray-400'}`}>{lvl.label}</span>
+                  <span className={`font-black uppercase text-[9px] text-center leading-tight ${quality === lvl.id ? 'text-rose-500' : 'text-gray-400'}`}>{lvl.label}</span>
                   <span className="text-[8px] text-gray-400 font-bold uppercase">{lvl.desc}</span>
                 </button>
               ))}
@@ -293,22 +300,22 @@ export default function CompressTool() {
                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
                  {quality === 'high' && (
                    <>
-                     <strong>Pro Mode:</strong> Retains maximum text clarity and image resolution (1.0x scale). 
-                     Best for official documents, portfolios, and high-fidelity reports. 
+                     <strong>High Quality:</strong> Retains maximum text clarity and image resolution. 
+                     Best for official documents and high-fidelity reports. 
                      Expected reduction: <span className="text-rose-500 font-bold">10-30%</span>.
                    </>
                  )}
                  {quality === 'medium' && (
                    <>
-                     <strong>Balanced:</strong> Downsamples images to 150DPI (1.5x scale) with optimized JPEG compression. 
-                     The perfect middle ground for everyday sharing and email attachments. 
+                     <strong>Standard:</strong> Balanced optimization for everyday sharing and email attachments. 
+                     The perfect middle ground for most users. 
                      Expected reduction: <span className="text-rose-500 font-bold">40-60%</span>.
                    </>
                  )}
                  {quality === 'low' && (
                    <>
-                     <strong>Extreme:</strong> Aggressive downsampling (2.0x scale) and high compression. 
-                     Ideal for quick mobile viewing or meeting strict 2MB upload limits. 
+                     <strong>Smallest Size:</strong> Aggressive downsampling for the lowest possible file size. 
+                     Ideal for quick mobile viewing or meeting strict upload limits. 
                      Expected reduction: <span className="text-rose-500 font-bold">70-90%</span>.
                    </>
                  )}
@@ -337,10 +344,10 @@ export default function CompressTool() {
           {objectUrl && files.length === 1 && (
             <div className="space-y-8">
               {lastPipelinedFile?.originalBuffer && lastPipelinedFile?.buffer && <div className="bg-white dark:bg-zinc-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm"><QualityCompare originalBuffer={lastPipelinedFile.originalBuffer} compressedBuffer={lastPipelinedFile.buffer} /></div>}
-              <SuccessState message={`Reduced by ${((1 - (files[0].resultSize || 0) / files[0].file.size) * 100).toFixed(0)}%`} downloadUrl={objectUrl} fileName={files[0].file.name.replace('.pdf', '-compressed.pdf')} onStartOver={() => { setFiles([]); setShowSuccess(false); clearUrls(); }} />
+              <SuccessState message={`Reduced by ${((1 - (files[0].resultSize || 0) / files[0].file.size) * 100).toFixed(0)}%`} downloadUrl={objectUrl} fileName={files[0].file.name.replace('.pdf', '-compressed.pdf')} onStartOver={() => { setFiles([]); setShowSuccess(false); clearUrls(); setIsProcessing(false); }} />
             </div>
           )}
-          <button onClick={() => { setFiles([]); setShowSuccess(false); clearUrls(); }} className="w-full py-4 text-gray-400 hover:text-rose-500 font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-2">
+          <button onClick={() => { setFiles([]); setShowSuccess(false); clearUrls(); setIsProcessing(false); }} className="w-full py-4 text-gray-400 hover:text-rose-500 font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-2">
             <RefreshCcw size={14}/> Start New Session
           </button>
         </div>

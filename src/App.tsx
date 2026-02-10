@@ -10,7 +10,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { 
-  Layers, Scissors, Zap, Smartphone, Monitor, Lock, Unlock, 
+  Layers, Scissors, Zap, Smartphone as SmartphoneIcon, Monitor as MonitorIcon, Lock, Unlock, 
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown
 } from 'lucide-react'
@@ -21,6 +21,7 @@ import { Filesystem } from '@capacitor/filesystem'
 import { Theme, ViewMode, Tool } from './types'
 import Layout from './components/Layout'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
+import { ViewModeProvider } from './utils/viewModeContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -293,90 +294,92 @@ function App() {
   return (
     <BrowserRouter basename={isCapacitor ? '/' : '/PaperKnife/'}>
       <ScrollToTop />
-      <PipelineProvider>
-        <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
-          <Toaster 
-            position="bottom-center" 
-            expand={true} 
-            richColors 
-            duration={2000}
-            toastOptions={{
-              className: 'dark:bg-zinc-900 dark:text-white dark:border-white/10'
-            }}
-          />
-          
-          {droppedFile && (
-            <PdfPreview 
-              file={droppedFile} 
-              onClose={() => {
-                setDroppedFile(null)
-                setShowQuickDrop(false)
-              }} 
-              onProcess={() => setShowQuickDrop(true)} 
+      <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
+        <PipelineProvider>
+          <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
+            <Toaster 
+              position="bottom-center" 
+              expand={true} 
+              richColors 
+              duration={2000}
+              toastOptions={{
+                className: 'dark:bg-zinc-900 dark:text-white dark:border-white/10'
+              }}
             />
-          )}
+            
+            {droppedFile && (
+              <PdfPreview 
+                file={droppedFile} 
+                onClose={() => {
+                  setDroppedFile(null)
+                  setShowQuickDrop(false)
+                }} 
+                onProcess={() => setShowQuickDrop(true)} 
+              />
+            )}
 
-          {droppedFile && showQuickDrop && (
-            <QuickDropModal 
-              file={droppedFile} 
-              onClear={() => {
-                setDroppedFile(null)
-                setShowQuickDrop(false)
-              }} 
-              onBack={() => setShowQuickDrop(false)}
-            />
-          )}
+            {droppedFile && showQuickDrop && (
+              <QuickDropModal 
+                file={droppedFile} 
+                onClear={() => {
+                  setDroppedFile(null)
+                  setShowQuickDrop(false)
+                }} 
+                onBack={() => setShowQuickDrop(false)}
+              />
+            )}
 
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={
-                viewMode === 'web' ? (
-                  <WebView tools={tools} />
-                ) : (
-                  <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} onFileSelect={(file) => handleGlobalDrop([file] as any)} />
-                )
-              } />
-              <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />
-              <Route path="/android-history" element={<AndroidHistoryView />} />
-              <Route path="/merge" element={<MergeTool />} />
-              <Route path="/split" element={<SplitTool />} />
-              <Route path="/protect" element={<ProtectTool />} />
-              <Route path="/unlock" element={<UnlockTool />} />
-              <Route path="/compress" element={<CompressTool />} />
-              <Route path="/pdf-to-image" element={<PdfToImageTool />} />
-              <Route path="/rotate-pdf" element={<RotateTool />} />
-              <Route path="/pdf-to-text" element={<PdfToTextTool />} />
-              <Route path="/rearrange-pdf" element={<RearrangeTool />} />
-              <Route path="/watermark" element={<WatermarkTool />} />
-              <Route path="/page-numbers" element={<PageNumberTool />} />
-              <Route path="/metadata" element={<MetadataTool />} />
-              <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
-              <Route path="/signature" element={<SignatureTool />} />
-              <Route path="/repair" element={<RepairTool />} />
-              <Route path="/extract-images" element={<ExtractImagesTool />} />
-              <Route path="/grayscale" element={<GrayscaleTool />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
-              <Route path="/thanks" element={<Thanks />} />
-            </Routes>
-          </Suspense>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={
+                  viewMode === 'web' ? (
+                    <WebView tools={tools} />
+                  ) : (
+                    <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} onFileSelect={(file) => handleGlobalDrop([file] as any)} />
+                  )
+                } />
+                <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />
+                <Route path="/android-history" element={<AndroidHistoryView />} />
+                <Route path="/merge" element={<MergeTool />} />
+                <Route path="/split" element={<SplitTool />} />
+                <Route path="/protect" element={<ProtectTool />} />
+                <Route path="/unlock" element={<UnlockTool />} />
+                <Route path="/compress" element={<CompressTool />} />
+                <Route path="/pdf-to-image" element={<PdfToImageTool />} />
+                <Route path="/rotate-pdf" element={<RotateTool />} />
+                <Route path="/pdf-to-text" element={<PdfToTextTool />} />
+                <Route path="/rearrange-pdf" element={<RearrangeTool />} />
+                <Route path="/watermark" element={<WatermarkTool />} />
+                <Route path="/page-numbers" element={<PageNumberTool />} />
+                <Route path="/metadata" element={<MetadataTool />} />
+                <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
+                <Route path="/signature" element={<SignatureTool />} />
+                <Route path="/repair" element={<RepairTool />} />
+                <Route path="/extract-images" element={<ExtractImagesTool />} />
+                <Route path="/grayscale" element={<GrayscaleTool />} />
+                <Route path="/about" element={<About viewMode={viewMode} />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
+                <Route path="/thanks" element={<Thanks />} />
+              </Routes>
+            </Suspense>
 
-          {/* Chameleon Toggle (Dev Only) */}
-          {import.meta.env.DEV && (
-            <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
-              <button
-                onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
-                className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-rose-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
-                title="Toggle Chameleon Mode"
-              >
-                {viewMode === 'web' ? <Smartphone size={20} /> : <Monitor size={20} />}
-                <span className="text-xs font-black uppercase tracking-tighter">{viewMode}</span>
-              </button>
-            </div>
-          )}
-        </Layout>
-      </PipelineProvider>
+            {/* Chameleon Toggle (Dev Only) */}
+            {import.meta.env.DEV && (
+              <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
+                <button
+                  onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
+                  className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-rose-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
+                  title="Toggle Chameleon Mode"
+                >
+                  {viewMode === 'web' ? <SmartphoneIcon size={20} /> : <MonitorIcon size={20} />}
+                  <span className="text-xs font-black uppercase tracking-tighter">{viewMode}</span>
+                </button>
+              </div>
+            )}
+          </Layout>
+        </PipelineProvider>
+      </ViewModeProvider>
     </BrowserRouter>
   )
 }

@@ -61,6 +61,9 @@ export default function PdfToImageTool() {
         setCustomFileName(`${file.name.replace('.pdf', '')}-images`)
       }
     } catch (err) { console.error(err) } finally { setIsProcessing(false); setDownloadUrl(null) }
+    
+    // Reset file input value
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const convertToImages = async () => {
@@ -102,11 +105,14 @@ export default function PdfToImageTool() {
     <NativeToolLayout title="PDF to Image" description="Convert document pages into high-quality images." actions={pdfData && !pdfData.isLocked && !downloadUrl && <ActionButton />}>
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       {!pdfData ? (
-        <div onClick={() => !isProcessing && fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
+        <button 
+          onClick={() => !isProcessing && fileInputRef.current?.click()} 
+          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+        >
           <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><ImageIcon size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF</h3>
           <p className="text-sm text-gray-400">Tap to start converting</p>
-        </div>
+        </button>
       ) : pdfData.isLocked ? (
         <div className="max-w-md mx-auto">
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 text-center">
@@ -130,9 +136,9 @@ export default function PdfToImageTool() {
                 <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3 tracking-widest px-1">Output ZIP Name</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
               </>
             ) : (
-              <SuccessState message="Images Ready!" downloadUrl={downloadUrl} fileName={`${customFileName}.zip`} onStartOver={() => { setDownloadUrl(null); setProgress(0); setPdfData(null); }} showPreview={false} />
+              <SuccessState message="Images Ready!" downloadUrl={downloadUrl} fileName={`${customFileName}.zip`} onStartOver={() => { setDownloadUrl(null); setProgress(0); setPdfData(null); setIsProcessing(false); }} showPreview={false} />
             )}
-            <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
+            <button onClick={() => { setPdfData(null); setIsProcessing(false); }} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
           </div>
         </div>
       )}

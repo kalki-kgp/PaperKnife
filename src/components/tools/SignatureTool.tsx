@@ -46,7 +46,10 @@ export default function SignatureTool() {
       const meta = await getPdfMetaData(file)
       if (meta.isLocked) { setPdfData({ file, pageCount: 0, isLocked: true }) }
       else { const pdfDoc = await loadPdfDocument(file); setPdfData({ file, pageCount: meta.pageCount, isLocked: false, pdfDoc }); const thumb = await renderPageThumbnail(pdfDoc, 1, 2.0); setThumbnail(thumb) }
-    } finally { setIsProcessing(false) }
+    } finally { 
+      setIsProcessing(false) 
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
@@ -79,7 +82,13 @@ export default function SignatureTool() {
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       <input type="file" accept="image/*" className="hidden" ref={signatureInputRef} onChange={(e) => { const file = e.target.files?.[0]; if (file) { setSignatureFile(file); setSignatureImg(URL.createObjectURL(file)) } }} />
       {!pdfData ? (
-        <div onClick={() => fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 transition-all cursor-pointer group"><ImageIcon size={32} className="mx-auto mb-4 text-rose-500" /><h3 className="text-xl font-bold dark:text-white">Select PDF</h3></div>
+        <button 
+          onClick={() => !isProcessing && fileInputRef.current?.click()} 
+          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 transition-all cursor-pointer group"
+        >
+          <ImageIcon size={32} className="mx-auto mb-4 text-rose-500" />
+          <h3 className="text-xl font-bold dark:text-white">Select PDF</h3>
+        </button>
       ) : pdfData.isLocked ? (
         <div className="max-w-md mx-auto p-8 bg-white dark:bg-zinc-900 rounded-3xl text-center"><Lock size={32} className="mx-auto mb-4 text-rose-500" /><input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} className="w-full p-4 mb-4 border rounded-xl" /><button onClick={handleUnlock} className="w-full p-4 bg-rose-500 text-white rounded-xl">Unlock</button></div>
       ) : (

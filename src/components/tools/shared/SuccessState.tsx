@@ -1,4 +1,4 @@
-import { Download, Eye, CheckCircle2, Share2 } from 'lucide-react'
+import { Download, Eye, CheckCircle2, Share2, RotateCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
@@ -125,9 +125,9 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
 
       <button 
         onClick={onStartOver}
-        className="w-full mt-4 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-[0.2em]"
+        className="w-full mt-6 py-4 bg-gray-50 dark:bg-zinc-900 text-gray-400 hover:text-rose-500 dark:hover:text-rose-500 rounded-2xl border border-gray-100 dark:border-white/5 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
       >
-        Start Over
+        <RotateCcw size={14} /> Start New Session
       </button>
     </div>
   )
