@@ -1,0 +1,14 @@
+PaperKnife is a professional-grade, open-source PDF utility designed with a "Zero-Server Architecture." Unlike other PDF tools that require you to upload sensitive documents to a remote server, PaperKnife performs every operation directly in your device's memory.
+
+Your data never leaves your phone.
+
+Core Features:
+• Merge PDF: Combine multiple documents into one.
+• Split PDF: Visually extract specific pages or ranges.
+• Compress PDF: Reduce file size without sacrificing quality.
+• Protect & Unlock: Add or remove passwords with strong encryption.
+• Convert: Images to PDF and PDF to high-quality images.
+• Edit: Rotate, rearrange, and add page numbers or watermarks.
+• Secure: Edit metadata and sign documents electronically.
+
+Built for the community, PaperKnife is fully open-source (AGPLv3) and contains no tracking, no analytics, and no advertisements. It's the ultimate tool for those who value their document privacy.

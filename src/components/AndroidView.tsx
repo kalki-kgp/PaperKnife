@@ -25,7 +25,6 @@ import {
 import { useState, useEffect, useRef } from 'react'
 import { getRecentActivity, ActivityEntry } from '../utils/recentActivity'
 import { PaperKnifeLogo } from './Logo'
-import { Capacitor } from '@capacitor/core'
 
 interface AndroidViewProps {
   theme: 'light' | 'dark'
@@ -37,7 +36,6 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
   const navigate = useNavigate()
   const [history, setHistory] = useState<ActivityEntry[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     getRecentActivity(3).then(setHistory)

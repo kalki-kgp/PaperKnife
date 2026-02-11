@@ -68,6 +68,7 @@
 - **[2026-02-10]:** Polished "Titan" UI Evolution: Comprehensive overhaul of About, Settings, and Privacy pages with high-density technical specifications. Fixed critical APK bug in file selection logic and refined Home View with History Clipboard and Secure Status indicators. Standardized internal asset naming and optimized memory usage for 100+ page documents.
 - **[2026-02-11]:** Finalized "Titan" UI Polish: Overhauled PDF Preview with Immersion Mode and floating page tracking. Redesigned web version into a modern SaaS-style multi-column footer. Implemented intelligent "GET APK" CTAs for mobile web users. Refined APK branding with "Secure Engine" Rose accents and pulsing indicators. Completed global README overhaul for dual-platform focus.
 - **[2026-02-11]:** Humanized Branding & Stability: Simplified README to use honest, human language and removed gimmicky branding. Integrated GitHub Sponsors via FUNDING.yml. Fixed critical isNative ReferenceError in AndroidView. Added social badges and direct support call-to-actions to the project homepage.
+- **[2026-02-11]:** F-Droid Ready: Removed proprietary Google Play Services logic from Gradle, implemented Fastlane metadata structure, and created an AGPL-compliant `fdroid.yml` build recipe for community-driven inclusion.
 
 ## 🏗️ 5. Architectural Notes
 *   **Chameleon Engine:** Uses `viewMode` state in `App.tsx` to hot-swap between `WebView.tsx` and `AndroidView.tsx`.
