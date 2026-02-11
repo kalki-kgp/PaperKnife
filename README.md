@@ -1,53 +1,53 @@
-# ✈️ PaperKnife
+# PaperKnife
 
-**A simple, privacy-first PDF utility.**  
-*Runs in your browser. Stays on your device.*
+**A simple, honest PDF utility that respects your privacy.**
 
-![License](https://img.shields.io/badge/license-AGPL--3.0-rose.svg)
-![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Android-blue.svg)
-
----
-
-## 🛡️ Why use this?
-
-Most online PDF tools upload your files to their servers. That means your bank statements, contracts, or IDs are being sent to someone else's computer.
-
-**PaperKnife is different.** Everything happens right on your device. Whether you're using the website or the Android app, your PDF files never leave your memory. You can even use it while offline.
-
-### Key Features
-*   **Merge & Split:** Combine documents or pick specific pages.
-*   **Compress:** Shrink file sizes without sending them to the cloud.
-*   **Security:** Password protect or unlock your PDFs locally.
-*   **Convert:** Turn PDFs into images or text, and vice versa.
-*   **Edit:** Add page numbers, watermarks, or rotate pages.
-
-## 📱 How to use it
-
-### On Android
-You can download the latest APK from the [Releases](https://github.com/potatameister/PaperKnife/releases/latest) page. It's built to be fast, thumb-friendly, and works completely offline.
-
-### On the Web
-Just visit the [live site](https://potatameister.github.io/PaperKnife/). It works in any modern browser and can be installed as a PWA (web app).
+[![License](https://img.shields.io/badge/license-AGPL--3.0-rose.svg)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/potatameister/PaperKnife?style=flat&color=rose)](https://github.com/potatameister/PaperKnife/stargazers)
+[![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://potatameister.github.io/PaperKnife/)
+[![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/potatameister/PaperKnife/releases/latest)
+[![Twitter](https://img.shields.io/badge/twitter-@potatameister-black?logo=x)](https://x.com/potatameister)
 
 ---
 
-## ❤️ Support the project
+### Why I built this
 
-I'm building PaperKnife as an open-source tool because I believe privacy shouldn't be a premium feature. It's self-funded and has no ads or tracking.
+Most PDF websites ask you to upload your sensitive documents—bank statements, IDs, contracts—to their servers. Even if they promise to delete them, your data still leaves your device and travels across the internet.
 
-If you find it useful, please consider:
-*   **Sponsoring:** You can support the development via [GitHub Sponsors](https://github.com/sponsors/potatameister).
-*   **Sharing:** Tell your friends about a safer way to handle their PDFs.
-*   **Contributing:** If you're a developer, feel free to report bugs or submit improvements.
+I built **PaperKnife** to solve this. It's a collection of tools that run entirely in your browser or on your phone. Your files never leave your memory, they aren't stored in any database, and no server ever sees them. It works 100% offline.
+
+### What it can do
+
+*   **Modify:** Merge multiple files, split pages, rotate, and rearrange.
+*   **Optimize:** Reduce file size with different quality presets.
+*   **Secure:** Encrypt files with passwords or remove them locally.
+*   **Convert:** Convert between PDF and images (JPG/PNG) or plain text.
+*   **Sign:** Add an electronic signature to your documents safely.
+*   **Sanitize:** Deep clean metadata (like Author or Producer) to keep your files anonymous.
+
+### How to use it
+
+*   **On Android:** Download the [latest APK](https://github.com/potatameister/PaperKnife/releases/latest). It's built to be fast, private, and easy to use with one hand.
+*   **On the Web:** Visit the [live site](https://potatameister.github.io/PaperKnife/). You can use it like any other website, or "install" it as a PWA for offline access.
 
 ---
 
-## 🛠️ How it's built
+### Support the project
 
-PaperKnife uses **React** and **TypeScript**. The heavy lifting is done by **pdf-lib** and **pdfjs-dist**, which run in your browser using WebAssembly. For the Android version, we use **Capacitor** to bring the same local engine to your phone.
+PaperKnife is a solo project. It's open-source, ad-free, and tracker-free because I believe privacy is a right, not a luxury.
 
-### License
-This project is licensed under the **GNU AGPL v3**. This ensures the project remains transparent and open. If you host a version of this tool, you must share the code with your users.
+If this tool has saved you time or kept your data safe, please consider:
+*   **Sponsoring:** Support development via [GitHub Sponsors](https://github.com/sponsors/potatameister).
+*   **Giving a Star:** It helps other people find the project.
+*   **Spreading the word:** Share it with anyone who handles sensitive documents.
+
+---
+
+### Under the hood
+
+PaperKnife is built with **React** and **TypeScript**. The core processing is handled by **pdf-lib** and **pdfjs-dist**, which run in a sandboxed environment using WebAssembly. The Android version is powered by **Capacitor**.
+
+This project is licensed under the **GNU AGPL v3** to ensure it remains open and transparent forever.
 
 ---
 *Made with care by [potatameister](https://github.com/potatameister)*

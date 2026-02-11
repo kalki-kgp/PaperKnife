@@ -36,6 +36,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
   const navigate = useNavigate()
   const [history, setHistory] = useState<ActivityEntry[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     getRecentActivity(3).then(setHistory)
