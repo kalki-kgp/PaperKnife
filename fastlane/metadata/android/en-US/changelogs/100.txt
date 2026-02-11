@@ -1,0 +1,1 @@
+Initial stable release of PaperKnife. 100% local PDF processing, Zero-Server Architecture, and 15+ professional tools.
