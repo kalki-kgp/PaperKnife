@@ -25,6 +25,7 @@ import {
 import { useState, useEffect, useRef } from 'react'
 import { getRecentActivity, ActivityEntry } from '../utils/recentActivity'
 import { PaperKnifeLogo } from './Logo'
+import { Capacitor } from '@capacitor/core'
 
 interface AndroidViewProps {
   theme: 'light' | 'dark'
