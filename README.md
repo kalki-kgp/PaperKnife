@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/icons/logo.svg" width="120" alt="PaperKnife Logo">
+</p>
+
 # PaperKnife
 
 **A simple, honest PDF utility that respects your privacy.**
@@ -7,6 +11,15 @@
 [![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://potatameister.github.io/PaperKnife/)
 [![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/potatameister/PaperKnife/releases/latest)
 [![Twitter](https://img.shields.io/badge/twitter-@potatameister-black?logo=x)](https://x.com/potatameister)
+
+---
+
+## Preview
+
+<p align="center">
+  <img src="assets/preview/screenshot1.jpg" width="45%" alt="Web View">
+  <img src="assets/preview/screenshot2.jpg" width="45%" alt="Android View">
+</p>
 
 ---
 
