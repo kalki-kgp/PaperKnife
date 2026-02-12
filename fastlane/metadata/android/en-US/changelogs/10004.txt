@@ -1,0 +1,5 @@
+Titan Overhaul & Version Fix:
+- Standardized versioning to v1.0.4 across all components.
+- Switched to HashRouter for improved routing stability on Web/GitHub Pages.
+- Optimized APK footer and about page layout.
+- Improved protocol transparency documentation.

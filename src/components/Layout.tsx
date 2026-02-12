@@ -108,7 +108,8 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
     return location.pathname.includes(`/${pathPart}`)
   })
 
-  const isHome = location.pathname === '/' || location.pathname === '/PaperKnife' || location.pathname === '/PaperKnife/'
+  const isHome = location.pathname === '/'
+
   const isMainView = isHome || 
     location.pathname.endsWith('/android-tools') || 
     location.pathname.endsWith('/android-history') || 

@@ -14,7 +14,7 @@ import {
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown
 } from 'lucide-react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
@@ -289,10 +289,8 @@ function App() {
     setShowQuickDrop(false) // Show preview first
   }
 
-  const isCapacitor = Capacitor.isNativePlatform()
-
   return (
-    <BrowserRouter basename={isCapacitor ? '/' : '/PaperKnife/'}>
+    <HashRouter>
       <ScrollToTop />
       <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
         <PipelineProvider>
@@ -380,7 +378,7 @@ function App() {
           </Layout>
         </PipelineProvider>
       </ViewModeProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
