@@ -140,7 +140,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
                      <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
                        <tool.icon size={18} strokeWidth={2.5} />
                      </div>
-                     <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title.split(' ')[0]}</span>
+                     <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
                    </button>
                  ))}
               </div>
@@ -166,7 +166,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
                        <div className={`p-2 rounded-xl ${tool.bg} ${tool.color} group-active:scale-110 transition-transform`}>
                          <tool.icon size={18} strokeWidth={2.5} />
                        </div>
-                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title.split(' ')[0]}</span>
+                       <span className="text-xs font-bold text-gray-900 dark:text-zinc-200">{tool.title}</span>
                      </button>
                    ))}
                 </div>
