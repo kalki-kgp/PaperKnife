@@ -1,14 +1,23 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+def getPackageJson() {
+    def inputFile = new File(project.rootDir, '../package.json')
+    return new JsonSlurper().parseText(inputFile.text)
+}
+
+def packageJson = getPackageJson()
+
 android {
-    namespace = "com.paperknife.app"
-    compileSdk = rootProject.ext.compileSdkVersion
+    namespace "com.paperknife.app"
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.paperknife.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 101
-        versionName "1.0.1"
+        versionCode (packageJson.version.split('-')[0].split('\\.').collect { it.toInteger() }.with { (it[0] * 10000) + (it[1] * 100) + it[2] })
+        versionName packageJson.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

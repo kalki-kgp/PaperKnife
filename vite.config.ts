@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react()
   ],
-  base: process.env.CAPACITOR_BUILD === 'true' ? './' : '/PaperKnife/',
+  base: process.env.VITE_BASE || './',
   server: {
     host: true
   },

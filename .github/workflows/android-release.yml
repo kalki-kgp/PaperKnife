@@ -23,8 +23,6 @@ jobs:
 
       - name: Build Web Assets (Vite)
         run: npm run build
-        env:
-          CAPACITOR_BUILD: 'true'
 
       - name: Generate Android Assets (Icon/Splash)
         run: npx -y @capacitor/assets generate --android
@@ -44,18 +42,11 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Set Version Code
-        run: echo "ANDROID_VERSION_CODE=$((GITHUB_RUN_NUMBER + 100))" >> $GITHUB_ENV
-        env:
-          GITHUB_RUN_NUMBER: ${{ github.run_number }}
-
       - name: Build with Gradle
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
-        env:
-          ANDROID_VERSION_CODE: ${{ env.ANDROID_VERSION_CODE }}
 
       - name: Sign APK
         id: sign_app
