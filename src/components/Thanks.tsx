@@ -9,7 +9,7 @@ export default function Thanks() {
   const links = [
     { name: 'pdf-lib', url: 'https://github.com/Hopding/pdf-lib', desc: 'Core document engine for local manipulation.' },
     { name: 'PDF.js', url: 'https://github.com/mozilla/pdf.js', desc: 'High-performance PDF rendering and parsing.' },
-    { name: 'Tesseract.js', url: 'https://github.com/naptha/tesseract.js', desc: 'Local OCR engine for image-to-text conversion.' },
+    { name: 'Tesseract.js', url: 'https://github.com/naptha/tesseract.js', desc: 'Fully localized OCR engine for image-to-text conversion.' },
     { name: 'JSZip', url: 'https://github.com/Stuk/jszip', desc: 'Local file compression and bundling.' },
     { name: 'Lucide', url: 'https://github.com/lucide-icons/lucide', desc: 'Beautifully crafted open-source icons.' },
     { name: 'Capacitor', url: 'https://github.com/ionic-team/capacitor', desc: 'Native bridge for cross-platform mobile apps.' },
@@ -83,7 +83,7 @@ export default function Thanks() {
 
       <footer className="text-center py-8 opacity-20">
          <PaperKnifeLogo size={24} iconColor="#F43F5E" partColor="currentColor" className="mx-auto mb-4" />
-         <p className="text-[8px] font-black uppercase tracking-[0.5em]">PaperKnife Protocol v1.0.5</p>
+         <p className="text-[8px] font-black uppercase tracking-[0.5em]">PaperKnife Protocol v1.0.6</p>
       </footer>
     </div>
   )

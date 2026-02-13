@@ -12,30 +12,34 @@ def packageJson = getPackageJson()
 android {
     namespace "com.paperknife.app"
     compileSdk rootProject.ext.compileSdkVersion
-    defaultConfig {
-        applicationId "com.paperknife.app"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10005
-        versionName "1.0.5"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
-        }
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    packagingOptions {
+        defaultConfig {
+            applicationId "com.paperknife.app"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+            versionCode 10006
+            versionName "1.0.6"
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+                    aaptOptions {
+                         // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+                         // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+                        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+                    }
+                }
+            
+                buildTypes {
+                    release {
+                        minifyEnabled false
+                        shrinkResources false
+                        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                    }
+                }
+    packaging {
         resources {
             excludes += '/assets/dexopt/baseline.prof'
+            excludes += '**/META-INF/*.version'
+            excludes += '**/META-INF/*.kotlin_module'
+            excludes += '**/META-INF/com.android.tools.build.gradle.version'
+            excludes += 'DebugProbesKt.bin'
         }
     }
 }

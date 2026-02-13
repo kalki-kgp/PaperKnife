@@ -36,9 +36,19 @@ export const downloadFile = async (data: Uint8Array | string, fileName: string, 
   if (Capacitor.isNativePlatform()) {
     try {
       // For Android, we use the Filesystem API
-      const base64Data = typeof data === 'string' 
-        ? data.split(',')[1] 
-        : btoa(data.reduce((acc, byte) => acc + String.fromCharCode(byte), ''));
+      let base64Data = '';
+      if (typeof data === 'string') {
+        base64Data = data.includes(',') ? data.split(',')[1] : data;
+      } else {
+        // High-performance chunked base64 conversion
+        const bytes = new Uint8Array(data);
+        const chunks = [];
+        const chunkSize = 0x8000; // 32KB chunks
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          chunks.push(String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunkSize))));
+        }
+        base64Data = btoa(chunks.join(''));
+      }
 
       // Resolve duplicate filenames
       let finalName = fileName;
@@ -97,9 +107,19 @@ export const shareFile = async (data: Uint8Array | string, fileName: string, mim
   if (Capacitor.isNativePlatform()) {
     try {
       // For Android, we save to Cache directory first, then share
-      const base64Data = typeof data === 'string' 
-        ? data.split(',')[1] 
-        : btoa(data.reduce((acc, byte) => acc + String.fromCharCode(byte), ''));
+      let base64Data = '';
+      if (typeof data === 'string') {
+        base64Data = data.includes(',') ? data.split(',')[1] : data;
+      } else {
+        // High-performance chunked base64 conversion
+        const bytes = new Uint8Array(data);
+        const chunks = [];
+        const chunkSize = 0x8000; // 32KB chunks
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          chunks.push(String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunkSize))));
+        }
+        base64Data = btoa(chunks.join(''));
+      }
 
       const result = await Filesystem.writeFile({
         path: fileName,

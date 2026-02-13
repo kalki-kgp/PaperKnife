@@ -29,7 +29,8 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
           const response = await fetch(downloadUrl)
           const blob = await response.blob()
           const buffer = await blob.arrayBuffer()
-          await downloadFile(new Uint8Array(buffer), fileName, 'application/pdf')
+          const mimeType = fileName.endsWith('.zip') ? 'application/zip' : 'application/pdf'
+          await downloadFile(new Uint8Array(buffer), fileName, mimeType)
           toast.success(`Auto-saved as ${fileName}`)
         } catch (e) {
           console.error('Auto-download failed:', e)
@@ -46,8 +47,9 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
       const response = await fetch(downloadUrl)
       const blob = await response.blob()
       const buffer = await blob.arrayBuffer()
+      const mimeType = fileName.endsWith('.zip') ? 'application/zip' : 'application/pdf'
       
-      await downloadFile(new Uint8Array(buffer), fileName, 'application/pdf')
+      await downloadFile(new Uint8Array(buffer), fileName, mimeType)
       toast.success(`Saved to Documents as ${fileName}`, { id: 'save-action' })
     } catch (err) {
       toast.error('Failed to save file', { id: 'save-action' })
@@ -61,8 +63,9 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
       const response = await fetch(downloadUrl)
       const blob = await response.blob()
       const buffer = await blob.arrayBuffer()
+      const mimeType = fileName.endsWith('.zip') ? 'application/zip' : 'application/pdf'
       
-      await shareFile(new Uint8Array(buffer), fileName, 'application/pdf')
+      await shareFile(new Uint8Array(buffer), fileName, mimeType)
       toast.dismiss('share-action')
     } catch (err) {
       toast.error('Failed to share file', { id: 'share-action' })
@@ -74,7 +77,8 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
       toast.loading('Loading preview...', { id: 'preview-load' })
       const response = await fetch(downloadUrl)
       const blob = await response.blob()
-      const file = new File([blob], fileName, { type: 'application/pdf' })
+      const mimeType = fileName.endsWith('.zip') ? 'application/zip' : 'application/pdf'
+      const file = new File([blob], fileName, { type: mimeType })
       setInternalPreviewFile(file)
       toast.dismiss('preview-load')
     } catch (e) {

@@ -1,0 +1,5 @@
+Privacy & Stability Patch:
+- Fixed critical 'NetworkError' in PDF to Text tool by bundling Tesseract.js assets locally.
+- Optimized file saving for large documents (prevents 'Failed to save' error in PDF to Image tool).
+- Improved MIME type detection for ZIP downloads.
+- OCR and all tools now work 100% offline without external CDN calls.

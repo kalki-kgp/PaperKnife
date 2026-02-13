@@ -10,6 +10,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/potatameister/PaperKnife?style=flat&color=rose)](https://github.com/potatameister/PaperKnife/stargazers)
 [![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://potatameister.github.io/PaperKnife/)
 [![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/potatameister/PaperKnife/releases/latest)
+[![IzzyOnDroid Downloads](https://img.shields.io/izzyondroid/dm/com.paperknife.app?color=rose&label=Downloads)](https://apt.izzysoft.de/packages/com.paperknife.app)
 [![Twitter](https://img.shields.io/badge/twitter-@potatameister-black?logo=x)](https://x.com/potatameister)
 
 ---
@@ -40,7 +41,10 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 
 ### How to use it
 
-*   **On Android:** Download the [latest APK](https://github.com/potatameister/PaperKnife/releases/latest). It's built to be fast, private, and easy to use with one hand.
+*   **On Android:** Download the [latest APK](https://github.com/potatameister/PaperKnife/releases/latest) or get it from:
+
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/com.paperknife.app)
+
 *   **On the Web:** Visit the [live site](https://potatameister.github.io/PaperKnife/). You can use it like any other website, or "install" it as a PWA for offline access.
 
 ---
