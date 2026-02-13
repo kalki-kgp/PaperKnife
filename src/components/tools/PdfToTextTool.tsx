@@ -69,6 +69,7 @@ export default function PdfToTextTool() {
           setProgress(Math.round((i / pdfData.pageCount) * 100))
         }
       } else {
+        let currentPageIndex = 1
         const worker = await Tesseract.createWorker('eng', 1, { 
           logger: m => { 
             if (m.status === 'recognizing text') { 
@@ -80,7 +81,6 @@ export default function PdfToTextTool() {
           corePath: `${window.location.origin}/tesseract/tesseract-core.wasm.js`,
           langPath: `${window.location.origin}/tesseract`
         })
-        let currentPageIndex = 1
         for (let i = 1; i <= pdfData.pageCount; i++) {
           currentPageIndex = i; const page = await pdfData.pdfDoc.getPage(i); const viewport = page.getViewport({ scale: 2.0 })
           const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d')
