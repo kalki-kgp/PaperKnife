@@ -10,7 +10,6 @@ export default function Thanks() {
     { name: 'pdf-lib', url: 'https://github.com/Hopding/pdf-lib', desc: 'Core document engine for local manipulation.' },
     { name: 'PDF.js', url: 'https://github.com/mozilla/pdf.js', desc: 'High-performance PDF rendering and parsing.' },
     { name: 'Tesseract.js', url: 'https://github.com/naptha/tesseract.js', desc: 'Fully localized OCR engine for image-to-text conversion.' },
-    { name: 'ProvablyAudit', url: 'https://github.com/ProvablyAudit', desc: 'Specialized privacy & security auditing.' },
     { name: 'JSZip', url: 'https://github.com/Stuk/jszip', desc: 'Local file compression and bundling.' },
     { name: 'Lucide', url: 'https://github.com/lucide-icons/lucide', desc: 'Beautifully crafted open-source icons.' },
     { name: 'Capacitor', url: 'https://github.com/ionic-team/capacitor', desc: 'Native bridge for cross-platform mobile apps.' },

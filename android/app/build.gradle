@@ -26,13 +26,24 @@ android {
                     }
                 }
             
-                buildTypes {
-                    release {
-                        minifyEnabled false
-                        shrinkResources false
-                        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-                    }
-                }
+    signingConfigs {
+        debug {
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            
+            // Mandatory for F-Droid Reproducible Build (RB) comparison
+            signingConfig signingConfigs.debug
+        }
+    }
+
     packaging {
         resources {
             excludes += '/assets/dexopt/baseline.prof'
