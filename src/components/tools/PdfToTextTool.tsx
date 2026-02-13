@@ -79,7 +79,9 @@ export default function PdfToTextTool() {
           },
           workerPath: Capacitor.convertFileSrc(`${window.location.origin}/tesseract/worker.min.js`),
           corePath: Capacitor.convertFileSrc(`${window.location.origin}/tesseract/tesseract-core.wasm.js`),
-          langPath: Capacitor.convertFileSrc(`${window.location.origin}/tesseract`)
+          langPath: Capacitor.convertFileSrc(`${window.location.origin}/tesseract`),
+          gzip: false,
+          cacheMethod: 'none'
         })
         for (let i = 1; i <= pdfData.pageCount; i++) {
           currentPageIndex = i; const page = await pdfData.pdfDoc.getPage(i); const viewport = page.getViewport({ scale: 2.0 })
