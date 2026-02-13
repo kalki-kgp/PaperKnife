@@ -70,24 +70,18 @@ export default function PdfToTextTool() {
         }
       } else {
         let currentPageIndex = 1
-        
-        // Use relative paths that are known to work on Capacitor's localhost
-        const workerPath = '/tesseract/worker.min.js'
-        const corePath = '/tesseract/tesseract-core.wasm.js'
-        const langPath = '/tesseract'
-
         const worker = await Tesseract.createWorker('eng', 1, { 
-          logger: m => { 
+          workerPath: '/tesseract/worker.min.js',
+          corePath: '/tesseract/tesseract-core.wasm.js',
+          langPath: '/tesseract/',
+          gzip: false,
+          cacheMethod: 'none',
+          logger: (m: any) => { 
             if (m.status === 'recognizing text') { 
               const base = ((currentPageIndex - 1) / pdfData.pageCount) * 100; 
               setProgress(Math.round(base + (m.progress * (100 / pdfData.pageCount)))) 
             } 
-          },
-          workerPath,
-          corePath,
-          langPath,
-          gzip: false,
-          cacheMethod: 'none'
+          }
         })
         for (let i = 1; i <= pdfData.pageCount; i++) {
           currentPageIndex = i; const page = await pdfData.pdfDoc.getPage(i); const viewport = page.getViewport({ scale: 2.0 })
