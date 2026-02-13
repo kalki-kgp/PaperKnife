@@ -13,7 +13,8 @@ AutoName: PaperKnife
 
 RepoType: git
 Repo: https://github.com/potatameister/PaperKnife.git
-Binaries: https://github.com/potatameister/PaperKnife/releases/download/v%v/paperknife-v%v.apk
+Binaries: 
+  https://github.com/potatameister/PaperKnife/releases/download/v%v/paperknife-v%v.apk
 
 Builds:
   - versionName: 1.0.6
