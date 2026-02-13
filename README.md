@@ -10,7 +10,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/potatameister/PaperKnife?style=flat&color=rose)](https://github.com/potatameister/PaperKnife/stargazers)
 [![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://potatameister.github.io/PaperKnife/)
 [![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/potatameister/PaperKnife/releases/latest)
-[![IzzyOnDroid Downloads](https://img.shields.io/izzyondroid/dm/com.paperknife.app?color=rose&label=Downloads)](https://apt.izzysoft.de/packages/com.paperknife.app)
+[![IzzyOnDroid Yearly Downloads](https://img.shields.io/badge/dynamic/json?url=https://dlstats.izzyondroid.org/iod-stats-collector/stats/basic/yearly/rolling.json&query=$.['<com.paperknife.app>']&label=IzzyOnDroid%20yearly%20downloads)](https://apt.izzysoft.de/packages/<com.paperknife.app>)
 [![Twitter](https://img.shields.io/badge/twitter-@potatameister-black?logo=x)](https://x.com/potatameister)
 
 ---
