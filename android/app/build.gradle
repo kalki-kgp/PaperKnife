@@ -9,9 +9,22 @@ def getPackageJson() {
 
 def packageJson = getPackageJson()
 
+// Official F-Droid Reproducible Build hardening
+def sourceDateEpoch = System.getenv("SOURCE_DATE_EPOCH")
+if (sourceDateEpoch != null) {
+    project.ext.set("source_date_epoch", sourceDateEpoch)
+}
+
 android {
     namespace "com.paperknife.app"
     compileSdk rootProject.ext.compileSdkVersion
+    
+    // Ensure deterministic output for Manifest and classes.dex
+    if (sourceDateEpoch != null) {
+        tasks.withType(JavaCompile).configureEach {
+            options.setBootstrapClasspath(files())
+        }
+    }
         defaultConfig {
             applicationId "com.paperknife.app"
             minSdkVersion rootProject.ext.minSdkVersion
