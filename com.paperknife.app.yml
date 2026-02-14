@@ -30,7 +30,7 @@ Builds:
       - rm -rf public/tesseract/
       - echo "export default function PdfToTextTool() { return null; }" > src/components/tools/PdfToTextTool.tsx
       - export VITE_DISABLE_OCR=true
-      - npm install --build-from-source
+      - npm ci
       - npm run build
       - npx cap sync android
     scanignore:
