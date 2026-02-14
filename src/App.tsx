@@ -75,13 +75,16 @@ const tools: Tool[] = [
   { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
 ]
 
+export const IS_OCR_DISABLED = import.meta.env.VITE_DISABLE_OCR === 'true'
+export const activeTools = IS_OCR_DISABLED ? tools.filter(t => t.path !== '/pdf-to-text') : tools
+
 function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => void, onBack?: () => void }) {
   const navigate = useNavigate()
   const { setPipelineFile } = usePipeline()
   const [showMore, setShowMore] = useState(false)
   
-  const essentials = tools.slice(0, 4)
-  const otherTools = tools.slice(4)
+  const essentials = activeTools.slice(0, 4)
+  const otherTools = activeTools.slice(4)
 
   const handleAction = async (path: string, title: string) => {
     toast.loading(`Importing ${file.name}...`, { id: 'quick-load' })
@@ -306,7 +309,7 @@ function App() {
       <ScrollToTop />
       <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
         <PipelineProvider>
-          <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={tools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
+          <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={activeTools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
             <Toaster 
               position="top-center" 
               expand={true} 
@@ -344,12 +347,12 @@ function App() {
               <Routes>
                 <Route path="/" element={
                   viewMode === 'web' ? (
-                    <WebView tools={tools} />
+                    <WebView tools={activeTools} />
                   ) : (
                     <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} onFileSelect={(file) => handleGlobalDrop([file] as any)} />
                   )
                 } />
-                <Route path="/android-tools" element={<AndroidToolsView tools={tools} />} />
+                <Route path="/android-tools" element={<AndroidToolsView tools={activeTools} />} />
                 <Route path="/android-history" element={<AndroidHistoryView />} />
                 <Route path="/merge" element={<MergeTool />} />
                 <Route path="/split" element={<SplitTool />} />
@@ -358,7 +361,7 @@ function App() {
                 <Route path="/compress" element={<CompressTool />} />
                 <Route path="/pdf-to-image" element={<PdfToImageTool />} />
                 <Route path="/rotate-pdf" element={<RotateTool />} />
-                <Route path="/pdf-to-text" element={<PdfToTextTool />} />
+                {!IS_OCR_DISABLED && <Route path="/pdf-to-text" element={<PdfToTextTool />} />}
                 <Route path="/rearrange-pdf" element={<RearrangeTool />} />
                 <Route path="/watermark" element={<WatermarkTool />} />
                 <Route path="/page-numbers" element={<PageNumberTool />} />

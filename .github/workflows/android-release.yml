@@ -21,10 +21,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Web Assets (Vite)
+      - name: Build Web Assets (Standard)
         run: npm run build
 
-      - name: Generate Android Assets (Icon/Splash)
+      - name: Generate Android Assets
         run: npx -y @capacitor/assets generate --android
 
       - name: Setup Java
@@ -33,23 +33,25 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: wrapper
-          cache-disabled: true
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Build with Gradle
+      - name: Sync & Build (Standard)
         run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
+          npx cap sync android
+          cd android && chmod +x gradlew && ./gradlew assembleRelease
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/standard-unsigned.apk
 
-      - name: Sign APK
-        id: sign_app
+      - name: Build Web Assets (F-Droid)
+        run: |
+          rm -rf public/tesseract/*.wasm
+          export VITE_DISABLE_OCR=true
+          npm run build
+
+      - name: Sync & Build (F-Droid)
+        run: |
+          npx cap sync android
+          cd android && ./gradlew assembleRelease
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/fdroid-unsigned.apk
+
+      - name: Sign APKs
         uses: ilharp/sign-android-release@v2
         with:
           releaseDir: android/app/build/outputs/apk/release
@@ -59,17 +61,19 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
           buildToolsVersion: "34.0.0"
 
-      - name: Rename APK
+      - name: Prepare Final Files
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          ls -R android/app/build/outputs/apk/release
-          cp android/app/build/outputs/apk/release/*-signed.apk "paperknife-v${VERSION}.apk"
+          cp android/app/build/outputs/apk/release/standard-unsigned-signed.apk "paperknife-v${VERSION}.apk"
+          cp android/app/build/outputs/apk/release/fdroid-unsigned-signed.apk "paperknife-fdroid-v${VERSION}.apk"
           echo "APP_VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Upload Signed APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: PaperKnife-Android-v${{ env.APP_VERSION }}
-          path: paperknife-v${{ env.APP_VERSION }}.apk
+          name: PaperKnife-v${{ env.APP_VERSION }}
+          path: |
+            paperknife-v${{ env.APP_VERSION }}.apk
+            paperknife-fdroid-v${{ env.APP_VERSION }}.apk
           if-no-files-found: error
           compression-level: 0
