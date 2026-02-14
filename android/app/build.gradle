@@ -55,6 +55,11 @@ android {
             excludes += 'DebugProbesKt.bin'
         }
     }
+
+    dependenciesInfo {
+        includeInBundle false
+        includeInApk false
+    }
 }
 
 repositories {

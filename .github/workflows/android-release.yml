@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set SOURCE_DATE_EPOCH
+        run: |
+          echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -44,7 +50,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '17'
 
       - name: Sync & Build (Standard)
         run: |
@@ -55,7 +61,6 @@ jobs:
       - name: Deep Clean for F-Droid
         run: |
           rm -rf public/tesseract/
-          # Replace real tool with empty stub to remove library code from bundle
           echo "export default function PdfToTextTool() { return null; }" > src/components/tools/PdfToTextTool.tsx
           export VITE_DISABLE_OCR=true
           npm run build
@@ -66,24 +71,28 @@ jobs:
           cd android && ./gradlew assembleRelease
           cp app/build/outputs/apk/release/app-release-unsigned.apk ../to-sign/paperknife-fdroid.apk
 
-      - name: Sign APKs
-        uses: ilharp/sign-android-release@v2
-        with:
-          releaseDir: to-sign
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          buildToolsVersion: "34.0.0"
-
-      - name: Prepare Final Files
+      - name: Sign APKs Deterministically
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          echo "Listing all signed APKs:"
-          ls -l to-sign/
-          cp to-sign/paperknife-standard-signed.apk "paperknife-v${VERSION}.apk"
-          cp to-sign/paperknife-fdroid-signed.apk "paperknife-fdroid-v${VERSION}.apk"
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 -d > release.jks
+          
+          # Sign Standard
+          apksigner sign --ks release.jks --ks-key-alias "${{ secrets.ANDROID_ALIAS }}" --ks-pass "pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" --key-pass "pass:${{ secrets.ANDROID_KEY_PASSWORD }}" --min-sdk-version 23 --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out "paperknife-v${VERSION}.apk" to-sign/paperknife-standard.apk
+          
+          # Sign F-Droid
+          apksigner sign --ks release.jks --ks-key-alias "${{ secrets.ANDROID_ALIAS }}" --ks-pass "pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" --key-pass "pass:${{ secrets.ANDROID_KEY_PASSWORD }}" --min-sdk-version 23 --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out "paperknife-fdroid-v${VERSION}.apk" to-sign/paperknife-fdroid.apk
+          
           echo "APP_VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: PaperKnife-v${{ env.APP_VERSION }}
+          path: |
+            paperknife-v${{ env.APP_VERSION }}.apk
+            paperknife-fdroid-v${{ env.APP_VERSION }}.apk
+          if-no-files-found: error
+          compression-level: 0
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
