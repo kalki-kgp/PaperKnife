@@ -1,0 +1,4 @@
+- Standardized Adaptive & Monochrome Icons for Material You support.
+- Refined PDF Preview with a continuous vertical vertical scroll experience.
+- Optimized build pipeline for official store compliance.
+- Fixed Tesseract asset path resolution error.
