@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react'
 import { HashRouter, Link, Route, Routes, useParams } from 'react-router-dom'
+import type { PDFDocument as PdfLibDocument } from 'pdf-lib'
 import { categories, tools } from './data/tools'
 import type { JobRecord } from './types'
 
@@ -22,6 +23,40 @@ type OutputArtifact = {
   blob: Blob
   fileName: string
   mimeType: string
+}
+type OutputRequest = {
+  toolId: string
+  file: File
+  quality: number
+  watermarkText: string
+  password: string
+  additionalFiles?: File[]
+}
+type PdfViewport = { width: number; height: number }
+type PdfJsImageObject = { data: Uint8ClampedArray; width: number; height: number }
+type PdfJsPage = {
+  getViewport: (params: { scale: number }) => PdfViewport
+  render: (params: {
+    canvas: HTMLCanvasElement
+    canvasContext: CanvasRenderingContext2D
+    viewport: PdfViewport
+  }) => { promise: Promise<void> }
+  getOperatorList: () => Promise<{ argsArray: unknown[][] }>
+  getTextContent: () => Promise<{ items: Array<{ str?: string }> }>
+  objs: { get: (name: string) => Promise<PdfJsImageObject | undefined> }
+}
+type PdfJsDocument = {
+  numPages: number
+  getPage: (pageNumber: number) => Promise<PdfJsPage>
+  cleanup: () => void
+}
+type PdfJsLoadingTask = {
+  promise: Promise<PdfJsDocument>
+  destroy: () => Promise<void>
+}
+type PdfJsBundle = {
+  getDocument: (src: unknown) => PdfJsLoadingTask
+  GlobalWorkerOptions: { workerSrc: string }
 }
 
 function formatBytes(bytes: number): string {
@@ -82,25 +117,69 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number)
   })
 }
 
-async function createPdfImageOutput(file: File, quality: number, onProgress: (progress: number) => void): Promise<OutputArtifact> {
-  const [{ GlobalWorkerOptions, getDocument }, { default: JSZip }, { default: pdfWorkerSrc }] = await Promise.all([
-    import('pdfjs-dist'),
-    import('jszip'),
-    import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
-  ])
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength)
+  copy.set(bytes)
+  return copy.buffer
+}
 
-  if (!GlobalWorkerOptions.workerSrc) {
-    GlobalWorkerOptions.workerSrc = pdfWorkerSrc
-  }
+function toPdfBlob(bytes: Uint8Array): Blob {
+  return new Blob([toArrayBuffer(bytes)], { type: 'application/pdf' })
+}
 
+function assertPdf(file: File, toolName: string): void {
   const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
   if (!isPdf) {
-    throw new Error('PDF to Image requires a PDF file.')
+    throw new Error(`${toolName} requires a PDF file.`)
+  }
+}
+
+let pdfJsBundlePromise: Promise<PdfJsBundle> | undefined
+
+async function getPdfJsBundle(): Promise<PdfJsBundle> {
+  if (!pdfJsBundlePromise) {
+    pdfJsBundlePromise = Promise.all([
+      import('pdfjs-dist'),
+      import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+    ]).then(([pdfjs, worker]) => {
+      if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+        pdfjs.GlobalWorkerOptions.workerSrc = worker.default
+      }
+
+      return {
+        getDocument: pdfjs.getDocument as unknown as PdfJsBundle['getDocument'],
+        GlobalWorkerOptions: pdfjs.GlobalWorkerOptions as PdfJsBundle['GlobalWorkerOptions'],
+      }
+    })
   }
 
+  return pdfJsBundlePromise
+}
+
+async function loadPdfLib() {
+  return import('pdf-lib')
+}
+
+async function loadPdfJsDocument(file: File, password = '') {
+  const { getDocument } = await getPdfJsBundle()
   const source = new Uint8Array(await file.arrayBuffer())
-  const loadingTask = getDocument({ data: source })
-  const pdf = await loadingTask.promise
+  const loadingTask = getDocument({
+    data: source,
+    ...(password ? { password } : {}),
+  })
+
+  return { loadingTask, pdf: await loadingTask.promise }
+}
+
+async function createPdfImageOutput(
+  file: File,
+  quality: number,
+  onProgress: (progress: number) => void,
+  password = '',
+): Promise<OutputArtifact> {
+  assertPdf(file, 'PDF to Image')
+  const { default: JSZip } = await import('jszip')
+  const { loadingTask, pdf } = await loadPdfJsDocument(file, password)
   const zip = new JSZip()
   const baseName = stripExtension(file.name)
   const padWidth = Math.max(2, String(pdf.numPages).length)
@@ -142,22 +221,497 @@ async function createPdfImageOutput(file: File, quality: number, onProgress: (pr
   }
 }
 
-async function createOutputArtifact(
-  toolId: string,
+async function readPdfLibDocument(
   file: File,
-  quality: number,
+  password: string,
+  fallbackToolName: string,
+): Promise<PdfLibDocument> {
+  assertPdf(file, fallbackToolName)
+  const { PDFDocument } = await loadPdfLib()
+  const bytes = await file.arrayBuffer()
+  return PDFDocument.load(bytes, {
+    ...(password ? { password } : {}),
+    ignoreEncryption: true,
+  } as { password?: string; ignoreEncryption: boolean })
+}
+
+function outputFileNameFrom(inputName: string, suffix: string, ext: string): string {
+  return `${stripExtension(inputName)}-${suffix}.${ext}`
+}
+
+async function createMergeOutput(
+  file: File,
+  additionalFiles: File[] = [],
+  password: string,
   onProgress: (progress: number) => void,
 ): Promise<OutputArtifact> {
-  if (toolId === 'pdf-to-image') {
-    return createPdfImageOutput(file, quality, onProgress)
+  const { PDFDocument } = await loadPdfLib()
+  const sources = [file, ...additionalFiles]
+
+  if (sources.length < 2) {
+    throw new Error('Merge PDF needs at least 2 PDF files. Select additional PDFs in the file picker.')
   }
 
-  const sourceBuffer = await file.arrayBuffer()
-  onProgress(100)
+  const merged = await PDFDocument.create()
+  for (let index = 0; index < sources.length; index += 1) {
+    const source = sources[index]
+    assertPdf(source, 'Merge PDF')
+    const sourceBytes = await source.arrayBuffer()
+    const sourceDoc = await PDFDocument.load(sourceBytes, {
+      ...(password ? { password } : {}),
+      ignoreEncryption: true,
+    } as { password?: string; ignoreEncryption: boolean })
+    const copied = await merged.copyPages(sourceDoc, sourceDoc.getPageIndices())
+    copied.forEach((page) => merged.addPage(page))
+    onProgress(Math.round(((index + 1) / sources.length) * 100))
+  }
+
+  const bytes = await merged.save()
   return {
-    blob: new Blob([sourceBuffer], { type: file.type || 'application/octet-stream' }),
-    fileName: `${stripExtension(file.name)}-${toolId}-output.${file.name.split('.').pop() || 'bin'}`,
-    mimeType: file.type || 'application/octet-stream',
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'merged', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createSplitOutput(file: File, password: string, onProgress: (progress: number) => void): Promise<OutputArtifact> {
+  const { default: JSZip } = await import('jszip')
+  const { PDFDocument } = await loadPdfLib()
+  const sourceDoc = await readPdfLibDocument(file, password, 'Split PDF')
+  const zip = new JSZip()
+  const pages = sourceDoc.getPages()
+  const padWidth = Math.max(2, String(pages.length).length)
+
+  for (let index = 0; index < pages.length; index += 1) {
+    const single = await PDFDocument.create()
+    const [copied] = await single.copyPages(sourceDoc, [index])
+    single.addPage(copied)
+    const singleBytes = await single.save()
+    zip.file(`page-${String(index + 1).padStart(padWidth, '0')}.pdf`, singleBytes)
+    onProgress(Math.round(((index + 1) / pages.length) * 100))
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' })
+  return {
+    blob,
+    fileName: outputFileNameFrom(file.name, 'split-pages', 'zip'),
+    mimeType: 'application/zip',
+  }
+}
+
+async function createRasterizedPdfOutput(
+  file: File,
+  quality: number,
+  password: string,
+  grayscale: boolean,
+  onProgress: (progress: number) => void,
+): Promise<OutputArtifact> {
+  assertPdf(file, grayscale ? 'Grayscale' : 'Compress PDF')
+  const { PDFDocument } = await loadPdfLib()
+  const { loadingTask, pdf } = await loadPdfJsDocument(file, password)
+  const out = await PDFDocument.create()
+  const jpegQuality = Math.min(0.94, Math.max(0.35, quality / 110))
+  const scale = 0.8 + quality / 120
+
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const page = await pdf.getPage(pageNumber)
+    const viewport = page.getViewport({ scale })
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.floor(viewport.width))
+    canvas.height = Math.max(1, Math.floor(viewport.height))
+    const context = canvas.getContext('2d')
+    if (!context) {
+      throw new Error('Could not create rendering context.')
+    }
+
+    await page.render({ canvas, canvasContext: context, viewport }).promise
+
+    if (grayscale) {
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+      for (let px = 0; px < data.length; px += 4) {
+        const gray = Math.round(data[px] * 0.299 + data[px + 1] * 0.587 + data[px + 2] * 0.114)
+        data[px] = gray
+        data[px + 1] = gray
+        data[px + 2] = gray
+      }
+      context.putImageData(imageData, 0, 0)
+    }
+
+    const jpegBlob = await canvasToBlob(canvas, 'image/jpeg', jpegQuality)
+    const jpegBytes = await jpegBlob.arrayBuffer()
+    const image = await out.embedJpg(jpegBytes)
+    const outPage = out.addPage([viewport.width, viewport.height])
+    outPage.drawImage(image, { x: 0, y: 0, width: viewport.width, height: viewport.height })
+    onProgress(Math.round((pageNumber / pdf.numPages) * 100))
+  }
+
+  pdf.cleanup()
+  await loadingTask.destroy()
+  const bytes = await out.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, grayscale ? 'grayscale' : 'compressed', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createProtectOutput(file: File, password: string): Promise<OutputArtifact> {
+  if (!password) {
+    throw new Error('Password is required for Protect PDF.')
+  }
+
+  const doc = await readPdfLibDocument(file, password, 'Protect PDF')
+  const intermediate = await doc.save()
+  const { encryptPDF } = await import('@pdfsmaller/pdf-encrypt-lite')
+  const encrypted = await encryptPDF(intermediate, password)
+  const encryptedBytes = encrypted instanceof Uint8Array ? encrypted : new Uint8Array(encrypted)
+  return {
+    blob: toPdfBlob(encryptedBytes),
+    fileName: outputFileNameFrom(file.name, 'protected', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createUnlockOutput(file: File, password: string): Promise<OutputArtifact> {
+  const doc = await readPdfLibDocument(file, password, 'Unlock PDF')
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'unlocked', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createRotateOutput(file: File, quality: number, password: string): Promise<OutputArtifact> {
+  const { degrees } = await loadPdfLib()
+  const doc = await readPdfLibDocument(file, password, 'Rotate PDF')
+  const rotation = quality < 40 ? 90 : quality < 75 ? 180 : 270
+  doc.getPages().forEach((page) => {
+    const current = page.getRotation().angle
+    page.setRotation(degrees((current + rotation) % 360))
+  })
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'rotated', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createRearrangeOutput(file: File, password: string): Promise<OutputArtifact> {
+  const { PDFDocument } = await loadPdfLib()
+  const source = await readPdfLibDocument(file, password, 'Rearrange PDF')
+  const output = await PDFDocument.create()
+  const indices = source
+    .getPageIndices()
+    .slice()
+    .reverse()
+  const copied = await output.copyPages(source, indices)
+  copied.forEach((page) => output.addPage(page))
+  const bytes = await output.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'rearranged', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createPageNumberOutput(file: File, quality: number, password: string): Promise<OutputArtifact> {
+  const { StandardFonts, rgb } = await loadPdfLib()
+  const doc = await readPdfLibDocument(file, password, 'Page Numbers')
+  const font = await doc.embedFont(StandardFonts.Helvetica)
+  const fontSize = Math.round(8 + quality / 10)
+  const pages = doc.getPages()
+  pages.forEach((page, index) => {
+    const label = `${index + 1}/${pages.length}`
+    const textWidth = font.widthOfTextAtSize(label, fontSize)
+    page.drawText(label, {
+      x: Math.max(16, (page.getWidth() - textWidth) / 2),
+      y: 20,
+      size: fontSize,
+      font,
+      color: rgb(0.1, 0.1, 0.1),
+    })
+  })
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'numbered', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createWatermarkOutput(file: File, watermarkText: string, password: string): Promise<OutputArtifact> {
+  const { StandardFonts, degrees, rgb } = await loadPdfLib()
+  const doc = await readPdfLibDocument(file, password, 'Watermark')
+  const mark = watermarkText.trim() || 'CONFIDENTIAL'
+  const font = await doc.embedFont(StandardFonts.HelveticaBold)
+  doc.getPages().forEach((page) => {
+    const size = Math.max(28, page.getWidth() * 0.07)
+    page.drawText(mark, {
+      x: page.getWidth() * 0.15,
+      y: page.getHeight() * 0.45,
+      size,
+      font,
+      color: rgb(0.65, 0.65, 0.65),
+      rotate: degrees(-35),
+      opacity: 0.45,
+    })
+  })
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'watermarked', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createMetadataOutput(file: File, password: string): Promise<OutputArtifact> {
+  const doc = await readPdfLibDocument(file, password, 'Metadata')
+  doc.setTitle('')
+  doc.setAuthor('')
+  doc.setSubject('')
+  doc.setKeywords([])
+  doc.setProducer('PaperKnife')
+  doc.setCreator('PaperKnife Web')
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'sanitized', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createSignatureOutput(file: File, watermarkText: string, quality: number, password: string): Promise<OutputArtifact> {
+  const { StandardFonts, rgb } = await loadPdfLib()
+  const doc = await readPdfLibDocument(file, password, 'Signature')
+  const signatureLabel = watermarkText.trim() || 'Signed Digitally'
+  const font = await doc.embedFont(StandardFonts.HelveticaOblique)
+  const first = doc.getPages()[0]
+  const fontSize = Math.max(14, Math.round(quality / 4))
+  const width = font.widthOfTextAtSize(signatureLabel, fontSize)
+  first.drawText(signatureLabel, {
+    x: Math.max(20, first.getWidth() - width - 28),
+    y: 26,
+    size: fontSize,
+    font,
+    color: rgb(0.12, 0.12, 0.12),
+  })
+  const bytes = await doc.save()
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'signed', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createImageToPdfOutput(file: File): Promise<OutputArtifact> {
+  const isImage = file.type.startsWith('image/')
+  if (!isImage) {
+    throw new Error('Image to PDF requires an image input (JPG/PNG/WebP).')
+  }
+
+  const { PDFDocument } = await loadPdfLib()
+  const doc = await PDFDocument.create()
+  const bytes = await file.arrayBuffer()
+  let width = 1080
+  let height = 1440
+  if (file.type.includes('png')) {
+    const embedded = await doc.embedPng(bytes)
+    width = embedded.width
+    height = embedded.height
+    const page = doc.addPage([width, height])
+    page.drawImage(embedded, { x: 0, y: 0, width, height })
+  } else if (file.type.includes('jpeg') || file.type.includes('jpg')) {
+    const embedded = await doc.embedJpg(bytes)
+    width = embedded.width
+    height = embedded.height
+    const page = doc.addPage([width, height])
+    page.drawImage(embedded, { x: 0, y: 0, width, height })
+  } else {
+    const image = new Image()
+    const imageUrl = URL.createObjectURL(file)
+    const imageLoad = new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve()
+      image.onerror = () => reject(new Error('Could not load image input.'))
+    })
+    image.src = imageUrl
+    await imageLoad
+    width = image.naturalWidth
+    height = image.naturalHeight
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext('2d')
+    if (!context) {
+      throw new Error('Could not create rendering context.')
+    }
+    context.drawImage(image, 0, 0)
+    const jpegBlob = await canvasToBlob(canvas, 'image/jpeg', 0.92)
+    const jpegBytes = await jpegBlob.arrayBuffer()
+    const embedded = await doc.embedJpg(jpegBytes)
+    const page = doc.addPage([width, height])
+    page.drawImage(embedded, { x: 0, y: 0, width, height })
+    URL.revokeObjectURL(imageUrl)
+  }
+
+  const output = await doc.save()
+  return {
+    blob: toPdfBlob(output),
+    fileName: outputFileNameFrom(file.name, 'image-to-pdf', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createExtractImagesOutput(
+  file: File,
+  password: string,
+  onProgress: (progress: number) => void,
+): Promise<OutputArtifact> {
+  assertPdf(file, 'Extract Images')
+  const { default: JSZip } = await import('jszip')
+  const { loadingTask, pdf } = await loadPdfJsDocument(file, password)
+  const zip = new JSZip()
+  let imageCounter = 0
+
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const page = await pdf.getPage(pageNumber)
+    const operatorList = await page.getOperatorList()
+    for (let opIndex = 0; opIndex < operatorList.argsArray.length; opIndex += 1) {
+      const dep = operatorList.argsArray[opIndex]?.[0]
+      if (typeof dep === 'string' && dep.startsWith('img_')) {
+        try {
+          const imgObj = await page.objs.get(dep)
+          if (imgObj && imgObj.data && imgObj.width && imgObj.height) {
+            const canvas = document.createElement('canvas')
+            canvas.width = imgObj.width
+            canvas.height = imgObj.height
+            const context = canvas.getContext('2d')
+            if (!context) {
+              continue
+            }
+            const imageData = context.createImageData(imgObj.width, imgObj.height)
+            imageData.data.set(imgObj.data)
+            context.putImageData(imageData, 0, 0)
+            const pngBlob = await canvasToBlob(canvas, 'image/png')
+            imageCounter += 1
+            zip.file(`image-${String(imageCounter).padStart(3, '0')}.png`, pngBlob)
+          }
+        } catch {
+          // Ignore malformed object references.
+        }
+      }
+    }
+    onProgress(Math.round((pageNumber / pdf.numPages) * 100))
+  }
+
+  pdf.cleanup()
+  await loadingTask.destroy()
+
+  if (imageCounter === 0) {
+    throw new Error('No embedded images found in this PDF.')
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' })
+  return {
+    blob,
+    fileName: outputFileNameFrom(file.name, 'extracted-images', 'zip'),
+    mimeType: 'application/zip',
+  }
+}
+
+async function createPdfToTextOutput(
+  file: File,
+  password: string,
+  onProgress: (progress: number) => void,
+): Promise<OutputArtifact> {
+  assertPdf(file, 'PDF to Text')
+  const { loadingTask, pdf } = await loadPdfJsDocument(file, password)
+  let text = ''
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const page = await pdf.getPage(pageNumber)
+    const content = await page.getTextContent()
+    const line = content.items.map((item) => item.str || '').join(' ')
+    text += `--- Page ${pageNumber} ---\n${line}\n\n`
+    onProgress(Math.round((pageNumber / pdf.numPages) * 100))
+  }
+  pdf.cleanup()
+  await loadingTask.destroy()
+  return {
+    blob: new Blob([text], { type: 'text/plain' }),
+    fileName: outputFileNameFrom(file.name, 'extracted-text', 'txt'),
+    mimeType: 'text/plain',
+  }
+}
+
+async function createRepairOutput(file: File, password: string): Promise<OutputArtifact> {
+  const doc = await readPdfLibDocument(file, password, 'Repair PDF')
+  const bytes = await doc.save({ useObjectStreams: false })
+  return {
+    blob: toPdfBlob(bytes),
+    fileName: outputFileNameFrom(file.name, 'repaired', 'pdf'),
+    mimeType: 'application/pdf',
+  }
+}
+
+async function createOutputArtifact(request: OutputRequest, onProgress: (progress: number) => void): Promise<OutputArtifact> {
+  const { toolId, file, quality, watermarkText, password, additionalFiles } = request
+
+  switch (toolId) {
+    case 'merge-pdf':
+      return createMergeOutput(file, additionalFiles, password, onProgress)
+    case 'split-pdf':
+      return createSplitOutput(file, password, onProgress)
+    case 'compress-pdf':
+      return createRasterizedPdfOutput(file, quality, password, false, onProgress)
+    case 'protect-pdf':
+      onProgress(30)
+      return createProtectOutput(file, password)
+    case 'unlock-pdf':
+      onProgress(40)
+      return createUnlockOutput(file, password)
+    case 'rotate-pdf':
+      onProgress(70)
+      return createRotateOutput(file, quality, password)
+    case 'rearrange-pdf':
+      onProgress(70)
+      return createRearrangeOutput(file, password)
+    case 'page-numbers':
+      onProgress(70)
+      return createPageNumberOutput(file, quality, password)
+    case 'watermark':
+      onProgress(70)
+      return createWatermarkOutput(file, watermarkText, password)
+    case 'metadata':
+      onProgress(70)
+      return createMetadataOutput(file, password)
+    case 'signature':
+      onProgress(70)
+      return createSignatureOutput(file, watermarkText, quality, password)
+    case 'grayscale':
+      return createRasterizedPdfOutput(file, quality, password, true, onProgress)
+    case 'pdf-to-image':
+      return createPdfImageOutput(file, quality, onProgress, password)
+    case 'image-to-pdf':
+      onProgress(70)
+      return createImageToPdfOutput(file)
+    case 'extract-images':
+      return createExtractImagesOutput(file, password, onProgress)
+    case 'pdf-to-text':
+      return createPdfToTextOutput(file, password, onProgress)
+    case 'repair-pdf':
+      onProgress(70)
+      return createRepairOutput(file, password)
+    default: {
+      const sourceBuffer = await file.arrayBuffer()
+      onProgress(100)
+      return {
+        blob: new Blob([sourceBuffer], { type: file.type || 'application/octet-stream' }),
+        fileName: `${stripExtension(file.name)}-${toolId}-output.${file.name.split('.').pop() || 'bin'}`,
+        mimeType: file.type || 'application/octet-stream',
+      }
+    }
   }
 }
 
@@ -452,6 +1006,7 @@ function ToolWorkspace({
   const [progress, setProgress] = useState(0)
   const [running, setRunning] = useState(false)
   const [runError, setRunError] = useState<string | null>(null)
+  const [mergeFiles, setMergeFiles] = useState<File[]>([])
   const [latestOutput, setLatestOutput] = useState<{
     fileName: string
     size: number
@@ -470,6 +1025,12 @@ function ToolWorkspace({
     }
   }, [latestOutput])
 
+  useEffect(() => {
+    if (tool?.id !== 'merge-pdf') {
+      setMergeFiles([])
+    }
+  }, [tool?.id])
+
   if (!tool) {
     return (
       <main className="workspace-grid">
@@ -487,7 +1048,32 @@ function ToolWorkspace({
   const Icon = tool.icon
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    onFileSelect(readIncomingFile(event.target.files))
+    const list = event.target.files
+    if (!list || list.length === 0) {
+      return
+    }
+
+    if (tool.id === 'merge-pdf') {
+      const all = Array.from(list).filter(
+        (candidate) => candidate.type === 'application/pdf' || candidate.name.toLowerCase().endsWith('.pdf'),
+      )
+      if (all.length === 0) {
+        setRunError('Merge PDF accepts only PDF files.')
+        return
+      }
+      setMergeFiles(all)
+      onFileSelect(all[0])
+    } else {
+      setMergeFiles([])
+      onFileSelect(readIncomingFile(list))
+    }
+
+    event.target.value = ''
+  }
+
+  const clearCurrentFiles = () => {
+    setMergeFiles([])
+    onFileClear()
   }
 
   const startRun = async () => {
@@ -501,9 +1087,19 @@ function ToolWorkspace({
     setProgress(6)
 
     try {
-      const output = await createOutputArtifact(tool.id, activeFile, quality, (nextProgress) => {
+      const output = await createOutputArtifact(
+        {
+          toolId: tool.id,
+          file: activeFile,
+          quality,
+          watermarkText,
+          password,
+          additionalFiles: tool.id === 'merge-pdf' ? mergeFiles.slice(1) : [],
+        },
+        (nextProgress) => {
         setProgress(Math.max(6, Math.min(99, nextProgress)))
-      })
+        },
+      )
 
       const downloadUrl = URL.createObjectURL(output.blob)
       if (latestOutput?.downloadUrl) {
@@ -520,7 +1116,8 @@ function ToolWorkspace({
 
       triggerDownload(downloadUrl, output.fileName)
       setProgress(100)
-      onQueue(tool.id, activeFile.name)
+      const queueName = tool.id === 'merge-pdf' && mergeFiles.length > 1 ? `${mergeFiles.length} PDF files` : activeFile.name
+      onQueue(tool.id, queueName)
     } catch (error) {
       setProgress(0)
       setRunError(error instanceof Error ? error.message : 'Failed to generate output.')
@@ -543,7 +1140,11 @@ function ToolWorkspace({
     const lines = [
       `PaperKnife Web Job`,
       `Tool: ${tool.title}`,
-      `Input: ${activeFile.name} (${formatBytes(activeFile.size)})`,
+      `Input: ${
+        tool.id === 'merge-pdf' && mergeFiles.length > 1
+          ? `${mergeFiles.length} PDF files`
+          : `${activeFile.name} (${formatBytes(activeFile.size)})`
+      }`,
       `Quality: ${quality}`,
       `Watermark: ${watermarkText || 'none'}`,
       `Password set: ${password ? 'yes' : 'no'}`,
@@ -586,7 +1187,7 @@ function ToolWorkspace({
               <div className="file-pill">
                 <strong>{activeFile.name}</strong>
                 <span>{formatBytes(activeFile.size)}</span>
-                <button onClick={onFileClear} type="button" aria-label="Clear file">
+                <button onClick={clearCurrentFiles} type="button" aria-label="Clear file">
                   <X size={14} />
                 </button>
               </div>
@@ -597,16 +1198,20 @@ function ToolWorkspace({
             )}
 
             <label className="wire-btn" htmlFor="workspace-file-input">
-              Replace file
+              {tool.id === 'merge-pdf' ? 'Select PDFs' : 'Replace file'}
             </label>
             <input
               id="workspace-file-input"
               className="hidden-input"
               type="file"
-              accept=".pdf,image/png,image/jpeg,image/webp"
+              accept={tool.id === 'image-to-pdf' ? 'image/png,image/jpeg,image/webp' : '.pdf'}
+              multiple={tool.id === 'merge-pdf'}
               onChange={handleFileSelect}
             />
           </div>
+          {tool.id === 'merge-pdf' && mergeFiles.length > 1 && (
+            <p className="muted">{mergeFiles.length} PDFs selected for merge.</p>
+          )}
         </section>
 
         <section className="controls-grid">
