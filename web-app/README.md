@@ -19,6 +19,7 @@ Build output is generated in `dist/` and can be deployed to static hosts such as
 
 ## Notes
 
-- Uses `HashRouter` to avoid server-side route rewrites.
-- Vite `base` is set to `./` for subpath-friendly deployments.
-- This UI is client-side and designed to mirror PaperKnife's Android workflow patterns for the web.
+- Uses `BrowserRouter` by default for SEO-friendly URLs.
+- Set `VITE_USE_HASH_ROUTER=true` if your host does not support SPA rewrites.
+- Includes route-level SEO metadata updates, `robots.txt`, and `sitemap.xml`.
+- Vite `base` remains `./` for subpath-friendly deployments.
