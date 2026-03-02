@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import {
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   Clock3,
@@ -13,7 +14,7 @@ import {
   Upload,
   X,
 } from 'lucide-react'
-import { HashRouter, Link, Route, Routes, useParams } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Link, Route, Routes, useParams } from 'react-router-dom'
 import type { PDFDocument as PdfLibDocument } from 'pdf-lib'
 import { categories, tools } from './data/tools'
 import type { JobRecord } from './types'
@@ -57,6 +58,59 @@ type PdfJsLoadingTask = {
 type PdfJsBundle = {
   getDocument: (src: unknown) => PdfJsLoadingTask
   GlobalWorkerOptions: { workerSrc: string }
+}
+type SeoConfig = {
+  title: string
+  description: string
+  path?: string
+}
+
+const BRAND_NAME = 'PaperKnife'
+const BRAND_SUBTITLE = 'Private PDF Toolkit'
+const BRAND_URL_FALLBACK = 'https://paperknife.app'
+const BRAND_LOGO_PATH = '/logos/icon.png'
+
+function upsertMetaTag(attribute: 'name' | 'property', key: string, content: string): void {
+  let tag = document.querySelector(`meta[${attribute}="${key}"]`) as HTMLMetaElement | null
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.setAttribute(attribute, key)
+    document.head.appendChild(tag)
+  }
+  tag.content = content
+}
+
+function applySeoMetadata(config: SeoConfig): void {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : BRAND_URL_FALLBACK
+  const canonicalHref = new URL(config.path ?? '/', origin).toString()
+  const logoHref = new URL('/logos/og-image.png', origin).toString()
+
+  document.title = config.title
+  upsertMetaTag('name', 'description', config.description)
+  upsertMetaTag('name', 'robots', 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1')
+  upsertMetaTag('property', 'og:title', config.title)
+  upsertMetaTag('property', 'og:description', config.description)
+  upsertMetaTag('property', 'og:type', 'website')
+  upsertMetaTag('property', 'og:url', canonicalHref)
+  upsertMetaTag('property', 'og:site_name', BRAND_NAME)
+  upsertMetaTag('property', 'og:image', logoHref)
+  upsertMetaTag('property', 'og:image:alt', `${BRAND_NAME} — Private PDF Toolkit`)
+  upsertMetaTag('name', 'twitter:card', 'summary_large_image')
+  upsertMetaTag('name', 'twitter:title', config.title)
+  upsertMetaTag('name', 'twitter:description', config.description)
+  upsertMetaTag('name', 'twitter:image', logoHref)
+
+  let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+  if (!canonical) {
+    canonical = document.createElement('link')
+    canonical.setAttribute('rel', 'canonical')
+    document.head.appendChild(canonical)
+  }
+  canonical.href = canonicalHref
 }
 
 function formatBytes(bytes: number): string {
@@ -715,6 +769,9 @@ async function createOutputArtifact(request: OutputRequest, onProgress: (progres
   }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   APP CHROME
+───────────────────────────────────────────────────────────── */
 function AppChrome({
   activeFile,
   onFileSelect,
@@ -729,56 +786,70 @@ function AppChrome({
   onQueue: (toolId: string, fileName: string) => void
 }) {
   return (
-    <div className="control-room">
-      <div className="texture-overlay" />
-      <div className="accent-wave accent-wave-a" />
-      <div className="accent-wave accent-wave-b" />
+    <div className="app-shell">
+      <header className="site-header">
+        <div className="header-inner">
+          <Link to="/" className="brand" aria-label={`${BRAND_NAME} home`}>
+            <img
+              className="brand-logo"
+              src={BRAND_LOGO_PATH}
+              alt={`${BRAND_NAME} logo`}
+              width={30}
+              height={30}
+            />
+            <span className="brand-name">
+              Paper<span>Knife</span>
+            </span>
+            <span className="brand-tag">{BRAND_SUBTITLE}</span>
+          </Link>
 
-      <header className="command-header reveal-up">
-        <Link to="/" className="brand-mark" aria-label="PaperKnife home">
-          <span className="brand-monogram">PK</span>
-          <div>
-            <p>PaperKnife / Web Ops</p>
-            <small>Local-only Document Forge</small>
+          <div className="header-badges">
+            <span className="badge badge-cyan">
+              <Shield size={11} />
+              Zero Uploads
+            </span>
+            <span className="badge">
+              <Clock3 size={11} />
+              {jobs.length} runs
+            </span>
           </div>
-        </Link>
-
-        <div className="header-pills">
-          <span>
-            <Shield size={14} />
-            Zero Uploads
-          </span>
-          <span>
-            <Clock3 size={14} />
-            {jobs.length} Runs Logged
-          </span>
         </div>
       </header>
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage activeFile={activeFile} onFileSelect={onFileSelect} onFileClear={onFileClear} jobs={jobs} />
-          }
-        />
-        <Route
-          path="/tool/:toolId"
-          element={
-            <ToolWorkspace
-              activeFile={activeFile}
-              onFileSelect={onFileSelect}
-              onFileClear={onFileClear}
-              onQueue={onQueue}
-              jobs={jobs}
-            />
-          }
-        />
-      </Routes>
+      <main className="page-main">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                activeFile={activeFile}
+                onFileSelect={onFileSelect}
+                onFileClear={onFileClear}
+                jobs={jobs}
+              />
+            }
+          />
+          <Route
+            path="/tool/:toolId"
+            element={
+              <ToolWorkspace
+                activeFile={activeFile}
+                onFileSelect={onFileSelect}
+                onFileClear={onFileClear}
+                onQueue={onQueue}
+                jobs={jobs}
+              />
+            }
+          />
+        </Routes>
+      </main>
     </div>
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   HOME PAGE
+───────────────────────────────────────────────────────────── */
 function HomePage({
   activeFile,
   onFileSelect,
@@ -796,23 +867,20 @@ function HomePage({
   const [dragging, setDragging] = useState(false)
 
   const goalChoices = useMemo(
-    () => categories.filter((category): category is Exclude<CategoryFilter, 'All'> => category !== 'All'),
+    () => categories.filter((c): c is Exclude<CategoryFilter, 'All'> => c !== 'All'),
     [],
   )
 
   const goalDescription: Record<Exclude<CategoryFilter, 'All'>, string> = {
-    Edit: 'Merge, split, rotate, watermark, and reorder pages.',
-    Secure: 'Protect files, remove locks, and clean metadata.',
-    Convert: 'Move between PDF, images, and text formats.',
-    Optimize: 'Compress, grayscale, and repair heavy documents.',
+    Edit: 'Merge, split, rotate, watermark, reorder pages.',
+    Secure: 'Encrypt, unlock, and sanitize metadata.',
+    Convert: 'PDF ↔ images, text extraction.',
+    Optimize: 'Compress, grayscale, repair broken files.',
   }
 
   const filtered = useMemo(() => {
     return tools.filter((tool) => {
-      if (!selectedGoal) {
-        return false
-      }
-
+      if (!selectedGoal) return false
       const matchesCategory = tool.category === selectedGoal
       const text = `${tool.title} ${tool.description} ${tool.category}`.toLowerCase()
       const matchesQuery = text.includes(query.trim().toLowerCase())
@@ -820,10 +888,17 @@ function HomePage({
     })
   }, [query, selectedGoal])
 
-  const visibleTools = showAllTools ? filtered : filtered.slice(0, 4)
-
-  const totalRuns = jobs.length
+  const visibleTools = showAllTools ? filtered : filtered.slice(0, 5)
   const lastJob = jobs[0]
+
+  useEffect(() => {
+    applySeoMetadata({
+      title: `${BRAND_NAME} — Merge, Split, Compress & Convert PDF Online`,
+      description:
+        'PaperKnife processes PDFs 100% locally in your browser. Merge PDF, split pages, compress, protect, unlock, convert to image or text. Zero uploads, complete privacy.',
+      path: '/',
+    })
+  }, [])
 
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     event.preventDefault()
@@ -836,154 +911,246 @@ function HomePage({
   }
 
   return (
-    <main className="home-flow">
-      <section className="panel welcome-panel reveal-up">
-        <p className="kicker">Start Here</p>
-        <h1>One clear flow for every user.</h1>
-        <p>
-          Upload your document, select what you want to do, then pick from a short recommended tool list.
-          No noisy dashboard.
+    <div className="home-root">
+
+      {/* Hero */}
+      <section className="hero-block fade-up">
+        <p className="hero-eyebrow">// private pdf toolkit</p>
+        <h1 className="hero-title">
+          PDF tools that<br />
+          <em>stay local.</em>
+        </h1>
+        <p className="hero-sub">
+          Every operation runs entirely in your browser. Files never leave your device.
+          No accounts, no uploads, no tracking.
         </p>
-        <div className="flow-strip">
-          <span>1. Add file</span>
-          <span>2. Pick goal</span>
-          <span>3. Run tool</span>
+        <div className="hero-flow">
+          <div className="flow-step">
+            <span className="flow-step-num">1</span>
+            Add file
+          </div>
+          <span className="flow-arrow">→</span>
+          <div className="flow-step">
+            <span className="flow-step-num">2</span>
+            Pick goal
+          </div>
+          <span className="flow-arrow">→</span>
+          <div className="flow-step">
+            <span className="flow-step-num">3</span>
+            Run tool
+          </div>
         </div>
-        <small className="flow-meta">
+        <p className="hero-meta">
           {lastJob
-            ? `Last run: ${lastJob.fileName} at ${formatTimestamp(lastJob.createdAt)}`
-            : `${totalRuns} total local runs. Files never leave browser memory.`}
-        </small>
+            ? `↳ last run: ${lastJob.fileName} · ${formatTimestamp(lastJob.createdAt)}`
+            : `↳ ${jobs.length} total local runs · files never leave browser memory`}
+        </p>
       </section>
 
-      <section
-        className={`panel step-panel reveal-up ${dragging ? 'dragging' : ''}`}
-        onDragOver={(event) => {
-          event.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={(event) => {
-          event.preventDefault()
-          setDragging(false)
-        }}
+      {/* Step 1: Upload */}
+      <div
+        className={`step-block fade-up fade-up-1${dragging ? ' is-dragging' : ''}`}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+        onDragLeave={(e) => { e.preventDefault(); setDragging(false) }}
         onDrop={handleDrop}
       >
-        <div className="step-head">
-          <span className="step-number">Step 1</span>
-          <h2>Upload your document</h2>
+        <div className="step-header">
+          <span className="step-num">Step 01</span>
+          <h2 className="step-title">Upload your document</h2>
         </div>
-        <div className="drop-zone-lite">
-          <div className="ingest-icon">{activeFile ? <CheckCircle2 size={26} /> : <Upload size={26} />}</div>
-          {activeFile ? (
-            <div className="active-file-inline">
-              <strong>{activeFile.name}</strong>
-              <small>{formatBytes(activeFile.size)}</small>
-              <button type="button" onClick={onFileClear} aria-label="Clear file">
-                <X size={14} />
+        <div className="step-body">
+          <label htmlFor="main-file-input" style={{ cursor: 'pointer', display: 'block' }}>
+            <div className="drop-zone">
+              <div className="drop-icon">
+                {activeFile ? <CheckCircle2 size={20} /> : <Upload size={20} />}
+              </div>
+              <div className="drop-text">
+                {activeFile ? (
+                  <>
+                    <strong>{activeFile.name}</strong>
+                    <p>{formatBytes(activeFile.size)} · Click to replace</p>
+                  </>
+                ) : (
+                  <>
+                    <strong>Drop file here or click to browse</strong>
+                    <p>PDF, JPG, PNG, WebP supported</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </label>
+          <input
+            id="main-file-input"
+            className="hidden-input"
+            type="file"
+            accept=".pdf,image/png,image/jpeg,image/webp"
+            onChange={handleSelect}
+          />
+          {activeFile && (
+            <div className="file-loaded" style={{ marginTop: '0.55rem' }}>
+              <span className="file-dot" />
+              <span className="file-name">{activeFile.name}</span>
+              <span className="file-size">{formatBytes(activeFile.size)}</span>
+              <button className="btn btn-icon btn-sm" type="button" onClick={onFileClear} aria-label="Remove file">
+                <X size={13} />
               </button>
             </div>
-          ) : (
-            <p>Drag PDF/JPG/PNG/WebP here or choose from device.</p>
           )}
         </div>
-        <label className="ink-btn" htmlFor="main-file-input">
-          <FileUp size={16} />
-          Choose Local File
-        </label>
-        <input
-          id="main-file-input"
-          className="hidden-input"
-          type="file"
-          accept=".pdf,image/png,image/jpeg,image/webp"
-          onChange={handleSelect}
-        />
-      </section>
+      </div>
 
-      <section className="panel step-panel reveal-up">
-        <div className="step-head">
-          <span className="step-number">Step 2</span>
-          <h2>What do you want to do?</h2>
+      {/* Step 2: Goal */}
+      <div className="step-block fade-up fade-up-2">
+        <div className="step-header">
+          <span className="step-num">Step 02</span>
+          <h2 className="step-title">What do you need?</h2>
         </div>
-        <div className="goal-grid">
-          {goalChoices.map((goal) => (
-            <button
-              key={goal}
-              className={`goal-card ${selectedGoal === goal ? 'active' : ''}`}
-              onClick={() => {
-                setSelectedGoal(goal)
-                setShowAllTools(false)
-              }}
-              type="button"
-            >
-              <strong>{goal}</strong>
-              <span>{goalDescription[goal]}</span>
-            </button>
-          ))}
+        <div className="step-body">
+          <div className="goal-grid">
+            {goalChoices.map((goal) => (
+              <button
+                key={goal}
+                type="button"
+                className={`goal-card${selectedGoal === goal ? ' active' : ''}`}
+                onClick={() => { setSelectedGoal(goal); setShowAllTools(false) }}
+              >
+                <span className="goal-name">{goal}</span>
+                <span className="goal-desc">{goalDescription[goal]}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section className="panel step-panel reveal-up">
-        <div className="step-head">
-          <span className="step-number">Step 3</span>
-          <h2>Pick a tool</h2>
+      {/* Step 3: Tool */}
+      <div className="step-block fade-up fade-up-3">
+        <div className="step-header">
+          <span className="step-num">Step 03</span>
+          <h2 className="step-title">Select a tool</h2>
         </div>
+        <div className="step-body">
+          {!selectedGoal ? (
+            <p className="step-hint">↑ Choose a category above to see matching tools.</p>
+          ) : (
+            <>
+              <div className="search-box">
+                <Search size={14} />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={`Search ${selectedGoal.toLowerCase()} tools…`}
+                  aria-label="Search tools"
+                />
+              </div>
 
-        {!selectedGoal ? (
-          <p className="step-placeholder">Choose a goal in Step 2 to unlock suggested tools.</p>
-        ) : (
-          <>
-            <div className="search-slot compact">
-              <Search size={16} />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={`Search within ${selectedGoal.toLowerCase()} tools`}
-                aria-label="Search tools"
-              />
-            </div>
-
-            <div className="guided-tools">
-              {visibleTools.map((tool, idx) => {
-                const Icon = tool.icon
-                return (
-                  <Link
-                    key={tool.id}
-                    className="guided-tool reveal-up"
-                    style={{ ['--accent' as string]: tool.accent, animationDelay: `${Math.min(idx * 45, 300)}ms` }}
-                    to={`/tool/${tool.id}`}
-                  >
-                    <div className="guided-tool-main">
-                      <span className="guided-icon">
-                        <Icon size={18} />
-                      </span>
-                      <div>
+              <div className="tool-list">
+                {visibleTools.map((tool, idx) => {
+                  const Icon = tool.icon
+                  return (
+                    <Link
+                      key={tool.id}
+                      className="tool-row fade-up"
+                      style={{ '--accent': tool.accent, animationDelay: `${idx * 40}ms` } as React.CSSProperties}
+                      to={`/tool/${tool.id}`}
+                    >
+                      <div className="tool-row-icon">
+                        <Icon size={16} />
+                      </div>
+                      <div className="tool-row-info">
                         <strong>{tool.title}</strong>
                         <p>{tool.description}</p>
                       </div>
-                    </div>
-                    <div className="guided-tool-meta">
-                      <span>{tool.eta}</span>
-                      <ArrowRight size={14} />
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
+                      <div className="tool-row-meta">
+                        <span className="tool-eta">{tool.eta}</span>
+                        <ArrowRight size={14} style={{ color: 'var(--fg-3)' }} />
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
 
-            {filtered.length > 4 && (
-              <button className="wire-btn show-more" type="button" onClick={() => setShowAllTools((prev) => !prev)}>
-                {showAllTools ? 'Show fewer tools' : `Show all ${filtered.length} tools`}
-              </button>
-            )}
+              {filtered.length === 0 && (
+                <p className="step-hint">No tools match "{query}". Try a different keyword.</p>
+              )}
 
-            {filtered.length === 0 && <p className="step-placeholder">No match for this search. Try another keyword.</p>}
-          </>
-        )}
-      </section>
-    </main>
+              {filtered.length > 5 && (
+                <button
+                  className="btn btn-ghost btn-sm"
+                  type="button"
+                  style={{ marginTop: '0.65rem' }}
+                  onClick={() => setShowAllTools((p) => !p)}
+                >
+                  {showAllTools ? `Show fewer` : `Show all ${filtered.length} tools`}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* SEO content block */}
+      <div className="seo-block fade-up fade-up-4">
+        <h2>All-in-one private PDF tools</h2>
+        <p>
+          PaperKnife handles everything from merge PDF, split PDF, compress PDF, protect PDF, unlock PDF,
+          rotate, watermark, metadata cleanup, signature, grayscale, PDF to image, image to PDF, extract images,
+          PDF to text, and repair. Every operation runs locally — no server, no cloud, no data collected.
+        </p>
+        <div className="seo-links">
+          {tools.map((tool) => (
+            <Link key={`seo-${tool.id}`} className="seo-chip" to={`/tool/${tool.id}`}>
+              {tool.title}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="faq-block fade-up fade-up-5">
+        <h2>FAQ</h2>
+        <details>
+          <summary>Is this truly private and offline?</summary>
+          <p>
+            Yes. All PDF processing runs using WebAssembly and JavaScript directly in your browser tab.
+            No file is ever transmitted to a server. You can even use PaperKnife with your network disconnected.
+          </p>
+        </details>
+        <details>
+          <summary>What file types are supported?</summary>
+          <p>
+            PDF is the primary format. The Image to PDF and PDF to Image tools also accept JPG, PNG, and WebP images.
+          </p>
+        </details>
+        <details>
+          <summary>Which PDF operations are available?</summary>
+          <p>
+            Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, rearrange pages, add page numbers,
+            watermark, metadata sanitization, signature, grayscale, PDF-to-image, image-to-PDF, extract embedded images,
+            PDF-to-text, and structural repair.
+          </p>
+        </details>
+        <details>
+          <summary>Where do processed files go?</summary>
+          <p>
+            Output files are downloaded directly by your browser. The latest output is also kept accessible for re-download
+            in the tool workspace sidebar during your current session.
+          </p>
+        </details>
+        <details>
+          <summary>Is there a file size limit?</summary>
+          <p>
+            There is no enforced size limit, but very large PDFs (100+ MB) may be slow since processing happens
+            on your device CPU. Compression is recommended before working with large files.
+          </p>
+        </details>
+      </div>
+    </div>
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   TOOL WORKSPACE
+───────────────────────────────────────────────────────────── */
 function ToolWorkspace({
   activeFile,
   onFileSelect,
@@ -1031,17 +1198,26 @@ function ToolWorkspace({
     }
   }, [tool?.id])
 
+  useEffect(() => {
+    if (!tool) return
+
+    applySeoMetadata({
+      title: `${tool.title} — ${BRAND_NAME}`,
+      description: `${tool.description} Runs locally in your browser with ${BRAND_NAME}. Private PDF processing, zero uploads.`,
+      path: `/tool/${tool.id}`,
+    })
+  }, [tool])
+
   if (!tool) {
     return (
-      <main className="workspace-grid">
-        <article className="panel workspace-main">
-          <h1>Tool not found</h1>
-          <p>This module does not exist in the current catalog.</p>
-          <Link to="/" className="wire-btn">
-            Back to tool list
-          </Link>
-        </article>
-      </main>
+      <div className="not-found">
+        <h1>Tool not found</h1>
+        <p>This module doesn't exist in the current catalog.</p>
+        <Link to="/" className="btn btn-ghost">
+          <ArrowLeft size={14} />
+          Back to home
+        </Link>
+      </div>
     )
   }
 
@@ -1049,13 +1225,11 @@ function ToolWorkspace({
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const list = event.target.files
-    if (!list || list.length === 0) {
-      return
-    }
+    if (!list || list.length === 0) return
 
     if (tool.id === 'merge-pdf') {
       const all = Array.from(list).filter(
-        (candidate) => candidate.type === 'application/pdf' || candidate.name.toLowerCase().endsWith('.pdf'),
+        (f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'),
       )
       if (all.length === 0) {
         setRunError('Merge PDF accepts only PDF files.')
@@ -1077,9 +1251,7 @@ function ToolWorkspace({
   }
 
   const startRun = async () => {
-    if (!activeFile || running || runLockRef.current) {
-      return
-    }
+    if (!activeFile || running || runLockRef.current) return
 
     runLockRef.current = true
     setRunError(null)
@@ -1096,15 +1268,11 @@ function ToolWorkspace({
           password,
           additionalFiles: tool.id === 'merge-pdf' ? mergeFiles.slice(1) : [],
         },
-        (nextProgress) => {
-        setProgress(Math.max(6, Math.min(99, nextProgress)))
-        },
+        (next) => setProgress(Math.max(6, Math.min(99, next))),
       )
 
       const downloadUrl = URL.createObjectURL(output.blob)
-      if (latestOutput?.downloadUrl) {
-        URL.revokeObjectURL(latestOutput.downloadUrl)
-      }
+      if (latestOutput?.downloadUrl) URL.revokeObjectURL(latestOutput.downloadUrl)
 
       setLatestOutput({
         fileName: output.fileName,
@@ -1116,7 +1284,11 @@ function ToolWorkspace({
 
       triggerDownload(downloadUrl, output.fileName)
       setProgress(100)
-      const queueName = tool.id === 'merge-pdf' && mergeFiles.length > 1 ? `${mergeFiles.length} PDF files` : activeFile.name
+
+      const queueName =
+        tool.id === 'merge-pdf' && mergeFiles.length > 1
+          ? `${mergeFiles.length} PDF files`
+          : activeFile.name
       onQueue(tool.id, queueName)
     } catch (error) {
       setProgress(0)
@@ -1127,24 +1299,13 @@ function ToolWorkspace({
     }
   }
 
-  const recentJobs = jobs
-    .filter((job) => job.toolId === tool.id)
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .slice(0, 4)
-
   const downloadRunSummary = () => {
-    if (!activeFile) {
-      return
-    }
+    if (!activeFile) return
 
     const lines = [
       `PaperKnife Web Job`,
       `Tool: ${tool.title}`,
-      `Input: ${
-        tool.id === 'merge-pdf' && mergeFiles.length > 1
-          ? `${mergeFiles.length} PDF files`
-          : `${activeFile.name} (${formatBytes(activeFile.size)})`
-      }`,
+      `Input: ${tool.id === 'merge-pdf' && mergeFiles.length > 1 ? `${mergeFiles.length} PDF files` : `${activeFile.name} (${formatBytes(activeFile.size)})`}`,
       `Quality: ${quality}`,
       `Watermark: ${watermarkText || 'none'}`,
       `Password set: ${password ? 'yes' : 'no'}`,
@@ -1160,191 +1321,244 @@ function ToolWorkspace({
     URL.revokeObjectURL(href)
   }
 
+  const recentJobs = jobs
+    .filter((job) => job.toolId === tool.id)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 5)
+
   return (
-    <main className="workspace-grid">
-      <article className="panel workspace-main reveal-up">
-        <Link className="back-link" to="/">
-          Back to Tool Deck
+    <div className="workspace-root">
+
+      {/* Main panel */}
+      <div className="workspace-card fade-up">
+        <Link className="back-nav" to="/">
+          <ArrowLeft size={12} />
+          All tools
         </Link>
 
-        <header className="workspace-head" style={{ ['--accent' as string]: tool.accent }}>
-          <div className="workspace-title">
-            <span className="workspace-icon">
-              <Icon size={18} />
-            </span>
+        <div
+          className="ws-tool-header"
+          style={{ '--accent': tool.accent } as React.CSSProperties}
+        >
+          <div className="ws-tool-identity">
+            <div className="ws-tool-icon">
+              <Icon size={20} />
+            </div>
             <div>
-              <p className="kicker">Active Operation</p>
-              <h1>{tool.title}</h1>
-              <p>{tool.description}</p>
+              <p className="ws-tool-eyebrow">{tool.category}</p>
+              <h1 className="ws-tool-name">{tool.title}</h1>
+              <p className="ws-tool-desc">{tool.description}</p>
             </div>
           </div>
-          <span className="eta-badge">{tool.eta}</span>
-        </header>
+          <span className="ws-eta-badge">~{tool.eta}</span>
+        </div>
 
-        <section className="file-bay">
-          <div className="file-row">
-            {activeFile ? (
-              <div className="file-pill">
-                <strong>{activeFile.name}</strong>
-                <span>{formatBytes(activeFile.size)}</span>
-                <button onClick={clearCurrentFiles} type="button" aria-label="Clear file">
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <div className="empty-pill">
-                <p>No file selected yet.</p>
-              </div>
-            )}
+        <div className="ws-body">
 
-            <label className="wire-btn" htmlFor="workspace-file-input">
-              {tool.id === 'merge-pdf' ? 'Select PDFs' : 'Replace file'}
-            </label>
-            <input
-              id="workspace-file-input"
-              className="hidden-input"
-              type="file"
-              accept={tool.id === 'image-to-pdf' ? 'image/png,image/jpeg,image/webp' : '.pdf'}
-              multiple={tool.id === 'merge-pdf'}
-              onChange={handleFileSelect}
-            />
-          </div>
-          {tool.id === 'merge-pdf' && mergeFiles.length > 1 && (
-            <p className="muted">{mergeFiles.length} PDFs selected for merge.</p>
-          )}
-        </section>
+          {/* File */}
+          <div>
+            <p className="ws-section-label">Input file</p>
+            <div className="ws-file-area">
+              {activeFile ? (
+                <div className="ws-file-pill">
+                  <span className="file-dot" />
+                  <span className="fn">{activeFile.name}</span>
+                  <span className="fs">{formatBytes(activeFile.size)}</span>
+                  <button className="btn btn-icon btn-sm" type="button" onClick={clearCurrentFiles} aria-label="Remove file">
+                    <X size={13} />
+                  </button>
+                </div>
+              ) : (
+                <div className="ws-empty-pill">
+                  <FileUp size={14} />
+                  No file selected
+                </div>
+              )}
 
-        <section className="controls-grid">
-          <label>
-            Quality Profile <strong>{quality}</strong>
-            <input
-              type="range"
-              min={20}
-              max={100}
-              value={quality}
-              onChange={(event) => setQuality(Number(event.target.value))}
-            />
-          </label>
-
-          <label>
-            Watermark Label
-            <input
-              type="text"
-              value={watermarkText}
-              onChange={(event) => setWatermarkText(event.target.value)}
-              placeholder="Optional label"
-            />
-          </label>
-
-          <label>
-            Password (optional)
-            <div className="inline-input">
-              <LockKeyhole size={16} />
+              <label className="btn btn-ghost btn-sm" htmlFor="workspace-file-input" style={{ cursor: 'pointer' }}>
+                {tool.id === 'merge-pdf' ? 'Select PDFs' : activeFile ? 'Replace' : 'Browse'}
+              </label>
               <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Only needed for secure tools"
+                id="workspace-file-input"
+                className="hidden-input"
+                type="file"
+                accept={tool.id === 'image-to-pdf' ? 'image/png,image/jpeg,image/webp' : '.pdf'}
+                multiple={tool.id === 'merge-pdf'}
+                onChange={handleFileSelect}
               />
             </div>
-          </label>
-        </section>
+            {tool.id === 'merge-pdf' && mergeFiles.length > 1 && (
+              <p className="merge-info">↳ {mergeFiles.length} PDFs queued for merge</p>
+            )}
+          </div>
 
-        <section className="run-actions">
-          <button className="ink-btn" type="button" disabled={!activeFile || running} onClick={startRun}>
-            <Sparkles size={16} />
-            {running ? 'Processing...' : 'Run Tool'}
-          </button>
+          {/* Controls */}
+          <div>
+            <p className="ws-section-label">Parameters</p>
+            <div className="controls-list">
+              <div className="control-item">
+                <label className="control-label">
+                  Quality profile <strong>{quality}</strong>
+                </label>
+                <input
+                  className="control-input"
+                  type="range"
+                  min={20}
+                  max={100}
+                  value={quality}
+                  onChange={(e) => setQuality(Number(e.target.value))}
+                  aria-label="Quality"
+                />
+              </div>
 
-          <button className="wire-btn" type="button" disabled={!activeFile} onClick={downloadRunSummary}>
-            <Gauge size={16} />
-            Export Job Note
-          </button>
-        </section>
-      </article>
+              <div className="control-item">
+                <label className="control-label" htmlFor="ws-watermark">
+                  Watermark / Signature text
+                </label>
+                <input
+                  id="ws-watermark"
+                  className="control-input"
+                  type="text"
+                  value={watermarkText}
+                  onChange={(e) => setWatermarkText(e.target.value)}
+                  placeholder="e.g. CONFIDENTIAL"
+                />
+              </div>
 
-      <aside className="panel workspace-side reveal-up">
-        <h2>Run Monitor</h2>
+              <div className="control-item">
+                <label className="control-label" htmlFor="ws-password">
+                  Password <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(for encrypted PDFs)</span>
+                </label>
+                <div className="control-input-group">
+                  <LockKeyhole size={14} />
+                  <input
+                    id="ws-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Leave blank if not needed"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <section className="progress-box" style={{ ['--accent' as string]: tool.accent }}>
+          {/* Actions */}
+          <div className="ws-actions">
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={!activeFile || running}
+              onClick={startRun}
+            >
+              <Sparkles size={14} />
+              {running ? `Processing… ${progress}%` : 'Run Tool'}
+            </button>
+
+            <button
+              className="btn btn-ghost btn-sm"
+              type="button"
+              disabled={!activeFile}
+              onClick={downloadRunSummary}
+            >
+              <Gauge size={14} />
+              Export job note
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div className="sidebar-card fade-up fade-up-1">
+        <div className="sidebar-header">
+          <span className="sidebar-title">Run monitor</span>
+        </div>
+
+        {/* Progress */}
+        <div className="sidebar-section">
+          <p className="sidebar-section-label">Progress</p>
           <div className="progress-track">
             <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <p>{running ? `Working... ${progress}%` : progress === 100 ? 'Completed.' : 'Ready to start.'}</p>
+          <p className={`progress-status${progress === 100 && !running ? ' is-done' : ''}`}>
+            {running
+              ? `Working… ${progress}%`
+              : progress === 100
+                ? '✓ Completed'
+                : 'Ready to start'}
+          </p>
           {runError && <p className="error-text">{runError}</p>}
-        </section>
+        </div>
 
-        <section className="output-box">
-          <h3>Latest Output</h3>
+        {/* Latest output */}
+        <div className="sidebar-section">
+          <p className="sidebar-section-label">Latest output</p>
           {latestOutput ? (
             <div className="output-entry">
-              <strong>{latestOutput.fileName}</strong>
-              <span>
-                {formatBytes(latestOutput.size)} • {formatTimestamp(latestOutput.createdAt)}
-              </span>
+              <p className="output-filename">{latestOutput.fileName}</p>
+              <p className="output-meta">
+                {formatBytes(latestOutput.size)} · {formatTimestamp(latestOutput.createdAt)}
+              </p>
               <button
-                className="wire-btn output-btn"
+                className="btn btn-ghost btn-sm"
                 type="button"
                 onClick={() => triggerDownload(latestOutput.downloadUrl, latestOutput.fileName)}
+                style={{ justifySelf: 'start', marginTop: '0.2rem' }}
               >
-                <Download size={14} />
+                <Download size={13} />
                 Download again
               </button>
-              <small>Saved via browser download.</small>
             </div>
           ) : (
             <p className="muted">Run the tool to generate output.</p>
           )}
-        </section>
+        </div>
 
-        <section className="timeline">
-          <h3>Recent {tool.title} Runs</h3>
+        {/* History */}
+        <div className="sidebar-section">
+          <p className="sidebar-section-label">Recent {tool.title} runs</p>
           {recentJobs.length === 0 ? (
-            <p className="muted">No runs for this tool yet.</p>
+            <p className="muted">No runs yet for this tool.</p>
           ) : (
             <ul className="job-list">
               {recentJobs.map((job) => (
-                <li key={job.id}>
-                  <strong>{job.fileName}</strong>
-                  <span>{formatTimestamp(job.createdAt)}</span>
+                <li key={job.id} className="job-item">
+                  <span className="job-item-name">{job.fileName}</span>
+                  <span className="job-item-time">{formatTimestamp(job.createdAt)}</span>
                 </li>
               ))}
             </ul>
           )}
-        </section>
-      </aside>
-    </main>
+        </div>
+      </div>
+    </div>
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   ROOT
+───────────────────────────────────────────────────────────── */
 export default function App() {
   const [activeFile, setActiveFile] = useState<File | null>(null)
   const [jobs, setJobs] = useState<JobRecord[]>([])
+  const RouterComponent = import.meta.env.VITE_USE_HASH_ROUTER === 'true' ? HashRouter : BrowserRouter
 
   const queueJob = (toolId: string, fileName: string) => {
     const now = Date.now()
-
     setJobs((prev) => {
       const latest = prev[0]
       if (latest && latest.toolId === toolId && latest.fileName === fileName && now - latest.createdAt < 2500) {
         return prev
       }
-
       return [
-        {
-          id: `${toolId}-${now}`,
-          toolId,
-          fileName,
-          createdAt: now,
-          status: 'done',
-        },
+        { id: `${toolId}-${now}`, toolId, fileName, createdAt: now, status: 'done' },
         ...prev,
       ]
     })
   }
 
   return (
-    <HashRouter>
+    <RouterComponent>
       <AppChrome
         activeFile={activeFile}
         onFileSelect={setActiveFile}
@@ -1352,6 +1566,6 @@ export default function App() {
         jobs={jobs}
         onQueue={queueJob}
       />
-    </HashRouter>
+    </RouterComponent>
   )
 }
