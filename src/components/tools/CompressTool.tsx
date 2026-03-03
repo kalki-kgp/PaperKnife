@@ -42,7 +42,7 @@ const QualityCompare = ({ originalBuffer, compressedBuffer }: { originalBuffer: 
 
   if (!originalThumb || !compressedThumb) return (
     <div className="h-64 flex flex-col items-center justify-center bg-gray-50 dark:bg-zinc-900 rounded-[2rem] animate-pulse">
-       <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mb-4" />
+       <div className="w-8 h-8 border-2 border-terracotta-500 border-t-transparent rounded-full animate-spin mb-4" />
        <p className="text-[10px] font-black uppercase text-gray-400">Comparing Quality...</p>
     </div>
   )
@@ -58,7 +58,7 @@ const QualityCompare = ({ originalBuffer, compressedBuffer }: { originalBuffer: 
           <img src={originalThumb} className="absolute inset-0 w-full h-full object-contain bg-white" alt="Original" />
         </div>
         <div className="absolute top-0 bottom-0 w-1 bg-white shadow-xl z-10" style={{ left: `${sliderPos}%` }}>
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white dark:bg-zinc-900 rounded-full shadow-2xl border border-gray-100 dark:border-white/5 flex items-center justify-center text-rose-500">
+          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white dark:bg-zinc-900 rounded-full shadow-2xl border border-gray-100 dark:border-white/5 flex items-center justify-center text-terracotta-500">
              <ChevronLeft size={14} /><ChevronRight size={14} />
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function CompressTool() {
     <button 
       onClick={startBatchCompression}
       disabled={isProcessing || files.filter(f => !f.isLocked).length === 0}
-      className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl`}
+      className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl`}
     >
       {isProcessing ? <><Loader2 className="animate-spin" /> {globalProgress}%</> : <>Compress {files.length > 1 ? `${files.length} Files` : 'PDF'} <ArrowRight size={18} /></>}
     </button>
@@ -245,9 +245,9 @@ export default function CompressTool() {
       {files.length === 0 ? (
         <button 
           onClick={() => !isProcessing && fileInputRef.current?.click()} 
-          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 transition-all cursor-pointer group"
         >
-          <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner"><Zap size={32} /></div>
+          <div className="w-20 h-20 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner"><Zap size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDFs</h3>
           <p className="text-sm text-gray-400 font-medium">Tap to start batch compression</p>
         </button>
@@ -263,14 +263,14 @@ export default function CompressTool() {
                   <p className="text-xs font-black truncate dark:text-white">{f.file.name}</p>
                   {f.isLocked ? (
                     <div className="flex gap-1 mt-1">
-                       <input type="password" placeholder="Locked..." className="flex-1 bg-gray-50 dark:bg-black text-[10px] p-1.5 rounded-lg outline-none w-full border border-gray-100 dark:border-zinc-800 focus:border-rose-500" onKeyDown={(e) => { if(e.key === 'Enter') handleUnlock(f.id, e.currentTarget.value) }} />
+                       <input type="password" placeholder="Locked..." className="flex-1 bg-gray-50 dark:bg-black text-[10px] p-1.5 rounded-lg outline-none w-full border border-gray-100 dark:border-zinc-800 focus:border-terracotta-500" onKeyDown={(e) => { if(e.key === 'Enter') handleUnlock(f.id, e.currentTarget.value) }} />
                     </div>
                   ) : <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{(f.file.size / (1024*1024)).toFixed(2)} MB • {f.pageCount} Pages</p>}
                 </div>
-                <button onClick={() => setFiles(prev => prev.filter(item => item.id !== f.id))} className="p-2 text-gray-300 hover:text-rose-500 transition-colors"><X size={16} /></button>
+                <button onClick={() => setFiles(prev => prev.filter(item => item.id !== f.id))} className="p-2 text-gray-300 hover:text-terracotta-500 transition-colors"><X size={16} /></button>
               </div>
             ))}
-            <button onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-[1.5rem] p-4 text-gray-400 flex flex-col items-center justify-center gap-1 hover:border-rose-500 hover:text-rose-500 transition-all">
+            <button onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-100 dark:border-zinc-800 rounded-[1.5rem] p-4 text-gray-400 flex flex-col items-center justify-center gap-1 hover:border-terracotta-500 hover:text-terracotta-500 transition-all">
               <Plus size={20} /><span className="text-[10px] font-black uppercase tracking-widest">Add More</span>
             </button>
           </div>
@@ -283,8 +283,8 @@ export default function CompressTool() {
                 { id: 'medium', label: 'Standard', desc: 'Recommended' },
                 { id: 'low', label: 'Smallest', desc: 'Max Save' }
               ].map((lvl) => (
-                <button key={lvl.id} onClick={() => setQuality(lvl.id as CompressionQuality)} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${quality === lvl.id ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-white/5'}`}>
-                  <span className={`font-black uppercase text-[9px] text-center leading-tight ${quality === lvl.id ? 'text-rose-500' : 'text-gray-400'}`}>{lvl.label}</span>
+                <button key={lvl.id} onClick={() => setQuality(lvl.id as CompressionQuality)} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${quality === lvl.id ? 'border-terracotta-500 bg-terracotta-50/50 dark:bg-terracotta-900/10' : 'border-gray-100 dark:border-white/5'}`}>
+                  <span className={`font-black uppercase text-[9px] text-center leading-tight ${quality === lvl.id ? 'text-terracotta-500' : 'text-gray-400'}`}>{lvl.label}</span>
                   <span className="text-[8px] text-gray-400 font-bold uppercase">{lvl.desc}</span>
                 </button>
               ))}
@@ -292,7 +292,7 @@ export default function CompressTool() {
             
             <div className="mt-6 p-6 bg-gray-50 dark:bg-black rounded-2xl border border-gray-100 dark:border-white/5">
                <div className="flex items-center gap-3 mb-3">
-                 <div className="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                 <div className="w-8 h-8 rounded-full bg-terracotta-500/10 text-terracotta-500 flex items-center justify-center">
                    <Zap size={16} />
                  </div>
                  <h5 className="text-xs font-black uppercase tracking-widest dark:text-white">Strategy Details</h5>
@@ -302,21 +302,21 @@ export default function CompressTool() {
                    <>
                      <strong>High Quality:</strong> Retains maximum text clarity and image resolution. 
                      Best for official documents and high-fidelity reports. 
-                     Expected reduction: <span className="text-rose-500 font-bold">10-30%</span>.
+                     Expected reduction: <span className="text-terracotta-500 font-bold">10-30%</span>.
                    </>
                  )}
                  {quality === 'medium' && (
                    <>
                      <strong>Standard:</strong> Balanced optimization for everyday sharing and email attachments. 
                      The perfect middle ground for most users. 
-                     Expected reduction: <span className="text-rose-500 font-bold">40-60%</span>.
+                     Expected reduction: <span className="text-terracotta-500 font-bold">40-60%</span>.
                    </>
                  )}
                  {quality === 'low' && (
                    <>
                      <strong>Smallest Size:</strong> Aggressive downsampling for the lowest possible file size. 
                      Ideal for quick mobile viewing or meeting strict upload limits. 
-                     Expected reduction: <span className="text-rose-500 font-bold">70-90%</span>.
+                     Expected reduction: <span className="text-terracotta-500 font-bold">70-90%</span>.
                    </>
                  )}
                </p>
@@ -325,7 +325,7 @@ export default function CompressTool() {
             {isProcessing && (
               <div className="mt-8 space-y-3">
                 <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner">
-                   <div className="bg-rose-500 h-full transition-all" style={{ width: `${globalProgress}%` }} />
+                   <div className="bg-terracotta-500 h-full transition-all" style={{ width: `${globalProgress}%` }} />
                 </div>
                 <p className="text-[10px] text-center font-black uppercase text-gray-400 tracking-widest animate-pulse">Rasterizing Document...</p>
               </div>
@@ -336,7 +336,7 @@ export default function CompressTool() {
         <div className="space-y-6 animate-in zoom-in duration-300">
           {objectUrl && files.length > 1 && (
             <button onClick={handleDownloadBatch} className="block w-full bg-zinc-900 dark:bg-white text-white dark:text-black p-10 rounded-[2.5rem] text-center shadow-2xl transition-all group active:scale-[0.98]">
-              <div className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg"><Download className="text-white" size={32} /></div>
+              <div className="w-16 h-16 bg-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg"><Download className="text-white" size={32} /></div>
               <h3 className="text-2xl font-black tracking-tight mb-1">{isNative ? 'Save ZIP Archive' : 'Download ZIP Archive'}</h3>
               <p className="text-xs font-bold opacity-60 uppercase tracking-widest">{files.length} Optimized PDFs</p>
             </button>

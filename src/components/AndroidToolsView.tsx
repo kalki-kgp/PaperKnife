@@ -11,7 +11,7 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const categoryColors: Record<ToolCategory, { bg: string, text: string, icon: string, border: string }> = {
-    Edit: { bg: 'bg-rose-50 dark:bg-rose-900/10', text: 'text-rose-600 dark:text-rose-400', icon: 'text-rose-500', border: 'border-rose-100/50 dark:border-rose-900/20' },
+    Edit: { bg: 'bg-terracotta-50 dark:bg-terracotta-900/10', text: 'text-terracotta-600 dark:text-terracotta-400', icon: 'text-terracotta-500', border: 'border-terracotta-100/50 dark:border-terracotta-900/20' },
     Secure: { bg: 'bg-indigo-50 dark:bg-indigo-900/10', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500', border: 'border-indigo-100/50 dark:border-indigo-900/20' },
     Convert: { bg: 'bg-emerald-50 dark:bg-emerald-900/10', text: 'text-emerald-600 dark:text-emerald-400', icon: 'text-emerald-500', border: 'border-emerald-100/50 dark:border-emerald-900/20' },
     Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/10', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500', border: 'border-amber-100/50 dark:border-amber-900/20' }
@@ -33,7 +33,7 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
   }, [filteredTools])
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-black pb-32 transition-colors">
+    <div className="min-h-screen bg-[#FFF3F0] dark:bg-black pb-32 transition-colors">
       <header className="px-6 pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-6">
         <h1 className="text-4xl font-black tracking-tighter dark:text-white mb-8">All Tools</h1>
         
@@ -46,7 +46,7 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
             placeholder="Search for a tool..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#EEE8F4] dark:bg-[#2B2930] border-none rounded-[1.75rem] py-4 pl-14 pr-6 text-base font-bold placeholder:text-gray-400 focus:bg-white dark:focus:bg-[#36343B] ring-2 ring-transparent focus:ring-rose-500/10 transition-all dark:text-white outline-none shadow-sm"
+            className="w-full bg-[#EEE8F4] dark:bg-[#2B2930] border-none rounded-[1.75rem] py-4 pl-14 pr-6 text-base font-bold placeholder:text-gray-400 focus:bg-white dark:focus:bg-[#36343B] ring-2 ring-transparent focus:ring-terracotta-500/10 transition-all dark:text-white outline-none shadow-sm"
           />
         </div>
       </header>
@@ -84,7 +84,7 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
       </main>
 
       <footer className="text-center py-12 opacity-20">
-         <PaperKnifeLogo size={24} iconColor="#F43F5E" partColor="currentColor" className="mx-auto mb-4" />
+         <PaperKnifeLogo size={24} iconColor="#E68A73" partColor="currentColor" className="mx-auto mb-4" />
          <p className="text-[9px] font-black uppercase tracking-[0.5em]">PaperKnife Version 1.0.9</p>
       </footer>
     </div>

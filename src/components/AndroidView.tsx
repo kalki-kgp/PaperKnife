@@ -42,7 +42,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
   }, [])
 
   const quickActions = [
-    { title: 'Merge', icon: LayersIcon, path: '/merge', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20', sub: 'Combine' },
+    { title: 'Merge', icon: LayersIcon, path: '/merge', color: 'text-terracotta-500', bg: 'bg-terracotta-50 dark:bg-terracotta-900/20', sub: 'Combine' },
     { title: 'Compress', icon: ZapIcon, path: '/compress', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20', sub: 'Optimize' },
     { title: 'Split', icon: ScissorsIcon, path: '/split', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', sub: 'Extract' },
     { title: 'Protect', icon: LockIcon, path: '/protect', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20', sub: 'Secure' },
@@ -56,7 +56,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors pb-24 text-left">
+    <div className="flex flex-col min-h-screen bg-[#FFF3F0] dark:bg-black transition-colors pb-24 text-left">
       <input 
         type="file" 
         accept=".pdf" 
@@ -66,16 +66,16 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
       />
       
       {/* Minimal Header */}
-      <header className="px-6 pt-safe pb-2 sticky top-0 z-50 bg-[#FAFAFA]/95 dark:bg-black/95 backdrop-blur-xl border-b border-transparent">
+      <header className="px-6 pt-safe pb-2 sticky top-0 z-50 bg-[#FFF3F0]/95 dark:bg-black/95 backdrop-blur-xl border-b border-transparent">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-             <PaperKnifeLogo size={24} iconColor="#F43F5E" partColor="currentColor" />
+             <PaperKnifeLogo size={24} iconColor="#E68A73" partColor="currentColor" />
              <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                    <span className="text-lg font-black tracking-tighter text-gray-900 dark:text-white leading-none">PaperKnife</span>
                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
                 </div>
-                <span className="text-[7px] font-black text-rose-500 uppercase tracking-[0.2em] mt-0.5">Secure Engine</span>
+                <span className="text-[7px] font-black text-terracotta-500 uppercase tracking-[0.2em] mt-0.5">Secure Engine</span>
              </div>
           </div>
           
@@ -94,17 +94,17 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
         <section>
            <button 
             onClick={() => fileInputRef.current?.click()}
-            className="w-full bg-zinc-900 dark:bg-zinc-100 rounded-[2.25rem] p-6 text-left relative overflow-hidden shadow-xl shadow-zinc-900/10 dark:shadow-[0_0_30px_rgba(244,63,94,0.15)] group active:scale-[0.98] transition-all duration-100"
+            className="w-full bg-zinc-900 dark:bg-zinc-100 rounded-[2.25rem] p-6 text-left relative overflow-hidden shadow-xl shadow-zinc-900/10 dark:shadow-[0_0_30px_rgba(230,138,115,0.15)] group active:scale-[0.98] transition-all duration-100"
            >
               {/* Static Background Pattern */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-20 dark:opacity-[0.08] pointer-events-none" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-terracotta-500 rounded-full blur-[80px] -mr-20 -mt-20 opacity-20 dark:opacity-[0.08] pointer-events-none" />
               
               <div className="relative z-10">
                  <div className="flex justify-between items-start mb-12">
                     <div className="p-3.5 bg-white/10 dark:bg-black/5 rounded-2xl backdrop-blur-md text-white dark:text-black border border-white/5 dark:border-black/5">
                        <UploadIcon size={28} strokeWidth={2.5} />
                     </div>
-                    <div className="px-3 py-1.5 bg-rose-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
+                    <div className="px-3 py-1.5 bg-terracotta-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
                        Start Session
                     </div>
                  </div>
@@ -124,7 +124,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
                   <ClipboardList size={12} className="text-gray-400" />
                   <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 leading-none">History Clipboard</h3>
                </div>
-               <button onClick={() => navigate('/android-history')} className="text-[9px] font-black uppercase text-rose-500 tracking-wider">View All</button>
+               <button onClick={() => navigate('/android-history')} className="text-[9px] font-black uppercase text-terracotta-500 tracking-wider">View All</button>
             </div>
             
             <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm divide-y divide-gray-50 dark:divide-white/5 overflow-hidden">
@@ -140,7 +140,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold truncate text-gray-900 dark:text-white leading-tight mb-0.5">{item.name}</p>
                     <div className="flex items-center gap-2">
-                       <span className="text-[9px] text-rose-500 font-black uppercase tracking-tight">{item.tool}</span>
+                       <span className="text-[9px] text-terracotta-500 font-black uppercase tracking-tight">{item.tool}</span>
                        <span className="text-[14px] text-gray-200 dark:text-zinc-800 leading-none">•</span>
                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tight">{(item.size / (1024*1024)).toFixed(2)} MB</span>
                     </div>
@@ -177,7 +177,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
 
               <button
                 onClick={() => navigate('/android-tools')}
-                className="col-span-2 p-5 bg-rose-500 text-white rounded-[2rem] flex items-center justify-between shadow-lg shadow-rose-500/20 active:bg-rose-600 transition-colors group relative overflow-hidden"
+                className="col-span-2 p-5 bg-terracotta-500 text-white rounded-[2rem] flex items-center justify-between shadow-lg shadow-terracotta-500/20 active:bg-terracotta-600 transition-colors group relative overflow-hidden"
               >
                  <div className="absolute right-0 top-0 p-4 opacity-10 pointer-events-none">
                     <LayoutGridIcon size={100} />

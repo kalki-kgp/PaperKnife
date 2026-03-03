@@ -105,7 +105,7 @@ export default function PdfToTextTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={handleStartExtraction} disabled={isProcessing} className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-rose-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={handleStartExtraction} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <>Extract Text <ArrowRight size={18} /></>}
     </button>
   )
@@ -114,43 +114,43 @@ export default function PdfToTextTool() {
     <NativeToolLayout title="PDF to Text" description="Extract text using fast scan or deep local OCR." actions={pdfData && !pdfData.isLocked && !extractedText && <ActionButton />}>
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       {!pdfData ? (
-        <div onClick={() => !isProcessing && fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
-          <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><FileText size={32} /></div>
+        <div onClick={() => !isProcessing && fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 transition-all cursor-pointer group">
+          <div className="w-20 h-20 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><FileText size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF</h3>
           <p className="text-sm text-gray-400">Tap to browse files</p>
         </div>
       ) : pdfData.isLocked ? (
         <div className="max-w-md mx-auto">
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 text-center">
-            <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6"><Lock size={32} /></div>
+            <div className="w-16 h-16 bg-terracotta-100 dark:bg-terracotta-900/30 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6"><Lock size={32} /></div>
             <h3 className="text-2xl font-bold mb-2 dark:text-white">Protected File</h3>
-            <input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} placeholder="Password" className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-transparent focus:border-rose-500 outline-none font-bold text-center mb-4" />
-            <button onClick={handleUnlock} disabled={!unlockPassword || isProcessing} className="w-full bg-rose-500 text-white p-4 rounded-2xl font-black uppercase text-xs">Unlock</button>
+            <input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} placeholder="Password" className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-transparent focus:border-terracotta-500 outline-none font-bold text-center mb-4" />
+            <button onClick={handleUnlock} disabled={!unlockPassword || isProcessing} className="w-full bg-terracotta-500 text-white p-4 rounded-2xl font-black uppercase text-xs">Unlock</button>
           </div>
         </div>
       ) : (
         <div className="space-y-6">
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center gap-6">
-            <div className="w-16 h-20 bg-gray-50 dark:bg-black rounded-xl border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-rose-500"><FileText size={24} /></div>
+            <div className="w-16 h-20 bg-gray-50 dark:bg-black rounded-xl border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-terracotta-500"><FileText size={24} /></div>
             <div className="flex-1 min-w-0"><h3 className="font-bold text-sm truncate dark:text-white">{pdfData.file.name}</h3><p className="text-[10px] text-gray-400 uppercase font-black">{pdfData.pageCount} Pages • {(pdfData.file.size / (1024*1024)).toFixed(1)} MB</p></div>
-            <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-rose-500"><X size={20} /></button>
+            <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-terracotta-500"><X size={20} /></button>
           </div>
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-8 shadow-sm">
             {!extractedText ? (
               <>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setExtractionMode('text')} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center ${extractionMode === 'text' ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-white/5'}`}><Zap size={20} className={extractionMode === 'text' ? 'text-rose-500' : 'text-gray-400'} /><span className="font-black uppercase text-[10px] mt-1">Fast Scan</span></button>
+                  <button onClick={() => setExtractionMode('text')} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center ${extractionMode === 'text' ? 'border-terracotta-500 bg-terracotta-50/50 dark:bg-terracotta-900/10' : 'border-gray-100 dark:border-white/5'}`}><Zap size={20} className={extractionMode === 'text' ? 'text-terracotta-500' : 'text-gray-400'} /><span className="font-black uppercase text-[10px] mt-1">Fast Scan</span></button>
                   <button 
                     onClick={() => !isOcrDisabled && setExtractionMode('ocr')} 
                     disabled={isOcrDisabled}
-                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center ${extractionMode === 'ocr' ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-gray-100 dark:border-white/5'} ${isOcrDisabled ? 'opacity-40 grayscale grayscale-mask' : ''}`}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center ${extractionMode === 'ocr' ? 'border-terracotta-500 bg-terracotta-50/50 dark:bg-terracotta-900/10' : 'border-gray-100 dark:border-white/5'} ${isOcrDisabled ? 'opacity-40 grayscale grayscale-mask' : ''}`}
                   >
-                    <ScanSearch size={20} className={extractionMode === 'ocr' ? 'text-rose-500' : 'text-gray-400'} />
+                    <ScanSearch size={20} className={extractionMode === 'ocr' ? 'text-terracotta-500' : 'text-gray-400'} />
                     <span className="font-black uppercase text-[10px] mt-1">{isOcrDisabled ? 'No OCR' : 'Deep OCR'}</span>
                   </button>
                 </div>
                 {isProcessing && (
-                  <div className="space-y-2"><div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner"><div className="bg-rose-500 h-full transition-all" style={{ width: `${progress}%` }} /></div><p className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse px-1">Scanning Document...</p></div>
+                  <div className="space-y-2"><div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner"><div className="bg-terracotta-500 h-full transition-all" style={{ width: `${progress}%` }} /></div><p className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse px-1">Scanning Document...</p></div>
                 )}
                 {!isProcessing && (
                   <div className="space-y-4">
@@ -168,8 +168,8 @@ export default function PdfToTextTool() {
                          </p>
                       </div>
                     )}
-                    <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-900/20 text-center">
-                      <p className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-widest">Select mode and tap Extract</p>
+                    <div className="p-4 bg-terracotta-50 dark:bg-terracotta-900/10 rounded-xl border border-terracotta-100 dark:border-terracotta-900/20 text-center">
+                      <p className="text-[10px] text-terracotta-600 dark:text-terracotta-400 font-bold uppercase tracking-widest">Select mode and tap Extract</p>
                     </div>
                     <div>
                       <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 px-1">Output Filename</label>
@@ -177,7 +177,7 @@ export default function PdfToTextTool() {
                         type="text" 
                         value={customFileName} 
                         onChange={(e) => setCustomFileName(e.target.value)} 
-                        className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" 
+                        className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-terracotta-500 outline-none font-bold text-sm dark:text-white" 
                       />
                     </div>
                   </div>
@@ -185,12 +185,12 @@ export default function PdfToTextTool() {
               </>
             ) : (
               <div className="space-y-6">
-                <textarea readOnly value={extractedText} className="w-full h-80 bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 rounded-2xl p-4 font-mono text-[10px] resize-none outline-none focus:border-rose-500 dark:text-gray-300 shadow-inner" />
+                <textarea readOnly value={extractedText} className="w-full h-80 bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 rounded-2xl p-4 font-mono text-[10px] resize-none outline-none focus:border-terracotta-500 dark:text-gray-300 shadow-inner" />
                 <div className="flex gap-3">
                   <button onClick={() => { navigator.clipboard.writeText(extractedText); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="flex-1 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-100 dark:border-white/5 p-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all active:scale-95">{copied ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />} Copy</button>
                   <button onClick={handleDownload} className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all"><Download size={18} /> {isNative ? 'Save .txt' : 'Download'}</button>
                 </div>
-                <button onClick={() => { setExtractedText(''); setProgress(0); setPdfData(null); }} className="w-full py-2 text-gray-400 uppercase font-black text-[10px] hover:text-rose-500 transition-colors">Close File</button>
+                <button onClick={() => { setExtractedText(''); setProgress(0); setPdfData(null); }} className="w-full py-2 text-gray-400 uppercase font-black text-[10px] hover:text-terracotta-500 transition-colors">Close File</button>
               </div>
             )}
           </div>

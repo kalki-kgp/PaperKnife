@@ -52,14 +52,14 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border transition-all shadow-sm group touch-none relative ${isDragging ? 'border-rose-300 dark:border-rose-800 shadow-xl scale-[1.02] ring-4 ring-rose-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-rose-200 dark:hover:border-rose-900/30'}`}>
-      <div {...attributes} {...listeners} className="p-2 cursor-grab text-rose-400 hover:text-rose-600 dark:text-rose-500/50 dark:hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors active:scale-90">
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-2xl border transition-all shadow-sm group touch-none relative ${isDragging ? 'border-terracotta-300 dark:border-terracotta-800 shadow-xl scale-[1.02] ring-4 ring-terracotta-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-terracotta-200 dark:hover:border-terracotta-900/30'}`}>
+      <div {...attributes} {...listeners} className="p-2 cursor-grab text-terracotta-400 hover:text-terracotta-600 dark:text-terracotta-500/50 dark:hover:text-terracotta-400 hover:bg-terracotta-500/10 rounded-lg transition-colors active:scale-90">
         <GripVertical size={20} />
       </div>
       
       <div className="w-12 h-16 bg-gray-50 dark:bg-zinc-800 rounded-lg overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 relative group-hover:shadow-md transition-shadow">
         {file.isLocked ? (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-black text-rose-500">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-black text-terracotta-500">
             <Lock size={16} />
             <span className="text-[8px] font-black uppercase mt-1 text-center px-1">Locked</span>
           </div>
@@ -72,15 +72,15 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center animate-pulse">
-            <div className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border-2 border-terracotta-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="font-bold text-sm truncate text-gray-900 dark:text-white group-hover:text-rose-500 transition-colors">{file.file.name}</p>
-          {file.isLocked && <Lock size={12} className="text-rose-500 shrink-0" />}
+          <p className="font-bold text-sm truncate text-gray-900 dark:text-white group-hover:text-terracotta-500 transition-colors">{file.file.name}</p>
+          {file.isLocked && <Lock size={12} className="text-terracotta-500 shrink-0" />}
         </div>
         
         {file.isLocked ? (
@@ -90,12 +90,12 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
               placeholder="Password" 
               value={localPass}
               onChange={(e) => setLocalPass(e.target.value)}
-              className="flex-1 bg-gray-50 dark:bg-black border border-gray-100 dark:border-zinc-800 rounded-lg px-2 py-1 text-[10px] font-bold outline-none focus:border-rose-500 text-gray-900 dark:text-white"
+              className="flex-1 bg-gray-50 dark:bg-black border border-gray-100 dark:border-zinc-800 rounded-lg px-2 py-1 text-[10px] font-bold outline-none focus:border-terracotta-500 text-gray-900 dark:text-white"
             />
             <button 
               onClick={handleUnlockClick}
               disabled={!localPass || isUnlocking}
-              className="bg-rose-500 text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest disabled:opacity-50 hover:scale-105 active:scale-95 transition-transform"
+              className="bg-terracotta-500 text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest disabled:opacity-50 hover:scale-105 active:scale-95 transition-transform"
             >
               {isUnlocking ? '...' : 'Unlock'}
             </button>
@@ -117,13 +117,13 @@ function SortableItem({ id, file, onRemove, onRotate, onUnlock }: { id: string, 
         {!file.isLocked && (
           <button 
             onClick={() => onRotate(id)}
-            className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-gray-400 hover:text-rose-500 transition-all hover:rotate-90 active:scale-90"
+            className="p-2 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-gray-400 hover:text-terracotta-500 transition-all hover:rotate-90 active:scale-90"
             title="Rotate 90°"
           >
             <RotateCw size={18} />
           </button>
         )}
-        <button onClick={() => onRemove(id)} className="p-2 hover:bg-rose-500/10 rounded-full text-gray-400 hover:text-rose-500 transition-all hover:scale-110 active:scale-90">
+        <button onClick={() => onRemove(id)} className="p-2 hover:bg-terracotta-500/10 rounded-full text-gray-400 hover:text-terracotta-500 transition-all hover:scale-110 active:scale-90">
           <X size={18} />
         </button>
       </div>
@@ -371,7 +371,7 @@ export default function MergeTool() {
     <button 
       onClick={mergePDFs}
       disabled={isProcessing || !canMerge}
-      className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20`}
+      className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20`}
     >
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <>Merge PDFs <ArrowRight size={18} /></>}
     </button>
@@ -390,7 +390,7 @@ export default function MergeTool() {
         className="flex-1"
       >
         {isDraggingGlobal && (
-          <div className="fixed inset-0 z-[100] bg-rose-500/90 backdrop-blur-xl flex flex-col items-center justify-center text-white p-6 animate-in fade-in duration-300">
+          <div className="fixed inset-0 z-[100] bg-terracotta-500/90 backdrop-blur-xl flex flex-col items-center justify-center text-white p-6 animate-in fade-in duration-300">
             <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center mb-8 animate-bounce">
               <Plus size={64} strokeWidth={3} />
             </div>
@@ -418,7 +418,7 @@ export default function MergeTool() {
                 </button>
                 <button 
                   onClick={() => { clearWorkspace('merge'); setHasRestorableWorkspace(false); }}
-                  className="flex-1 md:flex-none px-6 py-3 bg-white dark:bg-zinc-800 text-gray-400 hover:text-rose-500 rounded-xl text-xs font-black uppercase tracking-widest transition-colors active:scale-95"
+                  className="flex-1 md:flex-none px-6 py-3 bg-white dark:bg-zinc-800 text-gray-400 hover:text-terracotta-500 rounded-xl text-xs font-black uppercase tracking-widest transition-colors active:scale-95"
                 >
                   Discard
                 </button>
@@ -433,7 +433,7 @@ export default function MergeTool() {
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                   {files.length} Files • {totalPages} Pages
                 </p>
-                <button onClick={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); }} className="text-[10px] font-black uppercase text-rose-500/60 hover:text-rose-500 transition-colors font-bold">Clear All</button>
+                <button onClick={() => { setFiles([]); clearUrls(); clearWorkspace('merge'); }} className="text-[10px] font-black uppercase text-terracotta-500/60 hover:text-terracotta-500 transition-colors font-bold">Clear All</button>
               </div>
 
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -448,7 +448,7 @@ export default function MergeTool() {
 
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-2xl text-gray-400 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:border-rose-500 hover:text-rose-500 transition-all"
+                className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-2xl text-gray-400 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:border-terracotta-500 hover:text-terracotta-500 transition-all"
               >
                 <Plus size={16} /> Add More Files
               </button>
@@ -460,7 +460,7 @@ export default function MergeTool() {
                       type="text" 
                       value={customFileName}
                       onChange={(e) => setCustomFileName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 outline-none font-bold text-sm border border-transparent focus:border-rose-500 transition-colors dark:text-white"
+                      className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 outline-none font-bold text-sm border border-transparent focus:border-terracotta-500 transition-colors dark:text-white"
                    />
                 </div>
               )}
@@ -468,9 +468,9 @@ export default function MergeTool() {
           ) : (
             <button 
               onClick={() => !isProcessing && fileInputRef.current?.click()}
-              className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group"
+              className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 transition-all cursor-pointer group"
             >
-               <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner">
+               <div className="w-20 h-20 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner">
                   <Upload size={32} />
                </div>
                <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF Files</h3>
@@ -487,7 +487,7 @@ export default function MergeTool() {
           {isProcessing && !isNative && (
              <div className="mt-8 space-y-4">
                 <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                   <div className="bg-rose-500 h-full transition-all" style={{ width: `${progress}%` }} />
+                   <div className="bg-terracotta-500 h-full transition-all" style={{ width: `${progress}%` }} />
                 </div>
                 <p className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">Processing on Device...</p>
              </div>

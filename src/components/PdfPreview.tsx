@@ -154,7 +154,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
           </button>
           <div className="flex items-center gap-2.5 min-w-0">
              <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-xl shrink-0">
-                <PaperKnifeLogo size={20} iconColor="#F43F5E" partColor="#000000" />
+                <PaperKnifeLogo size={20} iconColor="#E68A73" partColor="#000000" />
              </div>
              <div className="hidden sm:block min-w-0">
                 <h2 className="text-sm font-black text-white truncate max-w-[140px] leading-tight">{file.name}</h2>
@@ -182,7 +182,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
               e.stopPropagation();
               onProcess();
             }}
-            className="w-10 h-10 flex items-center justify-center bg-rose-500 text-white rounded-2xl shadow-lg shadow-rose-500/20 active:scale-95 active:bg-rose-600 transition-all border border-rose-400/20"
+            className="w-10 h-10 flex items-center justify-center bg-terracotta-500 text-white rounded-2xl shadow-lg shadow-terracotta-500/20 active:scale-95 active:bg-terracotta-600 transition-all border border-terracotta-400/20"
           >
             <Plus size={22} strokeWidth={3} />
           </button>
@@ -198,14 +198,14 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
         <div className="min-h-full flex flex-col items-center pt-32 pb-40 space-y-12">
           {isLoading && (
             <div className="h-full flex flex-col items-center justify-center gap-4">
-              <Loader2 className="w-10 h-10 text-rose-500 animate-spin" />
+              <Loader2 className="w-10 h-10 text-terracotta-500 animate-spin" />
               <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Decoding Layers...</p>
             </div>
           )}
 
           {isLocked ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-8">
-              <div className="w-20 h-20 bg-rose-500/10 text-rose-500 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner border border-rose-500/20">
+              <div className="w-20 h-20 bg-terracotta-500/10 text-terracotta-500 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner border border-terracotta-500/20">
                 <Lock size={32} />
               </div>
               <h3 className="text-2xl font-black text-white tracking-tighter mb-3">Layer Protected</h3>
@@ -218,13 +218,13 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
                    onChange={(e) => setPassword(e.target.value)}
                    onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
                    placeholder="Enter Password"
-                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold text-center outline-none focus:border-rose-500 transition-all"
+                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold text-center outline-none focus:border-terracotta-500 transition-all"
                    autoFocus
                  />
                  <button 
                    onClick={handleUnlock}
                    disabled={!password || isUnlocking}
-                   className="w-full py-4 bg-rose-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                   className="w-full py-4 bg-terracotta-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                  >
                    {isUnlocking ? <Loader2 className="animate-spin" size={16} /> : <Unlock size={16} />} 
                    Unlock Layer

@@ -1,41 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/fonts/PlusJakartaSans-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/fonts/PlusJakartaSans-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/fonts/PlusJakartaSans-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/fonts/PlusJakartaSans-ExtraBold.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-}
-
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Quicksand', ui-sans-serif, system-ui, sans-serif;
 }
 
 html, body {
-  @apply bg-[#FAFAFA] dark:bg-black;
+  @apply bg-[#FFF3F0] dark:bg-black;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -43,8 +17,8 @@ html, body {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  @apply text-gray-900 dark:text-zinc-100 bg-[#FAFAFA] dark:bg-black transition-colors duration-500 ease-in-out;
+  font-family: 'Quicksand', ui-sans-serif, system-ui, sans-serif;
+  @apply text-text-main dark:text-zinc-100 bg-[#FFF3F0] dark:bg-black transition-colors duration-500 ease-in-out;
   overflow-x: hidden;
 }
 
@@ -70,6 +44,22 @@ header, footer, nav, aside, main, section, div, button, input, select {
   margin-top: env(safe-area-inset-top);
 }
 
+/* Clay Morphism Component Classes */
+@layer components {
+  .clay-card {
+    @apply bg-white rounded-[32px] shadow-clay border border-white/40;
+  }
+  .clay-card-yellow {
+    @apply bg-accent-yellow rounded-[32px] shadow-clay;
+  }
+  .clay-card-peach {
+    @apply bg-accent-peach rounded-[32px] shadow-clay;
+  }
+  .clay-button {
+    @apply bg-terracotta-500 text-white shadow-clay-button transition-all duration-300 hover:-translate-y-0.5 hover:shadow-clay-button-hover;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -80,9 +70,9 @@ header, footer, nav, aside, main, section, div, button, input, select {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-zinc-800 rounded-full;
+  @apply bg-terracotta-200 dark:bg-zinc-800 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-300 dark:bg-zinc-700;
+  @apply bg-terracotta-300 dark:bg-zinc-700;
 }

@@ -14,11 +14,11 @@ export default function PrivacyBadge() {
         </div>
 
         <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
-          <a href="https://github.com/potatameister/PaperKnife/issues" target="_blank" className="hover:text-rose-500 transition-colors flex items-center gap-2">
+          <a href="https://github.com/potatameister/PaperKnife/issues" target="_blank" className="hover:text-terracotta-500 transition-colors flex items-center gap-2">
             <Github size={14} /> Support
           </a>
           <span className="opacity-20">•</span>
-          <p className="opacity-60">Made by <span className="text-rose-500/80">potatameister</span></p>
+          <p className="opacity-60">Made by <span className="text-terracotta-500/80">potatameister</span></p>
         </div>
       </div>
     </div>

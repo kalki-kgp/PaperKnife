@@ -16,7 +16,7 @@ import { hapticImpact } from '../utils/haptics'
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: () => void }) => (
   <button 
     onClick={(e) => { e.stopPropagation(); onChange() }}
-    className={`w-12 h-7 rounded-full p-1 transition-all duration-300 ${checked ? 'bg-rose-500 shadow-lg shadow-rose-500/20' : 'bg-gray-200 dark:bg-zinc-700'}`}
+    className={`w-12 h-7 rounded-full p-1 transition-all duration-300 ${checked ? 'bg-terracotta-500 shadow-lg shadow-terracotta-500/20' : 'bg-gray-200 dark:bg-zinc-700'}`}
   >
     <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-300 ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
   </button>
@@ -46,7 +46,7 @@ const SettingItem = ({
       className={`w-full flex items-center justify-between p-4 px-5 transition-all text-left group ${onClick ? 'active:bg-gray-50 dark:active:bg-white/5 cursor-pointer' : 'cursor-default'}`}
     >
       <div className="flex items-center gap-4 flex-1 overflow-hidden">
-        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${danger ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : (iconColor || 'bg-gray-100 dark:bg-zinc-800 text-gray-500 group-hover:text-rose-500 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20')}`}>
+        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${danger ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : (iconColor || 'bg-gray-100 dark:bg-zinc-800 text-gray-500 group-hover:text-terracotta-500 group-hover:bg-terracotta-50 dark:group-hover:bg-terracotta-900/20')}`}>
           <Icon size={18} strokeWidth={2.5} />
         </div>
         <div className="min-w-0 flex-1">
@@ -110,7 +110,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
         
         {/* Integrated Header */}
         <div className="flex items-center gap-4 px-2 mb-8 mt-2">
-           <div className="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20 text-white shrink-0">
+           <div className="w-12 h-12 bg-terracotta-500 rounded-2xl flex items-center justify-center shadow-lg shadow-terracotta-500/20 text-white shrink-0">
               <Settings2 size={24} strokeWidth={2.5} />
            </div>
            <div>
@@ -158,7 +158,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
           />
           <div className="p-5 flex flex-col gap-3">
             <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-               <User size={16} className="text-rose-500" />
+               <User size={16} className="text-terracotta-500" />
                <span className="text-[11px] font-black uppercase tracking-tight">Default Author Metadata</span>
             </div>
             <input 
@@ -169,7 +169,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
                 localStorage.setItem('defaultAuthor', e.target.value)
               }}
               placeholder="e.g. potatameister"
-              className="w-full bg-gray-100 dark:bg-black border border-transparent focus:border-rose-500 rounded-xl px-4 py-3.5 text-xs font-black outline-none transition-all placeholder:text-gray-400 dark:text-white"
+              className="w-full bg-gray-100 dark:bg-black border border-transparent focus:border-terracotta-500 rounded-xl px-4 py-3.5 text-xs font-black outline-none transition-all placeholder:text-gray-400 dark:text-white"
             />
           </div>
         </SettingGroup>
@@ -183,12 +183,12 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
             action={<ToggleSwitch checked={autoWipe} onChange={() => handleToggle('autoWipe', autoWipe, setAutoWipe)} />}
           />
           {autoWipe && (
-            <div className="px-5 py-3 flex items-center justify-between bg-rose-50/50 dark:bg-rose-900/10 border-t border-rose-100/20 dark:border-rose-900/20 animate-in slide-in-from-top-2">
-               <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest">Wipe Delay</span>
+            <div className="px-5 py-3 flex items-center justify-between bg-terracotta-50/50 dark:bg-terracotta-900/10 border-t border-terracotta-100/20 dark:border-terracotta-900/20 animate-in slide-in-from-top-2">
+               <span className="text-[9px] font-black text-terracotta-500 uppercase tracking-widest">Wipe Delay</span>
                <select 
                 value={wipeTimer}
                 onChange={(e) => handleSelect('autoWipeTimer', e.target.value, setWipeTimer)}
-                className="bg-transparent text-[11px] font-black text-rose-600 outline-none cursor-pointer text-right"
+                className="bg-transparent text-[11px] font-black text-terracotta-600 outline-none cursor-pointer text-right"
                >
                   <option value="0">Immediately</option>
                   <option value="1">After 1 Minute</option>
@@ -211,7 +211,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
              <select 
               value={historyLimit}
               onChange={(e) => handleSelect('historyLimit', e.target.value, setHistoryLimit)}
-              className="bg-gray-100 dark:bg-black px-3 py-2 rounded-xl text-[11px] font-black text-gray-600 dark:text-gray-300 outline-none border border-transparent focus:border-rose-500 cursor-pointer"
+              className="bg-gray-100 dark:bg-black px-3 py-2 rounded-xl text-[11px] font-black text-gray-600 dark:text-gray-300 outline-none border border-transparent focus:border-terracotta-500 cursor-pointer"
              >
                 <option value="5">5 Files</option>
                 <option value="10">10 Files</option>
@@ -228,7 +228,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
             icon={HeartIcon} 
             title="Sponsor Project" 
             subtitle="Fuel development"
-            iconColor="text-rose-500 bg-rose-50 dark:bg-rose-900/20"
+            iconColor="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
             onClick={() => window.open('https://github.com/sponsors/potatameister', '_blank')}
           />
           <SettingItem 

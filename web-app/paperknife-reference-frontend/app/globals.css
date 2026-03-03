@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary-bg: #FFF3F0;
+  --color-accent-peach: #FFE4DE;
+  --color-accent-yellow: #FFF9E6;
+  --color-terracotta: #E68A73;
+  --color-text-main: #4A3B37;
+  --color-text-muted: #7D6B66;
+
+  --shadow-clay: 12px 12px 24px rgba(230, 138, 115, 0.15), -12px -12px 24px rgba(255, 255, 255, 0.8);
+  --shadow-clay-inset: inset 4px 4px 8px rgba(255, 255, 255, 0.6), inset -4px -4px 8px rgba(230, 138, 115, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-primary-bg text-text-main font-sans;
+  }
+}
+
+@layer components {
+  .clay-card {
+    @apply bg-white rounded-[32px] shadow-clay border border-white/40;
+  }
+  .clay-card-yellow {
+    @apply bg-accent-yellow rounded-[32px] shadow-clay;
+  }
+  .clay-card-peach {
+    @apply bg-accent-peach rounded-[32px] shadow-clay;
+  }
+  .clay-button {
+    @apply bg-terracotta text-white shadow-[0_8px_16px_rgba(230,138,115,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_20px_rgba(230,138,115,0.4)];
+  }
+}
