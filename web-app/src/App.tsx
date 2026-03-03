@@ -66,7 +66,7 @@ type SeoConfig = {
 }
 
 const BRAND_NAME = 'PaperKnife'
-const BRAND_SUBTITLE = 'Private PDF Toolkit'
+const BRAND_SUBTITLE = 'Your PDF Protector'
 const BRAND_URL_FALLBACK = 'https://paperknife.app'
 const BRAND_LOGO_PATH = '/logos/icon.png'
 
@@ -915,14 +915,14 @@ function HomePage({
 
       {/* Hero */}
       <section className="hero-block fade-up">
-        <p className="hero-eyebrow">// private pdf toolkit</p>
+        <p className="hero-eyebrow">Your PDF Protector</p>
         <h1 className="hero-title">
-          PDF tools that<br />
-          <em>stay local.</em>
+          Your PDFs, Your Peace.<br />
+          <em>Your Protector.</em>
         </h1>
         <p className="hero-sub">
-          Every operation runs entirely in your browser. Files never leave your device.
-          No accounts, no uploads, no tracking.
+          Experience effortless security. Process your documents right in your browser
+          with the comfort of knowing your files never leave your side.
         </p>
         <div className="hero-flow">
           <div className="flow-step">
