@@ -122,7 +122,7 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
           
           <button 
             onClick={handleShare}
-            className="flex-1 bg-rose-50 dark:bg-rose-900/20 text-rose-500 border border-rose-100 dark:border-rose-900/30 p-4 rounded-2xl md:rounded-3xl shadow-sm font-black text-sm md:text-xl tracking-tight transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="flex-1 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 border border-terracotta-100 dark:border-terracotta-900/30 p-4 rounded-2xl md:rounded-3xl shadow-sm font-black text-sm md:text-xl tracking-tight transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <Share2 size={20} /> Share
           </button>
@@ -138,7 +138,7 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
 
       <button 
         onClick={onStartOver}
-        className="w-full mt-6 py-4 bg-gray-50 dark:bg-zinc-900 text-gray-400 hover:text-rose-500 dark:hover:text-rose-500 rounded-2xl border border-gray-100 dark:border-white/5 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
+        className="w-full mt-6 py-4 bg-gray-50 dark:bg-zinc-900 text-gray-400 hover:text-terracotta-500 dark:hover:text-terracotta-500 rounded-2xl border border-gray-100 dark:border-white/5 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
       >
         <RotateCcw size={14} /> Start New Session
       </button>

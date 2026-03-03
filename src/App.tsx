@@ -56,7 +56,7 @@ import ExtractImagesTool from './components/tools/ExtractImagesTool'
 import GrayscaleTool from './components/tools/GrayscaleTool'
 
 const tools: Tool[] = [
-  { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
+  { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-terracotta-500', bg: 'bg-terracotta-50 dark:bg-terracotta-900/20' },
   { title: 'Split PDF', desc: 'Visually extract specific pages or ranges.', icon: Scissors, implemented: true, path: '/split', category: 'Edit', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
   { title: 'Compress PDF', desc: 'Optimize your file size for easier sharing.', icon: Zap, implemented: true, path: '/compress', category: 'Optimize', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
   { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
@@ -109,18 +109,18 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
 
   return (
     <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="w-full max-w-md bg-[#FAFAFA] dark:bg-zinc-950 rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border-t border-x border-white/10 sm:border animate-in slide-in-from-bottom-full duration-500 ease-out">
+      <div className="w-full max-w-md bg-[#FFF3F0] dark:bg-zinc-950 rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border-t border-x border-white/10 sm:border animate-in slide-in-from-bottom-full duration-500 ease-out">
         
         {/* Header */}
         <div className="p-6 pb-2">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center gap-3">
                 {onBack && (
-                  <button onClick={onBack} className="p-2 -ml-2 text-gray-400 hover:text-rose-500 transition-colors">
+                  <button onClick={onBack} className="p-2 -ml-2 text-gray-400 hover:text-terracotta-500 transition-colors">
                     <ChevronDown className="rotate-90" size={20} />
                   </button>
                 )}
-                <div className="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                <div className="w-10 h-10 bg-terracotta-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-terracotta-500/20">
                    <FileText size={20} />
                 </div>
                 <div className="min-w-0">
@@ -128,7 +128,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{(file.size / (1024*1024)).toFixed(2)} MB • PDF Document</p>
                 </div>
              </div>
-             <button onClick={onClear} className="p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-rose-500 transition-colors"><X size={18}/></button>
+             <button onClick={onClear} className="p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-terracotta-500 transition-colors"><X size={18}/></button>
           </div>
         </div>
         
@@ -154,7 +154,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
            <div>
               <button 
                 onClick={() => setShowMore(!showMore)}
-                className="w-full flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-rose-500 transition-colors shadow-sm"
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-terracotta-500 transition-colors shadow-sm"
               >
                 <span>Full Tool Catalog</span>
                 <ChevronDown size={14} className={`transition-transform duration-300 ${showMore ? 'rotate-180' : ''}`} />
@@ -291,8 +291,8 @@ function App() {
   }, [])
 
   const LoadingSpinner = () => (
-    <div className="h-full w-full flex items-center justify-center bg-[#FAFAFA] dark:bg-black min-h-[60vh]">
-      <div className="w-8 h-8 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+    <div className="h-full w-full flex items-center justify-center bg-[#FFF3F0] dark:bg-black min-h-[60vh]">
+      <div className="w-8 h-8 border-4 border-terracotta-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
   )
 
@@ -385,7 +385,7 @@ function App() {
               <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
                 <button
                   onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
-                  className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-rose-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
+                  className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-terracotta-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
                   title="Toggle Chameleon Mode"
                 >
                   {viewMode === 'web' ? <SmartphoneIcon size={20} /> : <MonitorIcon size={20} />}

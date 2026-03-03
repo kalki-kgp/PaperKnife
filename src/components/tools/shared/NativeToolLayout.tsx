@@ -31,10 +31,10 @@ export const NativeToolLayout = ({
   const showNativeHeader = isAndroidView
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-black transition-colors">
+    <div className="flex flex-col min-h-screen bg-[#FFF3F0] dark:bg-black transition-colors">
       {/* Ultra-Compact Native AppBar - Only shown in Android/Native mode on mobile */}
       {showNativeHeader && (
-        <header className="px-4 pt-safe pb-1 flex items-center justify-between sticky top-0 z-30 bg-[#FAFAFA]/95 dark:bg-black/95 backdrop-blur-xl md:hidden border-b border-gray-100 dark:border-white/5">
+        <header className="px-4 pt-safe pb-1 flex items-center justify-between sticky top-0 z-30 bg-[#FFF3F0]/95 dark:bg-black/95 backdrop-blur-xl md:hidden border-b border-gray-100 dark:border-white/5">
           <div className="flex items-center gap-2 h-14">
             <button 
               onClick={onBack || (() => navigate(-1))}

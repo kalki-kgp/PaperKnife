@@ -93,7 +93,7 @@ export default function RotateTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={savePDF} disabled={isProcessing} className={`w-full bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl`}>
+    <button onClick={savePDF} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl`}>
       {isProcessing ? <Loader2 className="animate-spin" /> : <RotateCw size={20} />} Save Rotated PDF
     </button>
   )
@@ -103,38 +103,38 @@ export default function RotateTool() {
       <input type="file" accept=".pdf" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       
       {!pdfData ? (
-        <div onClick={() => !isProcessing && fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer group">
-          <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><RotateCw size={32} /></div>
+        <div onClick={() => !isProcessing && fileInputRef.current?.click()} className="border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 transition-all cursor-pointer group">
+          <div className="w-20 h-20 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform"><RotateCw size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDF</h3>
           <p className="text-sm text-gray-400">Tap to start rotating</p>
         </div>
       ) : pdfData.isLocked ? (
         <div className="max-w-md mx-auto relative z-[100]">
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 text-center shadow-2xl">
-            <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6"><Lock size={32} /></div>
+            <div className="w-16 h-16 bg-terracotta-100 dark:bg-terracotta-900/30 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6"><Lock size={32} /></div>
             <h3 className="text-2xl font-bold mb-2 dark:text-white">Protected File</h3>
-            <input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} placeholder="Password" className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-transparent focus:border-rose-500 outline-none font-bold text-center mb-4 dark:text-white" />
-            <button onClick={handleUnlock} disabled={!unlockPassword || isProcessing} className="w-full bg-rose-500 text-white p-4 rounded-2xl font-black uppercase text-xs">Unlock</button>
+            <input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} placeholder="Password" className="w-full bg-gray-50 dark:bg-black rounded-2xl px-6 py-4 border border-transparent focus:border-terracotta-500 outline-none font-bold text-center mb-4 dark:text-white" />
+            <button onClick={handleUnlock} disabled={!unlockPassword || isProcessing} className="w-full bg-terracotta-500 text-white p-4 rounded-2xl font-black uppercase text-xs">Unlock</button>
           </div>
         </div>
       ) : (
         <div className="space-y-6 animate-in fade-in duration-500">
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center gap-6 shadow-sm">
-            <div className="w-12 h-16 bg-gray-50 dark:bg-black rounded-xl overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-rose-500 shadow-inner">{pdfData.thumbnail ? <img src={pdfData.thumbnail} className="w-full h-full object-cover" /> : <RotateCw size={24} />}</div>
+            <div className="w-12 h-16 bg-gray-50 dark:bg-black rounded-xl overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-terracotta-500 shadow-inner">{pdfData.thumbnail ? <img src={pdfData.thumbnail} className="w-full h-full object-cover" /> : <RotateCw size={24} />}</div>
             <div className="flex-1 min-w-0 text-left">
               <h3 className="font-bold text-sm truncate dark:text-white">{pdfData.file.name}</h3>
               <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">{pdfData.pageCount} Pages • {(pdfData.file.size / (1024*1024)).toFixed(1)} MB</p>
             </div>
-            <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors"><X size={20} /></button>
+            <button onClick={() => setPdfData(null)} className="p-2 text-gray-400 hover:text-terracotta-500 transition-colors"><X size={20} /></button>
           </div>
 
-          <div className="bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
-            <div className="w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-rose-500/20">
+          <div className="bg-terracotta-500/5 dark:bg-terracotta-500/10 border border-terracotta-500/20 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
+            <div className="w-10 h-10 bg-terracotta-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-terracotta-500/20">
               <RotateCw size={20} />
             </div>
             <div className="flex-1">
-              <h4 className="text-sm font-black text-rose-500 uppercase tracking-tight leading-none mb-1">Visual Editor</h4>
-              <p className="text-xs text-rose-500/70 font-bold">Tap any page thumbnail below to rotate it 90° clockwise.</p>
+              <h4 className="text-sm font-black text-terracotta-500 uppercase tracking-tight leading-none mb-1">Visual Editor</h4>
+              <p className="text-xs text-terracotta-500/70 font-bold">Tap any page thumbnail below to rotate it 90° clockwise.</p>
             </div>
           </div>
 
@@ -142,7 +142,7 @@ export default function RotateTool() {
             <div className="flex justify-between items-center mb-6">
               <h4 className="font-black uppercase tracking-widest text-[10px] text-gray-400">Page Preview</h4>
               <div className="flex gap-2">
-                <button onClick={rotateAll} className="text-[10px] font-black uppercase text-rose-500 flex items-center gap-1 font-bold"><RotateCw size={12}/> All</button>
+                <button onClick={rotateAll} className="text-[10px] font-black uppercase text-terracotta-500 flex items-center gap-1 font-bold"><RotateCw size={12}/> All</button>
                 <button onClick={() => setRotations({})} className="text-[10px] font-black uppercase text-gray-400 flex items-center gap-1 font-bold"><RefreshCcw size={12}/> Reset</button>
               </div>
             </div>
@@ -150,10 +150,10 @@ export default function RotateTool() {
               {Array.from({ length: pdfData.pageCount }).map((_, i) => {
                 const pageNum = i + 1; const rotation = rotations[pageNum] || 0
                 return (
-                  <div key={pageNum} onClick={() => rotatePage(pageNum)} className="relative group cursor-pointer aspect-[3/4] rounded-xl overflow-hidden border-2 border-transparent hover:border-rose-500 transition-all bg-gray-50 dark:bg-black shadow-sm">
+                  <div key={pageNum} onClick={() => rotatePage(pageNum)} className="relative group cursor-pointer aspect-[3/4] rounded-xl overflow-hidden border-2 border-transparent hover:border-terracotta-500 transition-all bg-gray-50 dark:bg-black shadow-sm">
                     <div className="w-full h-full p-2"><LazyThumbnail pdfDoc={pdfData.pdfDoc} pageNum={pageNum} rotation={rotation} /></div>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
-                      <div className="bg-white dark:bg-zinc-800 text-rose-500 p-2 rounded-full opacity-0 group-hover:opacity-100 shadow-xl scale-75 group-hover:scale-100 transition-all border border-gray-100 dark:border-white/5">
+                      <div className="bg-white dark:bg-zinc-800 text-terracotta-500 p-2 rounded-full opacity-0 group-hover:opacity-100 shadow-xl scale-75 group-hover:scale-100 transition-all border border-gray-100 dark:border-white/5">
                         <RotateCw size={20} />
                       </div>
                     </div>
@@ -167,12 +167,12 @@ export default function RotateTool() {
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
             {!downloadUrl ? (
               <div className="space-y-6">
-                <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-rose-500 outline-none font-bold text-sm dark:text-white" /></div>
+                <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Output Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-terracotta-500 outline-none font-bold text-sm dark:text-white" /></div>
               </div>
             ) : (
               <SuccessState message="PDF Rotated Successfully!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setDownloadUrl(null); setPdfData(null); }} />
             )}
-            <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-rose-500 transition-colors">Close File</button>
+            <button onClick={() => setPdfData(null)} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-terracotta-500 transition-colors">Close File</button>
           </div>
         </div>
       )}

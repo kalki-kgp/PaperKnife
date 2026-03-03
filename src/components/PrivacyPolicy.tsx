@@ -11,7 +11,7 @@ import { PaperKnifeLogo } from './Logo'
 // --- WEB VERSION (TITAN HIGH-DENSITY) ---
 const PrivacyWeb = () => {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-black text-gray-900 dark:text-zinc-100 selection:bg-rose-500 selection:text-white p-6 md:p-12 pb-24">
+    <div className="min-h-screen bg-[#FFF3F0] dark:bg-black text-gray-900 dark:text-zinc-100 selection:bg-terracotta-500 selection:text-white p-6 md:p-12 pb-24">
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Hero Section */}
@@ -49,7 +49,7 @@ const PrivacyWeb = () => {
         {/* Protocol Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-8 bg-white dark:bg-zinc-900 rounded-[2.25rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-4">
-            <div className="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-xl flex items-center justify-center">
               <Cpu size={20} />
             </div>
             <h3 className="font-black text-sm uppercase tracking-widest dark:text-white">RAM Processing</h3>
@@ -130,7 +130,7 @@ const PrivacyAPK = () => {
              icon={ServerOff} 
              title="No Cloud Compute" 
              desc="All PDF logic runs on your phone's CPU. No document data is ever uploaded to any server." 
-             color="text-rose-500 bg-rose-50 dark:bg-rose-900/20"
+             color="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
            />
            <PrivacyItem 
              icon={EyeOff} 
