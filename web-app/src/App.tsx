@@ -32,6 +32,7 @@ type OutputRequest = {
   watermarkText: string
   password: string
   additionalFiles?: File[]
+  rotationAngle?: number
 }
 type PdfViewport = { width: number; height: number }
 type PdfJsImageObject = { data: Uint8ClampedArray; width: number; height: number }
@@ -437,10 +438,10 @@ async function createUnlockOutput(file: File, password: string): Promise<OutputA
   }
 }
 
-async function createRotateOutput(file: File, quality: number, password: string): Promise<OutputArtifact> {
+async function createRotateOutput(file: File, angle: number, password: string): Promise<OutputArtifact> {
   const { degrees } = await loadPdfLib()
   const doc = await readPdfLibDocument(file, password, 'Rotate PDF')
-  const rotation = quality < 40 ? 90 : quality < 75 ? 180 : 270
+  const rotation = angle
   doc.getPages().forEach((page) => {
     const current = page.getRotation().angle
     page.setRotation(degrees((current + rotation) % 360))
@@ -560,60 +561,57 @@ async function createSignatureOutput(file: File, watermarkText: string, quality:
   }
 }
 
-async function createImageToPdfOutput(file: File): Promise<OutputArtifact> {
-  const isImage = file.type.startsWith('image/')
-  if (!isImage) {
-    throw new Error('Image to PDF requires an image input (JPG/PNG/WebP).')
+async function createImageToPdfOutput(file: File, additionalFiles: File[] = []): Promise<OutputArtifact> {
+  const allFiles = [file, ...additionalFiles]
+  for (const f of allFiles) {
+    if (!f.type.startsWith('image/')) {
+      throw new Error(`Image to PDF requires image inputs (JPG/PNG/WebP). "${f.name}" is not an image.`)
+    }
   }
 
   const { PDFDocument } = await loadPdfLib()
   const doc = await PDFDocument.create()
-  const bytes = await file.arrayBuffer()
-  let width = 1080
-  let height = 1440
-  if (file.type.includes('png')) {
-    const embedded = await doc.embedPng(bytes)
-    width = embedded.width
-    height = embedded.height
-    const page = doc.addPage([width, height])
-    page.drawImage(embedded, { x: 0, y: 0, width, height })
-  } else if (file.type.includes('jpeg') || file.type.includes('jpg')) {
-    const embedded = await doc.embedJpg(bytes)
-    width = embedded.width
-    height = embedded.height
-    const page = doc.addPage([width, height])
-    page.drawImage(embedded, { x: 0, y: 0, width, height })
-  } else {
-    const image = new Image()
-    const imageUrl = URL.createObjectURL(file)
-    const imageLoad = new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve()
-      image.onerror = () => reject(new Error('Could not load image input.'))
-    })
-    image.src = imageUrl
-    await imageLoad
-    width = image.naturalWidth
-    height = image.naturalHeight
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    const context = canvas.getContext('2d')
-    if (!context) {
-      throw new Error('Could not create rendering context.')
+
+  for (const f of allFiles) {
+    const bytes = await f.arrayBuffer()
+    if (f.type.includes('png')) {
+      const embedded = await doc.embedPng(bytes)
+      const page = doc.addPage([embedded.width, embedded.height])
+      page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height })
+    } else if (f.type.includes('jpeg') || f.type.includes('jpg')) {
+      const embedded = await doc.embedJpg(bytes)
+      const page = doc.addPage([embedded.width, embedded.height])
+      page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height })
+    } else {
+      const image = new Image()
+      const imageUrl = URL.createObjectURL(f)
+      const imageLoad = new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve()
+        image.onerror = () => reject(new Error(`Could not load image: ${f.name}`))
+      })
+      image.src = imageUrl
+      await imageLoad
+      const canvas = document.createElement('canvas')
+      canvas.width = image.naturalWidth
+      canvas.height = image.naturalHeight
+      const context = canvas.getContext('2d')
+      if (!context) throw new Error('Could not create rendering context.')
+      context.drawImage(image, 0, 0)
+      const jpegBlob = await canvasToBlob(canvas, 'image/jpeg', 0.92)
+      const jpegBytes = await jpegBlob.arrayBuffer()
+      const embedded = await doc.embedJpg(jpegBytes)
+      const page = doc.addPage([image.naturalWidth, image.naturalHeight])
+      page.drawImage(embedded, { x: 0, y: 0, width: image.naturalWidth, height: image.naturalHeight })
+      URL.revokeObjectURL(imageUrl)
     }
-    context.drawImage(image, 0, 0)
-    const jpegBlob = await canvasToBlob(canvas, 'image/jpeg', 0.92)
-    const jpegBytes = await jpegBlob.arrayBuffer()
-    const embedded = await doc.embedJpg(jpegBytes)
-    const page = doc.addPage([width, height])
-    page.drawImage(embedded, { x: 0, y: 0, width, height })
-    URL.revokeObjectURL(imageUrl)
   }
 
   const output = await doc.save()
   return {
     blob: toPdfBlob(output),
-    fileName: outputFileNameFrom(file.name, 'image-to-pdf', 'pdf'),
+    fileName: allFiles.length > 1
+      ? 'images-combined.pdf'
+      : outputFileNameFrom(file.name, 'image-to-pdf', 'pdf'),
     mimeType: 'application/pdf',
   }
 }
@@ -710,7 +708,7 @@ async function createRepairOutput(file: File, password: string): Promise<OutputA
 }
 
 async function createOutputArtifact(request: OutputRequest, onProgress: (progress: number) => void): Promise<OutputArtifact> {
-  const { toolId, file, quality, watermarkText, password, additionalFiles } = request
+  const { toolId, file, quality, watermarkText, password, additionalFiles, rotationAngle } = request
 
   switch (toolId) {
     case 'merge-pdf':
@@ -727,7 +725,7 @@ async function createOutputArtifact(request: OutputRequest, onProgress: (progres
       return createUnlockOutput(file, password)
     case 'rotate-pdf':
       onProgress(70)
-      return createRotateOutput(file, quality, password)
+      return createRotateOutput(file, rotationAngle ?? 90, password)
     case 'rearrange-pdf':
       onProgress(70)
       return createRearrangeOutput(file, password)
@@ -749,7 +747,7 @@ async function createOutputArtifact(request: OutputRequest, onProgress: (progres
       return createPdfImageOutput(file, quality, onProgress, password)
     case 'image-to-pdf':
       onProgress(70)
-      return createImageToPdfOutput(file)
+      return createImageToPdfOutput(file, additionalFiles)
     case 'extract-images':
       return createExtractImagesOutput(file, password, onProgress)
     case 'pdf-to-text':
@@ -768,6 +766,45 @@ async function createOutputArtifact(request: OutputRequest, onProgress: (progres
     }
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   TOOL CONTROL CONFIG
+───────────────────────────────────────────────────────────── */
+type ToolControlConfig = {
+  showQuality?: boolean
+  qualityLabel?: string
+  showWatermark?: boolean
+  watermarkLabel?: string
+  watermarkPlaceholder?: string
+  showPassword?: boolean
+  passwordLabel?: string
+  passwordRequired?: boolean
+  showRotation?: boolean
+  multiFile?: boolean
+  acceptType?: string
+}
+
+const toolControlConfig: Record<string, ToolControlConfig> = {
+  'merge-pdf': { showPassword: true, multiFile: true, acceptType: '.pdf' },
+  'split-pdf': { showPassword: true },
+  'compress-pdf': { showQuality: true, qualityLabel: 'Compression quality', showPassword: true },
+  'protect-pdf': { showPassword: true, passwordLabel: 'Set password', passwordRequired: true },
+  'unlock-pdf': { showPassword: true, passwordLabel: 'Enter existing password', passwordRequired: true },
+  'rotate-pdf': { showRotation: true, showPassword: true },
+  'rearrange-pdf': { showPassword: true },
+  'page-numbers': { showQuality: true, qualityLabel: 'Font size', showPassword: true },
+  'watermark': { showWatermark: true, watermarkLabel: 'Watermark text', watermarkPlaceholder: 'e.g. CONFIDENTIAL', showPassword: true },
+  'metadata': { showPassword: true },
+  'signature': { showWatermark: true, watermarkLabel: 'Signature text', watermarkPlaceholder: 'e.g. John Doe', showQuality: true, qualityLabel: 'Font size', showPassword: true },
+  'grayscale': { showQuality: true, qualityLabel: 'Quality', showPassword: true },
+  'pdf-to-image': { showQuality: true, qualityLabel: 'Resolution quality', showPassword: true },
+  'image-to-pdf': { multiFile: true, acceptType: 'image/png,image/jpeg,image/webp' },
+  'extract-images': { showPassword: true },
+  'pdf-to-text': { showPassword: true },
+  'repair-pdf': { showPassword: true },
+}
+
+const MULTI_FILE_TOOLS = new Set(['merge-pdf', 'image-to-pdf'])
 
 /* ─────────────────────────────────────────────────────────────
    APP CHROME
@@ -1174,6 +1211,10 @@ function ToolWorkspace({
   const [running, setRunning] = useState(false)
   const [runError, setRunError] = useState<string | null>(null)
   const [mergeFiles, setMergeFiles] = useState<File[]>([])
+  const [rotationAngle, setRotationAngle] = useState(90)
+  const [textPreview, setTextPreview] = useState<string | null>(null)
+  const [metadataInfo, setMetadataInfo] = useState<Record<string, string> | null>(null)
+  const [dragging, setDragging] = useState(false)
   const [latestOutput, setLatestOutput] = useState<{
     fileName: string
     size: number
@@ -1182,6 +1223,8 @@ function ToolWorkspace({
     mimeType: string
   } | null>(null)
 
+  const config = toolControlConfig[tool?.id ?? ''] ?? {}
+  const isMultiFileTool = MULTI_FILE_TOOLS.has(tool?.id ?? '')
   const runLockRef = useRef(false)
 
   useEffect(() => {
@@ -1193,9 +1236,11 @@ function ToolWorkspace({
   }, [latestOutput])
 
   useEffect(() => {
-    if (tool?.id !== 'merge-pdf') {
+    if (!MULTI_FILE_TOOLS.has(tool?.id ?? '')) {
       setMergeFiles([])
     }
+    setTextPreview(null)
+    setMetadataInfo(null)
   }, [tool?.id])
 
   useEffect(() => {
@@ -1237,16 +1282,64 @@ function ToolWorkspace({
       }
       setMergeFiles(all)
       onFileSelect(all[0])
+    } else if (tool.id === 'image-to-pdf') {
+      const all = Array.from(list).filter((f) => f.type.startsWith('image/'))
+      if (all.length === 0) {
+        setRunError('Image to PDF accepts only image files (JPG, PNG, WebP).')
+        return
+      }
+      setMergeFiles(all)
+      onFileSelect(all[0])
     } else {
       setMergeFiles([])
       onFileSelect(readIncomingFile(list))
     }
 
     event.target.value = ''
+    setTextPreview(null)
+
+    if (tool.id === 'metadata' && list.length > 0) {
+      const f = list[0]
+      if (f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')) {
+        readPdfLibDocument(f, '', 'Metadata').then((doc) => {
+          setMetadataInfo({
+            Title: doc.getTitle() ?? '(none)',
+            Author: doc.getAuthor() ?? '(none)',
+            Subject: doc.getSubject() ?? '(none)',
+            Creator: doc.getCreator() ?? '(none)',
+            Producer: doc.getProducer() ?? '(none)',
+            Keywords: doc.getKeywords() ?? '(none)',
+          })
+        }).catch(() => {
+          setMetadataInfo(null)
+        })
+      }
+    }
+  }
+
+  const handleDrop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault()
+    setDragging(false)
+    const list = event.dataTransfer.files
+    if (!list || list.length === 0) return
+
+    if (isMultiFileTool) {
+      const filterFn = tool.id === 'image-to-pdf'
+        ? (f: File) => f.type.startsWith('image/')
+        : (f: File) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')
+      const all = Array.from(list).filter(filterFn)
+      if (all.length === 0) return
+      setMergeFiles(all)
+      onFileSelect(all[0])
+    } else {
+      onFileSelect(readIncomingFile(list))
+    }
   }
 
   const clearCurrentFiles = () => {
     setMergeFiles([])
+    setTextPreview(null)
+    setMetadataInfo(null)
     onFileClear()
   }
 
@@ -1259,6 +1352,7 @@ function ToolWorkspace({
     setProgress(6)
 
     try {
+      const additionalFiles = isMultiFileTool ? mergeFiles.slice(1) : []
       const output = await createOutputArtifact(
         {
           toolId: tool.id,
@@ -1266,10 +1360,16 @@ function ToolWorkspace({
           quality,
           watermarkText,
           password,
-          additionalFiles: tool.id === 'merge-pdf' ? mergeFiles.slice(1) : [],
+          additionalFiles,
+          rotationAngle,
         },
         (next) => setProgress(Math.max(6, Math.min(99, next))),
       )
+
+      if (output.mimeType === 'text/plain') {
+        const text = await output.blob.text()
+        setTextPreview(text)
+      }
 
       const downloadUrl = URL.createObjectURL(output.blob)
       if (latestOutput?.downloadUrl) URL.revokeObjectURL(latestOutput.downloadUrl)
@@ -1286,8 +1386,8 @@ function ToolWorkspace({
       setProgress(100)
 
       const queueName =
-        tool.id === 'merge-pdf' && mergeFiles.length > 1
-          ? `${mergeFiles.length} PDF files`
+        isMultiFileTool && mergeFiles.length > 1
+          ? `${mergeFiles.length} files`
           : activeFile.name
       onQueue(tool.id, queueName)
     } catch (error) {
@@ -1305,7 +1405,7 @@ function ToolWorkspace({
     const lines = [
       `PaperKnife Web Job`,
       `Tool: ${tool.title}`,
-      `Input: ${tool.id === 'merge-pdf' && mergeFiles.length > 1 ? `${mergeFiles.length} PDF files` : `${activeFile.name} (${formatBytes(activeFile.size)})`}`,
+      `Input: ${isMultiFileTool && mergeFiles.length > 1 ? `${mergeFiles.length} files` : `${activeFile.name} (${formatBytes(activeFile.size)})`}`,
       `Quality: ${quality}`,
       `Watermark: ${watermarkText || 'none'}`,
       `Password set: ${password ? 'yes' : 'no'}`,
@@ -1357,13 +1457,28 @@ function ToolWorkspace({
 
           {/* File */}
           <div>
-            <p className="ws-section-label">Input file</p>
-            <div className="ws-file-area">
+            <p className="ws-section-label">
+              {isMultiFileTool ? 'Input files' : 'Input file'}
+            </p>
+            <div
+              className={`ws-file-area${dragging ? ' is-dragging' : ''}`}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+              onDragLeave={(e) => { e.preventDefault(); setDragging(false) }}
+              onDrop={handleDrop}
+            >
               {activeFile ? (
                 <div className="ws-file-pill">
                   <span className="file-dot" />
-                  <span className="fn">{activeFile.name}</span>
-                  <span className="fs">{formatBytes(activeFile.size)}</span>
+                  <span className="fn">
+                    {isMultiFileTool && mergeFiles.length > 1
+                      ? `${mergeFiles.length} files selected`
+                      : activeFile.name}
+                  </span>
+                  <span className="fs">
+                    {isMultiFileTool && mergeFiles.length > 1
+                      ? formatBytes(mergeFiles.reduce((s, f) => s + f.size, 0))
+                      : formatBytes(activeFile.size)}
+                  </span>
                   <button className="btn btn-icon btn-sm" type="button" onClick={clearCurrentFiles} aria-label="Remove file">
                     <X size={13} />
                   </button>
@@ -1371,84 +1486,144 @@ function ToolWorkspace({
               ) : (
                 <div className="ws-empty-pill">
                   <FileUp size={14} />
-                  No file selected
+                  {dragging ? 'Drop files here' : 'No file selected — drag & drop or browse'}
                 </div>
               )}
 
               <label className="btn btn-ghost btn-sm" htmlFor="workspace-file-input" style={{ cursor: 'pointer' }}>
-                {tool.id === 'merge-pdf' ? 'Select PDFs' : activeFile ? 'Replace' : 'Browse'}
+                {isMultiFileTool
+                  ? (tool.id === 'merge-pdf' ? 'Select PDFs' : 'Select images')
+                  : (activeFile ? 'Replace' : 'Browse')}
               </label>
               <input
                 id="workspace-file-input"
                 className="hidden-input"
                 type="file"
-                accept={tool.id === 'image-to-pdf' ? 'image/png,image/jpeg,image/webp' : '.pdf'}
-                multiple={tool.id === 'merge-pdf'}
+                accept={config.acceptType ?? '.pdf'}
+                multiple={isMultiFileTool}
                 onChange={handleFileSelect}
               />
             </div>
-            {tool.id === 'merge-pdf' && mergeFiles.length > 1 && (
-              <p className="merge-info">↳ {mergeFiles.length} PDFs queued for merge</p>
+            {isMultiFileTool && mergeFiles.length > 1 && (
+              <div className="merge-file-list">
+                <p className="merge-info">
+                  ↳ {mergeFiles.length} {tool.id === 'image-to-pdf' ? 'images' : 'PDFs'} queued
+                </p>
+                <ul className="merge-file-names">
+                  {mergeFiles.map((f, i) => (
+                    <li key={`${f.name}-${i}`} className="merge-file-item">
+                      <span className="file-dot" />
+                      <span>{f.name}</span>
+                      <span className="file-size">{formatBytes(f.size)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
 
+          {/* Metadata preview */}
+          {tool.id === 'metadata' && metadataInfo && (
+            <div className="metadata-preview">
+              <p className="ws-section-label">Current metadata</p>
+              <div className="metadata-grid">
+                {Object.entries(metadataInfo).map(([key, value]) => (
+                  <div key={key} className="metadata-row">
+                    <span className="metadata-key">{key}</span>
+                    <span className="metadata-value">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="metadata-hint">Running this tool will clear all metadata fields above.</p>
+            </div>
+          )}
+
           {/* Controls */}
-          <div>
-            <p className="ws-section-label">Parameters</p>
-            <div className="controls-list">
-              <div className="control-item">
-                <label className="control-label">
-                  Quality profile <strong>{quality}</strong>
-                </label>
-                <input
-                  className="control-input"
-                  type="range"
-                  min={20}
-                  max={100}
-                  value={quality}
-                  onChange={(e) => setQuality(Number(e.target.value))}
-                  aria-label="Quality"
-                />
-              </div>
+          {(config.showQuality || config.showWatermark || config.showPassword || config.showRotation) && (
+            <div>
+              <p className="ws-section-label">Parameters</p>
+              <div className="controls-list">
+                {config.showQuality && (
+                  <div className="control-item">
+                    <label className="control-label">
+                      {config.qualityLabel ?? 'Quality'} <strong>{quality}</strong>
+                    </label>
+                    <input
+                      className="control-input"
+                      type="range"
+                      min={20}
+                      max={100}
+                      value={quality}
+                      onChange={(e) => setQuality(Number(e.target.value))}
+                      aria-label={config.qualityLabel ?? 'Quality'}
+                    />
+                  </div>
+                )}
 
-              <div className="control-item">
-                <label className="control-label" htmlFor="ws-watermark">
-                  Watermark / Signature text
-                </label>
-                <input
-                  id="ws-watermark"
-                  className="control-input"
-                  type="text"
-                  value={watermarkText}
-                  onChange={(e) => setWatermarkText(e.target.value)}
-                  placeholder="e.g. CONFIDENTIAL"
-                />
-              </div>
+                {config.showRotation && (
+                  <div className="control-item">
+                    <label className="control-label">Rotation angle</label>
+                    <div className="rotation-selector">
+                      {[90, 180, 270].map((angle) => (
+                        <button
+                          key={angle}
+                          type="button"
+                          className={`rotation-btn${rotationAngle === angle ? ' active' : ''}`}
+                          onClick={() => setRotationAngle(angle)}
+                        >
+                          {angle}°
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              <div className="control-item">
-                <label className="control-label" htmlFor="ws-password">
-                  Password <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(for encrypted PDFs)</span>
-                </label>
-                <div className="control-input-group">
-                  <LockKeyhole size={14} />
-                  <input
-                    id="ws-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Leave blank if not needed"
-                  />
-                </div>
+                {config.showWatermark && (
+                  <div className="control-item">
+                    <label className="control-label" htmlFor="ws-watermark">
+                      {config.watermarkLabel ?? 'Text'}
+                    </label>
+                    <input
+                      id="ws-watermark"
+                      className="control-input"
+                      type="text"
+                      value={watermarkText}
+                      onChange={(e) => setWatermarkText(e.target.value)}
+                      placeholder={config.watermarkPlaceholder ?? ''}
+                    />
+                  </div>
+                )}
+
+                {config.showPassword && (
+                  <div className="control-item">
+                    <label className="control-label" htmlFor="ws-password">
+                      {config.passwordLabel ?? 'Password'}
+                      {!config.passwordRequired && (
+                        <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}> (optional)</span>
+                      )}
+                    </label>
+                    <div className="control-input-group">
+                      <LockKeyhole size={14} />
+                      <input
+                        id="ws-password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={config.passwordRequired ? 'Required' : 'Leave blank if not needed'}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="ws-actions">
             <button
               className="btn btn-primary"
               type="button"
-              disabled={!activeFile || running}
+              disabled={!activeFile || running || (config.passwordRequired && !password)}
               onClick={startRun}
             >
               <Sparkles size={14} />
@@ -1499,6 +1674,15 @@ function ToolWorkspace({
               <p className="output-meta">
                 {formatBytes(latestOutput.size)} · {formatTimestamp(latestOutput.createdAt)}
               </p>
+              {activeFile && (
+                <p className="size-comparison">
+                  {latestOutput.size < activeFile.size
+                    ? `↓ ${Math.round((1 - latestOutput.size / activeFile.size) * 100)}% smaller than input`
+                    : latestOutput.size > activeFile.size
+                      ? `↑ ${Math.round((latestOutput.size / activeFile.size - 1) * 100)}% larger than input`
+                      : 'Same size as input'}
+                </p>
+              )}
               <button
                 className="btn btn-ghost btn-sm"
                 type="button"
@@ -1513,6 +1697,14 @@ function ToolWorkspace({
             <p className="muted">Run the tool to generate output.</p>
           )}
         </div>
+
+        {/* Text preview for PDF to Text */}
+        {textPreview && (
+          <div className="sidebar-section">
+            <p className="sidebar-section-label">Text preview</p>
+            <pre className="text-preview">{textPreview.slice(0, 2000)}{textPreview.length > 2000 ? '\n\n… (truncated)' : ''}</pre>
+          </div>
+        )}
 
         {/* History */}
         <div className="sidebar-section">

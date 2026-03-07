@@ -32,7 +32,7 @@ export const tools: ToolDefinition[] = [
   {
     id: 'split-pdf',
     title: 'Split PDF',
-    description: 'Extract selected pages or ranges.',
+    description: 'Split each page into a separate PDF file.',
     category: 'Edit',
     accent: '#D97756',
     icon: Scissors,
@@ -77,7 +77,7 @@ export const tools: ToolDefinition[] = [
   {
     id: 'rearrange-pdf',
     title: 'Rearrange PDF',
-    description: 'Drag pages into a new order.',
+    description: 'Reverse page order of your document.',
     category: 'Edit',
     accent: '#6BAF8D',
     icon: ArrowUpDown,
@@ -104,7 +104,7 @@ export const tools: ToolDefinition[] = [
   {
     id: 'metadata',
     title: 'Metadata',
-    description: 'View, edit, or wipe hidden PDF properties.',
+    description: 'View and wipe hidden PDF properties.',
     category: 'Secure',
     accent: '#5BAFB0',
     icon: Tags,
@@ -113,7 +113,7 @@ export const tools: ToolDefinition[] = [
   {
     id: 'signature',
     title: 'Signature',
-    description: 'Add an e-signature image or draw one.',
+    description: 'Add a text-based e-signature to your PDF.',
     category: 'Edit',
     accent: '#D4856E',
     icon: PenTool,
