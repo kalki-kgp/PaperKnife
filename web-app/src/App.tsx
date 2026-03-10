@@ -193,19 +193,29 @@ let pdfJsBundlePromise: Promise<PdfJsBundle> | undefined
 
 async function getPdfJsBundle(): Promise<PdfJsBundle> {
   if (!pdfJsBundlePromise) {
-    pdfJsBundlePromise = Promise.all([
-      import('pdfjs-dist'),
-      import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
-    ]).then(([pdfjs, worker]) => {
+    pdfJsBundlePromise = (async () => {
+      const [pdfjs, workerModule] = await Promise.all([
+        import('pdfjs-dist'),
+        import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+      ])
+
       if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-        pdfjs.GlobalWorkerOptions.workerSrc = worker.default
+        const assetUrl = workerModule.default as string
+        try {
+          const res = await fetch(assetUrl)
+          const code = await res.text()
+          const blob = new Blob([code], { type: 'application/javascript' })
+          pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob)
+        } catch {
+          pdfjs.GlobalWorkerOptions.workerSrc = assetUrl
+        }
       }
 
       return {
         getDocument: pdfjs.getDocument as unknown as PdfJsBundle['getDocument'],
         GlobalWorkerOptions: pdfjs.GlobalWorkerOptions as PdfJsBundle['GlobalWorkerOptions'],
       }
-    })
+    })()
   }
 
   return pdfJsBundlePromise
