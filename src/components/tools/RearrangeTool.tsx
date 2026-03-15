@@ -11,6 +11,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type RearrangePdfData = { file: File, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string, thumbnail?: string }
@@ -185,6 +186,27 @@ export default function RearrangeTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Rearrange PDF"
+        headline="Reorder PDF Pages by Reversing Page Order"
+        description="Reverse the page order of your PDF document instantly. PaperKnife's rearrange tool flips your entire document so the last page becomes the first — useful for reversing scan orders, presentations, and print jobs. Everything runs locally in your browser."
+        benefits={[
+          "Reverse page order instantly — last page becomes first, and vice versa.",
+          "Fix documents scanned in reverse order without re-scanning.",
+          "Perfect for presentations, reports, and batch-scanned documents.",
+          "Lossless operation: page content, quality, and formatting are preserved.",
+        ]}
+        howItWorks={[
+          "Upload the PDF whose pages you want to rearrange.",
+          "Click 'Rearrange' to reverse the page order.",
+          "Download the rearranged PDF.",
+        ]}
+        faqs={[
+          { q: "Can I rearrange specific pages?", a: "The rearrange tool reverses the entire page order. For custom page reordering, use the Merge tool which supports drag-and-drop page sequencing." },
+          { q: "Will rearranging affect page content?", a: "No. Only the page order changes — all content, images, fonts, and formatting remain identical." },
+          { q: "Can I rearrange a large PDF?", a: "Yes. The tool handles large documents efficiently since it only modifies page order metadata without re-processing page content." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

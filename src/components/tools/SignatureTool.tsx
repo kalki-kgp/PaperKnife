@@ -9,6 +9,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type SignaturePdfData = { file: File, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string }
@@ -125,6 +126,29 @@ export default function SignatureTool() {
           <button onClick={() => { setPdfData(null); setSignatureImg(null); }} className="w-full py-2 text-[10px] font-black uppercase text-gray-300 hover:text-terracotta-500 transition-colors">Close File</button>
         </div>
       )}
+      <ToolSeoContent
+        title="PDF Signature"
+        headline="Add Electronic Signatures to PDF Documents"
+        description="Sign your PDF documents with a text-based electronic signature. PaperKnife lets you add your name as a signature stamp to any PDF — completely in your browser. No account needed, no data uploaded, fully private."
+        benefits={[
+          "Add your signature to contracts, forms, and documents instantly.",
+          "Text-based signature with customizable font size.",
+          "No account or registration required — just type and sign.",
+          "100% private: your signature and documents stay on your device.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to sign.",
+          "Type your signature text (your name or initials).",
+          "Adjust the font size as needed.",
+          "Click to apply and download your signed document.",
+        ]}
+        faqs={[
+          { q: "Is this a legally binding signature?", a: "PaperKnife adds a text-based signature stamp to your PDF. Legal validity depends on your jurisdiction and the type of document. For legally binding digital signatures with certificates, specialized software may be required." },
+          { q: "Can I place the signature on a specific page?", a: "The signature is applied to your document. For precise placement control, consider using a PDF viewer's annotation tools after signing." },
+          { q: "Can I use a handwritten signature image?", a: "Currently, PaperKnife supports text-based signatures. Handwritten signature image support is not yet available." },
+          { q: "Is my signature data stored?", a: "No. Your signature text is used only during the current session to stamp the PDF. It is never stored, transmitted, or logged." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

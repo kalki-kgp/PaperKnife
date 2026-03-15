@@ -8,6 +8,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type WatermarkPdfData = { file: File, pageCount: number, isLocked: boolean, password?: string, pdfDoc?: any, thumbnail?: string }
@@ -217,6 +218,29 @@ export default function WatermarkTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Watermark PDF"
+        headline="Add Text Watermarks to PDF Documents"
+        description="Overlay custom text watermarks on every page of your PDF. Perfect for marking documents as 'CONFIDENTIAL', 'DRAFT', or adding branding. PaperKnife applies watermarks entirely in your browser — your documents stay private."
+        benefits={[
+          "Add custom text watermarks like CONFIDENTIAL, DRAFT, or your company name.",
+          "Applied to every page for consistent document marking.",
+          "Protect intellectual property and mark document status clearly.",
+          "No server uploads — your sensitive documents remain private.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to watermark.",
+          "Enter your watermark text (e.g., CONFIDENTIAL, DRAFT).",
+          "Click to apply the watermark to all pages.",
+          "Download the watermarked PDF.",
+        ]}
+        faqs={[
+          { q: "Can I customize the watermark appearance?", a: "You can set the watermark text. The watermark is applied as a semi-transparent diagonal overlay on each page for maximum visibility without obscuring content." },
+          { q: "Can I remove a watermark later?", a: "Watermarks added by PaperKnife are embedded in the PDF. To remove them, you would need to use the original unwatermarked file." },
+          { q: "Will the watermark appear when printed?", a: "Yes. The watermark is embedded in the PDF page content and will appear in both digital viewing and print." },
+          { q: "Can I watermark a password-protected PDF?", a: "Yes. Enter the document password when prompted, and the watermark will be applied while maintaining the document's structure." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

@@ -10,6 +10,7 @@ import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 // Compare Slider Component (Optimized)
@@ -349,6 +350,29 @@ export default function CompressTool() {
           )}
         </div>
       )}
+      <ToolSeoContent
+        title="Compress PDF"
+        headline="Compress PDF Files Without Losing Quality"
+        description="Reduce your PDF file size for easier sharing and storage. PaperKnife's compression tool optimizes your documents right in your browser — no uploading to servers, no quality loss, no waiting. Adjust the compression level to find the perfect balance between file size and visual quality."
+        benefits={[
+          "Reduce PDF file size by up to 80% while maintaining readable quality.",
+          "Adjustable compression slider — choose your preferred balance of size vs. quality.",
+          "Perfect for email attachments, web uploads, and storage optimization.",
+          "100% local processing: your documents are never uploaded to any server.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to compress.",
+          "Adjust the quality slider to set your preferred compression level.",
+          "Click 'Compress' to process your document locally.",
+          "Download the smaller PDF file.",
+        ]}
+        faqs={[
+          { q: "How much can I reduce my PDF size?", a: "Compression results vary depending on the content. PDFs with large images typically see 50-80% size reduction. Text-heavy documents may see 10-30% reduction since text is already compact." },
+          { q: "Will compression make my PDF blurry?", a: "The quality slider gives you control. Higher quality settings preserve visual clarity with moderate compression. Lower quality settings maximize compression with some visual reduction in images." },
+          { q: "Can I compress password-protected PDFs?", a: "Yes. If your PDF is password-protected, enter the password when prompted and the tool will compress it while maintaining the encryption." },
+          { q: "Is this better than online compression tools?", a: "For privacy, absolutely. Unlike online tools that upload your files to their servers, PaperKnife compresses everything locally. Your sensitive documents never leave your device." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

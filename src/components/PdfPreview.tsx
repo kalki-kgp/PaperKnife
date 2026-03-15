@@ -1,6 +1,6 @@
 /**
  * PaperKnife - The Swiss Army Knife for PDFs
- * Copyright (C) 2026 potatameister
+ * Copyright (C) 2026 kalki-kgp
  */
 
 import { useState, useEffect, useRef } from 'react'

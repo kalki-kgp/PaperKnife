@@ -7,10 +7,10 @@
 **A simple, honest PDF utility that respects your privacy.**
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-rose.svg)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/potatameister/PaperKnife?style=flat&color=rose)](https://github.com/potatameister/PaperKnife/stargazers)
-[![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://potatameister.github.io/PaperKnife/)
-[![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/potatameister/PaperKnife/releases/latest)
-[![Twitter](https://img.shields.io/badge/twitter-@potatameister-black?logo=x)](https://x.com/potatameister)
+[![GitHub Stars](https://img.shields.io/github/stars/kalki-kgp/PaperKnife?style=flat&color=rose)](https://github.com/kalki-kgp/PaperKnife/stargazers)
+[![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://kalki-kgp.github.io/PaperKnife/)
+[![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/kalki-kgp/PaperKnife/releases/latest)
+[![Twitter](https://img.shields.io/badge/twitter-@kalki-kgp-black?logo=x)](https://x.com/kalki-kgp)
 
 ---
 
@@ -40,11 +40,11 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 
 ### How to use it
 
-*   **On Android:** Download the [latest APK](https://github.com/potatameister/PaperKnife/releases/latest) or get it from:
+*   **On Android:** Download the [latest APK](https://github.com/kalki-kgp/PaperKnife/releases/latest) or get it from:
 
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/com.paperknife.app)
 
-*   **On the Web:** Visit the [live site](https://potatameister.github.io/PaperKnife/). You can use it like any other website, or "install" it as a PWA for offline access.
+*   **On the Web:** Visit the [live site](https://kalki-kgp.github.io/PaperKnife/). You can use it like any other website, or "install" it as a PWA for offline access.
 
 ---
 
@@ -53,7 +53,7 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 PaperKnife is a solo project. It's open-source, ad-free, and tracker-free because I believe privacy is a right, not a luxury.
 
 If this tool has saved you time or kept your data safe, please consider:
-*   **Sponsoring:** Support development via [GitHub Sponsors](https://github.com/sponsors/potatameister).
+*   **Sponsoring:** Support development via [GitHub Sponsors](https://github.com/sponsors/kalki-kgp).
 *   **Giving a Star:** It helps other people find the project.
 *   **Spreading the word:** Share it with anyone who handles sensitive documents.
 
@@ -161,4 +161,4 @@ PaperKnife is built with **React** and **TypeScript**. The core processing is ha
 This project is licensed under the **GNU AGPL v3** to ensure it remains open and transparent forever.
 
 ---
-*Made with care by [potatameister](https://github.com/potatameister)*
+*Made with care by [kalki-kgp](https://github.com/kalki-kgp)*

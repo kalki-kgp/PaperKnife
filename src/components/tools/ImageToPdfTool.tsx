@@ -10,6 +10,7 @@ import { Capacitor } from '@capacitor/core'
 import { addActivity } from '../../utils/recentActivity'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type ImageFile = { id: string, file: File, preview: string }
@@ -90,6 +91,29 @@ export default function ImageToPdfTool() {
       ) : (
         <SuccessState message="PDF Ready!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setImages([]); setDownloadUrl(null); }} />
       )}
+      <ToolSeoContent
+        title="Image to PDF"
+        headline="Convert Images to PDF Documents"
+        description="Combine JPG, PNG, and WebP images into a single PDF document. PaperKnife packs your images into a clean, shareable PDF entirely in your browser — no uploads, no account needed. Perfect for creating photo albums, portfolios, and document scans."
+        benefits={[
+          "Convert JPG, PNG, and WebP images into a single PDF document.",
+          "Combine multiple images into one organized PDF file.",
+          "Perfect for portfolios, photo collections, and scanned document assembly.",
+          "No server uploads — your images stay private on your device.",
+        ]}
+        howItWorks={[
+          "Select or drag multiple image files (JPG, PNG, WebP).",
+          "Images are automatically arranged in the order you add them.",
+          "Click 'Convert' to pack images into a PDF.",
+          "Download your image-based PDF document.",
+        ]}
+        faqs={[
+          { q: "What image formats can I convert?", a: "PaperKnife supports JPG/JPEG, PNG, and WebP image formats for conversion to PDF." },
+          { q: "Is there a limit on the number of images?", a: "No hard limit. You can add as many images as your device's memory allows." },
+          { q: "Will image quality be preserved?", a: "Yes. Images are embedded in the PDF at their original resolution without additional compression." },
+          { q: "Can I reorder images before converting?", a: "Images are arranged in the order they're added. Add them in your preferred sequence for the desired page order." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

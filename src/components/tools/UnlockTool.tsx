@@ -9,6 +9,7 @@ import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type UnlockPdfFile = {
@@ -115,6 +116,29 @@ export default function UnlockTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Unlock PDF"
+        headline="Remove Password Protection From PDFs"
+        description="Unlock password-protected PDF files locally in your browser. Enter the existing password to remove the protection and download an unprotected copy. Your password and document never leave your device."
+        benefits={[
+          "Remove password restrictions from PDFs you have authorized access to.",
+          "Create unprotected copies for easier sharing and editing.",
+          "All decryption happens locally — your password is never sent anywhere.",
+          "Works with standard PDF encryption formats.",
+        ]}
+        howItWorks={[
+          "Upload the password-protected PDF.",
+          "Enter the existing password for the document.",
+          "Click 'Unlock' to remove the protection.",
+          "Download the unprotected PDF.",
+        ]}
+        faqs={[
+          { q: "Can I unlock a PDF without the password?", a: "No. You must know the correct password to unlock the file. PaperKnife does not crack or bypass PDF encryption — it removes protection using the authorized password." },
+          { q: "Is it legal to unlock PDFs?", a: "Yes, if you have the right to access the document. Unlocking your own password-protected files or files you've been given the password for is perfectly legal." },
+          { q: "Will unlocking affect the PDF content?", a: "No. The content, formatting, images, and fonts remain identical. Only the password protection is removed." },
+          { q: "What if the password doesn't work?", a: "Make sure you're entering the correct password including any uppercase letters, numbers, or special characters. PDF passwords are case-sensitive." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

@@ -13,6 +13,7 @@ import { useObjectURL } from '../../utils/useObjectURL'
 import { saveWorkspace, getWorkspace, clearWorkspace } from '../../utils/workspacePersistence'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 // File Item Type
@@ -510,6 +511,29 @@ export default function MergeTool() {
         </div>
 
         <input type="file" multiple accept=".pdf" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
+        <ToolSeoContent
+          title="Merge PDF"
+          headline="Combine Multiple PDFs Into One Document"
+          description="PaperKnife's Merge PDF tool lets you combine two or more PDF files into a single document — completely in your browser. No uploads, no cloud processing, no accounts. Drag and drop your files, reorder pages, and download the merged result instantly."
+          benefits={[
+            "Combine unlimited PDF files into one document with no file size restrictions.",
+            "Drag and drop to reorder files before merging — get the exact page sequence you need.",
+            "100% private: your documents never leave your browser. No server uploads, ever.",
+            "Works offline — merge PDFs even without an internet connection.",
+          ]}
+          howItWorks={[
+            "Upload or drag multiple PDF files into the merge area.",
+            "Reorder files by dragging them into your preferred sequence.",
+            "Click 'Merge' to combine all files into one PDF.",
+            "Download your merged document or share it directly.",
+          ]}
+          faqs={[
+            { q: "How many PDFs can I merge at once?", a: "There's no limit. You can merge as many PDF files as your device's memory allows. Most users merge 2-50 files without any issues." },
+            { q: "Will merging reduce the quality of my PDFs?", a: "No. PaperKnife performs a lossless merge — it combines the original page data without re-encoding or compressing. Your fonts, images, and formatting remain identical." },
+            { q: "Can I reorder pages from different PDFs?", a: "Yes. After adding your files, you can drag and drop to reorder them. The final merged PDF will follow your custom sequence." },
+            { q: "Is it safe to merge sensitive documents?", a: "Absolutely. All processing happens locally in your browser using JavaScript. No file data is ever sent to a server. You can even disconnect from the internet before merging." },
+          ]}
+        />
         <PrivacyBadge />
       </div>
     </NativeToolLayout>

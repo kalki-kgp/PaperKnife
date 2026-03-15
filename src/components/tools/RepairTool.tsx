@@ -7,6 +7,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 export default function RepairTool() {
@@ -110,6 +111,29 @@ export default function RepairTool() {
           PaperKnife rebuilds the internal cross-reference table and regenerates the file structure from scratch. This can restore access to many files that "cannot be opened."
         </div>
       </div>
+      <ToolSeoContent
+        title="Repair PDF"
+        headline="Fix Corrupted or Broken PDF Files"
+        description="Attempt to repair damaged, corrupted, or unreadable PDF documents. PaperKnife re-processes the file structure to fix common PDF issues — all locally in your browser. No uploads, no data exposure."
+        benefits={[
+          "Fix PDFs that won't open, display errors, or have corrupted pages.",
+          "Re-process internal PDF structure to resolve common file issues.",
+          "Recover access to important documents that other readers can't open.",
+          "100% local repair — your damaged files stay private.",
+        ]}
+        howItWorks={[
+          "Upload the corrupted or problematic PDF file.",
+          "PaperKnife attempts to parse and reconstruct the document.",
+          "If successful, a repaired version is generated.",
+          "Download the fixed PDF document.",
+        ]}
+        faqs={[
+          { q: "Can PaperKnife fix any corrupted PDF?", a: "PaperKnife can fix many common PDF issues like broken cross-references, incomplete file structures, and minor corruption. Severely damaged files with destroyed page data may not be fully recoverable." },
+          { q: "Will repair change my document content?", a: "No. The repair process fixes structural issues without modifying visible content. Text, images, and formatting are preserved." },
+          { q: "What if the repair fails?", a: "If the PDF is too severely corrupted to parse, PaperKnife will notify you. In such cases, try opening the file in different PDF readers, as some are more tolerant of corruption." },
+          { q: "Should I keep a backup of the original?", a: "Always recommended. Keep your original file in case you need to try different recovery methods." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

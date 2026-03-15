@@ -8,6 +8,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type MetadataPdfData = {
@@ -211,6 +212,29 @@ export default function MetadataTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="PDF Metadata"
+        headline="View and Clean PDF Metadata"
+        description="Inspect and remove hidden metadata from your PDF files. PDFs contain invisible information like author names, software used, creation dates, and edit history. PaperKnife's metadata tool lets you view and wipe this data for maximum privacy — all locally in your browser."
+        benefits={[
+          "View hidden metadata: author, creator software, dates, and document properties.",
+          "Clean metadata to remove identifying information before sharing.",
+          "Protect your privacy by removing digital fingerprints from documents.",
+          "Essential for legal, medical, and confidential document handling.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to inspect.",
+          "View all hidden metadata properties in the document.",
+          "Click 'Clean' to strip all metadata from the PDF.",
+          "Download the clean, metadata-free document.",
+        ]}
+        faqs={[
+          { q: "What metadata do PDFs contain?", a: "PDFs can store author name, creation/modification dates, software used to create the document, company name, keywords, and other properties. This information is invisible but can reveal sensitive details." },
+          { q: "Why should I clean metadata?", a: "Metadata can reveal who created a document, when, and with what software. For privacy-sensitive documents, cleaning metadata prevents unintended information disclosure." },
+          { q: "Does cleaning metadata affect the document content?", a: "No. Only the hidden metadata properties are removed. All visible content — text, images, formatting — remains unchanged." },
+          { q: "Is metadata cleaning important for legal documents?", a: "Yes. Legal and compliance requirements often mandate metadata sanitization before sharing documents externally to prevent data leakage." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

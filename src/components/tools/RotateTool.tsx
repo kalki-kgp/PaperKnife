@@ -8,6 +8,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type RotatePdfData = { file: File, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string, thumbnail?: string }
@@ -176,6 +177,29 @@ export default function RotateTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Rotate PDF"
+        headline="Rotate PDF Pages to the Correct Orientation"
+        description="Fix wrongly oriented PDF pages by rotating them 90, 180, or 270 degrees. PaperKnife rotates pages permanently in your browser — no uploads, no cloud processing. Perfect for scanned documents that came out sideways or upside down."
+        benefits={[
+          "Rotate pages by 90, 180, or 270 degrees to fix any orientation issue.",
+          "Permanent rotation saved directly in the PDF — not just a viewer setting.",
+          "Fix scanned documents, photos, and presentations with wrong orientation.",
+          "100% local: your documents stay on your device.",
+        ]}
+        howItWorks={[
+          "Upload the PDF with pages that need rotating.",
+          "Select your desired rotation angle (90, 180, or 270 degrees).",
+          "Click 'Rotate' to apply the rotation permanently.",
+          "Download the corrected PDF.",
+        ]}
+        faqs={[
+          { q: "Does rotation affect all pages?", a: "Yes, the selected rotation is applied to all pages in the document. For rotating specific pages only, you can split the PDF, rotate individual files, and merge them back." },
+          { q: "Is the rotation permanent?", a: "Yes. Unlike some PDF viewers that only rotate the display, PaperKnife modifies the actual page rotation in the PDF structure. The change persists in all applications." },
+          { q: "Can I rotate landscape to portrait?", a: "Yes. A 90 or 270 degree rotation will switch between landscape and portrait orientation." },
+          { q: "Will rotating affect text or image quality?", a: "No. Rotation is a lossless operation that changes the page orientation metadata without re-encoding any content." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

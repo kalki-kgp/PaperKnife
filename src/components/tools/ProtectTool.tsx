@@ -11,6 +11,7 @@ import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type ProtectPdfFile = {
@@ -144,6 +145,29 @@ export default function ProtectTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Protect PDF"
+        headline="Password Protect Your PDF Documents"
+        description="Secure your PDF files with strong password encryption. PaperKnife encrypts your documents entirely in your browser — the password and your files never touch a server. Add a layer of security before sharing sensitive documents."
+        benefits={[
+          "Encrypt PDFs with a password to prevent unauthorized access.",
+          "Industry-standard encryption applied entirely in your browser.",
+          "Perfect for contracts, financial documents, medical records, and legal files.",
+          "Zero server contact: your password and files stay on your device.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to protect.",
+          "Enter your desired password.",
+          "Click 'Protect' to encrypt the document.",
+          "Download your password-protected PDF.",
+        ]}
+        faqs={[
+          { q: "How strong is the encryption?", a: "PaperKnife uses standard PDF encryption. The security level depends on the complexity of your password — use a strong, unique password for best protection." },
+          { q: "Can I remove the password later?", a: "Yes. Use PaperKnife's Unlock PDF tool to remove the password protection if you know the original password." },
+          { q: "Will the recipient need special software?", a: "No. Any standard PDF reader (Adobe Reader, Chrome, Preview, etc.) can open password-protected PDFs. The recipient just needs to enter the password." },
+          { q: "Is my password stored anywhere?", a: "No. Your password is used locally to encrypt the file and is never stored, transmitted, or logged anywhere." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

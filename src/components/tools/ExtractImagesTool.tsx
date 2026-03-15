@@ -9,6 +9,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type PdfData = { file: File, thumbnail?: string, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string }
@@ -194,6 +195,29 @@ export default function ExtractImagesTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Extract Images"
+        headline="Extract All Images From PDF Documents"
+        description="Pull out every embedded image from a PDF file. PaperKnife extracts original image assets — photos, graphics, logos — from your PDF documents and packages them as a ZIP download. All processing runs locally in your browser."
+        benefits={[
+          "Extract all embedded images from any PDF document.",
+          "Get original image files — not screenshots, but the actual embedded assets.",
+          "Downloaded as a convenient ZIP file with all images organized.",
+          "Recover images from documents, presentations, and reports.",
+        ]}
+        howItWorks={[
+          "Upload the PDF containing images you want to extract.",
+          "PaperKnife scans the document for all embedded image objects.",
+          "Click to extract and package all images.",
+          "Download the ZIP file containing all extracted images.",
+        ]}
+        faqs={[
+          { q: "What image formats are extracted?", a: "Images are extracted in their original embedded format, typically JPEG or PNG depending on how they were embedded in the PDF." },
+          { q: "Can I extract images from specific pages?", a: "Currently, images are extracted from all pages. Split the PDF first if you only need images from specific pages." },
+          { q: "Will the extracted images be high quality?", a: "Yes. PaperKnife extracts the original embedded image data, so quality matches what was stored in the PDF." },
+          { q: "What if my PDF has no images?", a: "If the PDF contains only text and vector graphics (no raster images), the extraction may return few or no results." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

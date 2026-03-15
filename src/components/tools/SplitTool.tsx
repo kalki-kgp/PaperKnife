@@ -9,6 +9,7 @@ import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type SplitPdfFile = {
@@ -326,6 +327,28 @@ export default function SplitTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Split PDF"
+        headline="Split PDF Pages Into Separate Files"
+        description="Extract individual pages from any PDF document. PaperKnife's Split PDF tool separates each page into its own PDF file, packaged as a convenient ZIP download. Everything runs locally in your browser — your documents stay private."
+        benefits={[
+          "Extract every page as a separate PDF file — perfect for organizing multi-page documents.",
+          "Download all split pages as a single ZIP file for easy handling.",
+          "No file size limits — split large documents with hundreds of pages.",
+          "Completely private: your PDF never leaves your device.",
+        ]}
+        howItWorks={[
+          "Upload the PDF file you want to split.",
+          "Click 'Split' to separate each page into individual PDFs.",
+          "Download the ZIP file containing all separated pages.",
+        ]}
+        faqs={[
+          { q: "Can I split specific pages instead of all pages?", a: "Currently, PaperKnife splits every page into its own PDF. For extracting specific page ranges, you can use the split tool and then merge only the pages you need." },
+          { q: "What format are the split files in?", a: "Each page becomes its own PDF file. All split pages are packaged into a ZIP file for easy download." },
+          { q: "Is there a page limit for splitting?", a: "No hard limit. The tool can handle PDFs with hundreds of pages. Processing time depends on your device's performance." },
+          { q: "Are the split pages the same quality as the original?", a: "Yes. Splitting is lossless — each page retains its original quality, fonts, images, and formatting." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

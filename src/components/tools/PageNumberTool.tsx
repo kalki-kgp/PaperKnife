@@ -8,6 +8,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type PageNumberPdfData = { file: File, pageCount: number, isLocked: boolean, password?: string, pdfDoc?: any, thumbnail?: string }
@@ -175,6 +176,29 @@ export default function PageNumberTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Page Numbers"
+        headline="Add Page Numbers to PDF Documents"
+        description="Stamp page numbers onto every page of your PDF. Choose your preferred font size and let PaperKnife add sequential numbering automatically. Everything processes locally — your document never leaves your browser."
+        benefits={[
+          "Add sequential page numbers to any PDF automatically.",
+          "Customizable font size to match your document's style.",
+          "Professional numbering for reports, manuals, and presentations.",
+          "100% local processing with no server uploads.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to number.",
+          "Adjust the font size to your preference.",
+          "Click to add page numbers to all pages.",
+          "Download the numbered PDF.",
+        ]}
+        faqs={[
+          { q: "Where are the page numbers placed?", a: "Page numbers are placed at the bottom center of each page in a clean, readable format." },
+          { q: "Can I start numbering from a specific page?", a: "Currently, numbering starts from page 1 and continues sequentially through all pages." },
+          { q: "Will page numbers overlap existing content?", a: "Page numbers are placed in the bottom margin area. If your document has content in that area, there may be some overlap." },
+          { q: "Can I change the number format?", a: "Currently, PaperKnife uses simple numeric formatting (1, 2, 3...). Custom formats like Roman numerals are not yet supported." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

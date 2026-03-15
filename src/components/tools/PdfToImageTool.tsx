@@ -9,6 +9,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type ImageFormat = 'jpg' | 'png'
@@ -142,6 +143,29 @@ export default function PdfToImageTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="PDF to Image"
+        headline="Convert PDF Pages to High-Quality Images"
+        description="Export PDF pages as JPG or PNG images. PaperKnife renders each page at high resolution directly in your browser — no server uploads, no quality loss. Perfect for social media, presentations, and web use."
+        benefits={[
+          "Convert each PDF page into a high-quality JPG or PNG image.",
+          "Adjustable resolution quality for the perfect balance of size and clarity.",
+          "Multiple pages exported as a convenient ZIP download.",
+          "Ideal for sharing on social media, embedding in presentations, or web publishing.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to convert.",
+          "Adjust the resolution quality slider.",
+          "Click 'Convert' to render pages as images.",
+          "Download individual images or all pages as a ZIP file.",
+        ]}
+        faqs={[
+          { q: "What image formats are supported?", a: "PaperKnife exports PDF pages as high-quality PNG or JPG images, depending on your preference." },
+          { q: "Can I convert specific pages only?", a: "Currently, all pages are converted. You can split the PDF first to extract specific pages, then convert them." },
+          { q: "What resolution are the exported images?", a: "The quality slider controls the rendering resolution. Higher quality settings produce larger, sharper images suitable for printing. Lower settings are optimized for web use." },
+          { q: "Will text remain sharp in the images?", a: "Yes. PaperKnife renders pages at high resolution, maintaining crisp text and clear graphics." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

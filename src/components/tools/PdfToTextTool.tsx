@@ -7,6 +7,7 @@ import { Capacitor } from '@capacitor/core'
 import { getPdfMetaData, loadPdfDocument, unlockPdf, downloadFile } from '../../utils/pdfHelpers'
 import { usePipeline } from '../../utils/pipelineContext'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type PdfToTextData = { file: File, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string }
@@ -196,6 +197,29 @@ export default function PdfToTextTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="PDF to Text"
+        headline="Extract Text From PDF Documents"
+        description="Convert PDF content to plain text. PaperKnife extracts all selectable text from your PDF documents for easy copying, editing, and analysis. Processing runs entirely in your browser — your documents remain private."
+        benefits={[
+          "Extract all readable text from PDF documents instantly.",
+          "Copy text for use in documents, emails, or other applications.",
+          "Preview extracted text before downloading.",
+          "Works with text-based PDFs and OCR-processed documents.",
+        ]}
+        howItWorks={[
+          "Upload the PDF you want to extract text from.",
+          "PaperKnife reads all text layers in the document.",
+          "Preview the extracted text in the sidebar.",
+          "Download the text content as a plain text file.",
+        ]}
+        faqs={[
+          { q: "Does this work with scanned PDFs?", a: "PaperKnife extracts embedded text layers. For scanned documents without a text layer, OCR processing may be available depending on your configuration." },
+          { q: "Will formatting be preserved?", a: "Text is extracted as plain text without formatting. Headings, bold, italic, and layout structure are not preserved in the output." },
+          { q: "Can I extract text from specific pages?", a: "Currently, text is extracted from all pages. Use the Split tool first if you need text from specific pages only." },
+          { q: "What about tables and columns?", a: "Complex layouts like tables and multi-column text may not extract perfectly. Text is extracted in reading order as best determined by the PDF structure." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )

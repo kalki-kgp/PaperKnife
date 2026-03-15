@@ -169,7 +169,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
                 setDefaultAuthor(e.target.value)
                 localStorage.setItem('defaultAuthor', e.target.value)
               }}
-              placeholder="e.g. potatameister"
+              placeholder="e.g. kalki-kgp"
               className="w-full bg-gray-100 dark:bg-black border border-transparent focus:border-terracotta-500 rounded-xl px-4 py-3.5 text-xs font-black outline-none transition-all placeholder:text-gray-400 dark:text-white"
             />
           </div>
@@ -237,13 +237,13 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
             title="Sponsor Project"
             subtitle="Fuel development"
             iconColor="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
-            onClick={() => window.open('https://github.com/sponsors/potatameister', '_blank')}
+            onClick={() => window.open('https://github.com/sponsors/kalki-kgp', '_blank')}
           />
           <SettingItem 
             icon={Bug} 
             title="Report Issue" 
             subtitle="GitHub Tracker"
-            onClick={() => window.open('https://github.com/potatameister/PaperKnife/issues', '_blank')}
+            onClick={() => window.open('https://github.com/kalki-kgp/PaperKnife/issues', '_blank')}
           />
           <SettingItem 
             icon={Info} 

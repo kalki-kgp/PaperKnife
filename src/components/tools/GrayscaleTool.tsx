@@ -9,6 +9,7 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import PrivacyBadge from './shared/PrivacyBadge'
+import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
 type PdfData = { file: File, thumbnail?: string, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string }
@@ -174,6 +175,29 @@ export default function GrayscaleTool() {
           </div>
         </div>
       )}
+      <ToolSeoContent
+        title="Grayscale PDF"
+        headline="Convert PDF to Black and White"
+        description="Convert your color PDF documents to grayscale (black and white). PaperKnife renders each page in grayscale for reduced file size and print-friendly output. All processing happens locally in your browser."
+        benefits={[
+          "Convert color PDFs to grayscale for cheaper black-and-white printing.",
+          "Reduce file size by removing color information from images.",
+          "Create consistent, professional-looking documents for formal submissions.",
+          "Adjustable quality settings for optimal output.",
+        ]}
+        howItWorks={[
+          "Upload the color PDF you want to convert.",
+          "Adjust the quality slider for your preferred output.",
+          "Click to convert all pages to grayscale.",
+          "Download the black-and-white PDF.",
+        ]}
+        faqs={[
+          { q: "Will converting to grayscale reduce file size?", a: "Often yes. Removing color information from images can significantly reduce file size, especially for image-heavy documents." },
+          { q: "Can I convert back to color?", a: "No. Grayscale conversion removes color information permanently. Keep your original color PDF if you might need it later." },
+          { q: "Does grayscale affect text readability?", a: "No. Black text on white background looks identical in grayscale. Only colored text and images are affected by the conversion." },
+          { q: "Is this useful for printing?", a: "Yes. Converting to grayscale before printing ensures your document looks as intended on black-and-white printers and reduces ink costs." },
+        ]}
+      />
       <PrivacyBadge />
     </NativeToolLayout>
   )
