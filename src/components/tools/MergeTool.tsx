@@ -189,15 +189,19 @@ export default function MergeTool() {
     const ws = await getWorkspace('merge')
     if (!ws) return
 
-    const restoredFiles = ws.files.map(f => ({
-      id: Math.random().toString(36).substr(2, 9),
-      file: new File([f.buffer as any], f.name, { type: 'application/pdf' }),
-      thumbnail: undefined,
-      pageCount: 0,
-      isLocked: false,
-      rotation: f.settings.rotation || 0,
-      password: f.settings.password
-    }))
+    const restoredFiles = ws.files.map(f => {
+      // IndexedDB may return buffer as plain object — ensure it's a proper ArrayBuffer
+      const raw = f.buffer instanceof Uint8Array ? f.buffer : new Uint8Array(Object.values(f.buffer as any))
+      return {
+        id: Math.random().toString(36).substr(2, 9),
+        file: new File([raw as BlobPart], f.name, { type: 'application/pdf' }),
+        thumbnail: undefined,
+        pageCount: 0,
+        isLocked: false,
+        rotation: f.settings?.rotation || 0,
+        password: f.settings?.password
+      }
+    })
 
     setFiles(restoredFiles)
     setHasRestorableWorkspace(false)

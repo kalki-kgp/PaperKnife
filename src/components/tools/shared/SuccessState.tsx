@@ -16,7 +16,7 @@ interface SuccessStateProps {
 
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
-  const [promoDismissed, setPromoDismissed] = useState(() => localStorage.getItem('resumate_promo_dismissed') === '1')
+  const [promoVisible, setPromoVisible] = useState(true)
   const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
@@ -137,12 +137,12 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
         </button>
       </div>
 
-      {/* ResuMate Cross-Promo */}
-      {!promoDismissed && !isNative && (
+      {/* ResuMate Cross-Promo — shows every time after tool completion */}
+      {promoVisible && !isNative && (
         <div className="relative mt-2 rounded-2xl bg-gradient-to-br from-[#faf7f2] to-[#fff1e8] dark:from-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 p-5 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#c96442] to-[#2d5a3d]" />
           <button
-            onClick={() => { localStorage.setItem('resumate_promo_dismissed', '1'); setPromoDismissed(true); }}
+            onClick={() => setPromoVisible(false)}
             className="absolute top-3 right-3 w-6 h-6 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors"
             aria-label="Dismiss"
           >
