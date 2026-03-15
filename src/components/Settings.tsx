@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { 
+import {
   Trash2, Clock, Moon, Sun, Monitor,
   ChevronRight, Info, Zap, User, DownloadCloud, ListFilter,
-  RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2
+  RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
+  FileText as FileTextIcon
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -224,9 +225,16 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
 
         {/* Ecosystem */}
         <SettingGroup title="Ecosystem">
-          <SettingItem 
-            icon={HeartIcon} 
-            title="Sponsor Project" 
+          <SettingItem
+            icon={FileTextIcon}
+            title="ResuMate — AI Resume Builder"
+            subtitle="Build ATS-friendly resumes with AI"
+            iconColor="text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20"
+            onClick={() => window.open('https://resumate.paperknife.app', '_blank')}
+          />
+          <SettingItem
+            icon={HeartIcon}
+            title="Sponsor Project"
             subtitle="Fuel development"
             iconColor="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
             onClick={() => window.open('https://github.com/sponsors/potatameister', '_blank')}

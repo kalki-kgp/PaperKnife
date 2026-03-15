@@ -1,4 +1,4 @@
-import { Download, Eye, CheckCircle2, Share2, RotateCcw } from 'lucide-react'
+import { Download, Eye, CheckCircle2, Share2, RotateCcw, FileText, Sparkles, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
@@ -16,6 +16,7 @@ interface SuccessStateProps {
 
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
+  const [promoDismissed, setPromoDismissed] = useState(() => localStorage.getItem('resumate_promo_dismissed') === '1')
   const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
@@ -136,7 +137,38 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
         </button>
       </div>
 
-      <button 
+      {/* ResuMate Cross-Promo */}
+      {!promoDismissed && !isNative && (
+        <div className="relative mt-2 rounded-2xl bg-gradient-to-br from-[#faf7f2] to-[#fff1e8] dark:from-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 p-5 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#c96442] to-[#2d5a3d]" />
+          <button
+            onClick={() => { localStorage.setItem('resumate_promo_dismissed', '1'); setPromoDismissed(true); }}
+            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors"
+            aria-label="Dismiss"
+          >
+            <X size={12} />
+          </button>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles size={12} className="text-[#2d5a3d] dark:text-emerald-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#2d5a3d] dark:text-emerald-400">From PaperKnife</span>
+          </div>
+          <p className="text-sm font-bold text-[#2c1810] dark:text-white mb-1">Need a job-ready resume?</p>
+          <p className="text-xs text-[#8b7355] dark:text-zinc-400 leading-relaxed mb-3">
+            ResuMate uses AI to build ATS-friendly resumes in minutes. Upload, analyze, and craft the one that gets you hired.
+          </p>
+          <a
+            href="https://resumate.paperknife.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-[#c96442]/20 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 no-underline"
+          >
+            <FileText size={13} />
+            Try ResuMate — Free
+          </a>
+        </div>
+      )}
+
+      <button
         onClick={onStartOver}
         className="w-full mt-6 py-4 bg-gray-50 dark:bg-zinc-900 text-gray-400 hover:text-terracotta-500 dark:hover:text-terracotta-500 rounded-2xl border border-gray-100 dark:border-white/5 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
       >

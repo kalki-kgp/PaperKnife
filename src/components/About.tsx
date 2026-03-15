@@ -148,11 +148,37 @@ const AboutWeb = () => {
         </div>
       </section>
 
+      {/* ResuMate Cross-Promo */}
+      <section className="max-w-4xl mx-auto px-6 mb-16">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#faf7f2] to-[#fff1e8] dark:from-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 p-8 md:p-10">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#c96442] to-[#2d5a3d]" />
+          <div className="flex items-center gap-1.5 mb-3">
+            <SparklesIcon size={12} className="text-[#2d5a3d] dark:text-emerald-400" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#2d5a3d] dark:text-emerald-400">Also by PaperKnife</span>
+          </div>
+          <h3 className="text-xl md:text-2xl font-black text-[#2c1810] dark:text-white mb-2 tracking-tight">Build resumes with the same privacy-first mindset.</h3>
+          <p className="text-sm text-[#8b7355] dark:text-zinc-400 leading-relaxed mb-5 max-w-xl">
+            ResuMate uses AI to analyze, score, and build ATS-friendly resumes. Upload your old resume, get instant feedback, and create the one that gets you hired.
+          </p>
+          <a
+            href="https://resumate.paperknife.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-[#c96442]/20 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
+          >
+            Try ResuMate — Free
+          </a>
+        </div>
+      </section>
+
       {/* 4. Final Footer Links - Condensed */}
       <section className="max-w-4xl mx-auto px-6 text-center border-t border-gray-100 dark:border-zinc-900 pt-16">
         <div className="flex flex-wrap justify-center gap-8 mb-12">
            <a href="https://github.com/potatameister/PaperKnife" target="_blank" className="flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-terracotta-500 transition-colors group">
               <GHIcon size={16} /> Audit Source <ExternalLinkIcon size={12} className="opacity-40 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+           </a>
+           <a href="https://resumate.paperknife.app" target="_blank" className="flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-terracotta-500 transition-colors group">
+              <SparklesIcon size={16} /> ResuMate <ExternalLinkIcon size={12} className="opacity-40 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
            </a>
            <button onClick={() => navigate('/thanks')} className="flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-terracotta-500 transition-colors group">
               <SparklesIcon size={16} /> Credits <ChevronRightIcon size={12} className="opacity-40 group-hover:translate-x-1 transition-transform" />

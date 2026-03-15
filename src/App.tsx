@@ -14,7 +14,7 @@ import {
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown
 } from 'lucide-react'
-import { BrowserRouter, HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
@@ -380,6 +380,8 @@ function App() {
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
                 <Route path="/thanks" element={<Thanks />} />
+                {/* Catch-all: redirect unknown routes (e.g. old /home) to homepage */}
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
 
