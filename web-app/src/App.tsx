@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock3,
   Download,
+  FileText as FileTextIcon,
   FileUp,
   Gauge,
   LockKeyhole,
@@ -1191,6 +1192,35 @@ function HomePage({
           </p>
         </details>
       </div>
+
+      {/* ResuMate cross-promo */}
+      <div className="promo-banner fade-up">
+        <div className="promo-banner-content">
+          <span className="promo-eyebrow">
+            <Sparkles size={12} />
+            Also by PaperKnife
+          </span>
+          <p className="promo-title">
+            Working with resumes?<br />
+            Build one that actually lands interviews.
+          </p>
+          <p className="promo-desc">
+            ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
+          </p>
+          <a
+            className="promo-cta"
+            href="https://resumate.paperknife.app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FileTextIcon size={13} />
+            Try ResuMate — It's Free
+          </a>
+        </div>
+        <div className="promo-banner-visual" aria-hidden="true">
+          <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={140} height={140} />
+        </div>
+      </div>
     </div>
   )
 }
@@ -1713,6 +1743,42 @@ function ToolWorkspace({
           <div className="sidebar-section">
             <p className="sidebar-section-label">Text preview</p>
             <pre className="text-preview">{textPreview.slice(0, 2000)}{textPreview.length > 2000 ? '\n\n… (truncated)' : ''}</pre>
+          </div>
+        )}
+
+        {/* ResuMate promo — shown after successful output */}
+        {latestOutput && !localStorage.getItem('resumate_promo_dismissed') && (
+          <div className="sidebar-section">
+            <div className="promo-card">
+              <button
+                className="promo-dismiss"
+                type="button"
+                onClick={(e) => {
+                  localStorage.setItem('resumate_promo_dismissed', '1')
+                  ;(e.currentTarget.closest('.sidebar-section') as HTMLElement)?.remove()
+                }}
+                aria-label="Dismiss"
+              >
+                <X size={10} />
+              </button>
+              <span className="promo-eyebrow">
+                <Sparkles size={11} />
+                From the makers of PaperKnife
+              </span>
+              <p className="promo-title">Need a job-ready resume?</p>
+              <p className="promo-desc">
+                ResuMate uses AI to build ATS-friendly resumes in minutes. Upload your old resume, get instant analysis, and craft the one that gets you hired.
+              </p>
+              <a
+                className="promo-cta"
+                href="https://resumate.paperknife.app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileTextIcon size={12} />
+                Try ResuMate — Free
+              </a>
+            </div>
           </div>
         )}
 

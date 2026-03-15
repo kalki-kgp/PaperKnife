@@ -59,6 +59,101 @@ If this tool has saved you time or kept your data safe, please consider:
 
 ---
 
+### Deployment
+
+PaperKnife uses **BrowserRouter** for SEO-friendly URLs (e.g., `paperknife.app/merge` instead of `paperknife.app/#/merge`). This means your server must return `index.html` for all routes — otherwise direct navigation to `/merge`, `/split`, etc. will 404.
+
+#### Quick start (local or VPS)
+
+```bash
+# 1. Install dependencies
+bun install        # or npm install
+
+# 2. Build for production
+bun run build      # outputs to dist/
+
+# 3. Serve with SPA fallback
+npx serve -s dist -l 3000
+```
+
+The `-s` (single-page) flag tells `serve` to rewrite all routes to `index.html`, which is exactly what BrowserRouter needs.
+
+#### With Cloudflare Tunnel
+
+If you're using `cloudflared` to expose a local server:
+
+```yaml
+# ~/.cloudflared/config.yml
+ingress:
+  - hostname: paperknife.app
+    service: http://localhost:3000
+  - service: http_status:404
+```
+
+Then run:
+
+```bash
+npx serve -s dist -l 3000   # SPA-aware static server
+cloudflared tunnel run       # expose to the internet
+```
+
+#### With Nginx
+
+```nginx
+server {
+    listen 80;
+    server_name paperknife.app;
+    root /path/to/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache hashed assets aggressively
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+#### With Docker
+
+```dockerfile
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine
+RUN npm install -g serve
+COPY --from=build /app/dist /app/dist
+EXPOSE 3000
+CMD ["serve", "-s", "/app/dist", "-l", "3000"]
+```
+
+#### Android APK
+
+The Android build still uses **HashRouter** automatically (detected via Capacitor). No server-side config needed — the APK works offline.
+
+```bash
+bun run build
+npx cap sync android
+npx cap open android    # opens Android Studio
+```
+
+#### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_BASE` | `/` | Base path for asset URLs (change for GitHub Pages: `./`) |
+| `VITE_DISABLE_OCR` | `false` | Set to `true` to remove the PDF-to-Text tool (reduces bundle size) |
+
+---
+
 ### Under the hood
 
 PaperKnife is built with **React** and **TypeScript**. The core processing is handled by **pdf-lib** and **pdfjs-dist**, which run in a sandboxed environment using WebAssembly. The Android version is powered by **Capacitor**.

@@ -10,11 +10,11 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { 
-  Layers, Scissors, Zap, Smartphone as SmartphoneIcon, Monitor as MonitorIcon, Lock, Unlock, 
+  Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown
 } from 'lucide-react'
-import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
@@ -306,8 +306,11 @@ function App() {
     setShowQuickDrop(false) // Show preview first
   }
 
+  // Use HashRouter for native apps (Android APK), BrowserRouter for web (SEO-friendly)
+  const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter
+
   return (
-    <HashRouter>
+    <Router>
       <ScrollToTop />
       <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
         <PipelineProvider>
@@ -380,23 +383,11 @@ function App() {
               </Routes>
             </Suspense>
 
-            {/* Chameleon Toggle (Dev Only) */}
-            {import.meta.env.DEV && (
-              <div className="fixed bottom-24 right-6 z-[100] flex flex-col gap-2">
-                <button
-                  onClick={() => setViewMode(prev => prev === 'web' ? 'android' : 'web')}
-                  className="bg-gray-900 dark:bg-zinc-800 text-white p-4 rounded-3xl shadow-2xl hover:bg-terracotta-500 transition-all duration-300 flex items-center gap-3 border border-white/10 group active:scale-95"
-                  title="Toggle Chameleon Mode"
-                >
-                  {viewMode === 'web' ? <SmartphoneIcon size={20} /> : <MonitorIcon size={20} />}
-                  <span className="text-xs font-black uppercase tracking-tighter">{viewMode}</span>
-                </button>
-              </div>
-            )}
+            {/* Chameleon Toggle — hidden, viewMode auto-detects via Capacitor */}
           </Layout>
         </PipelineProvider>
       </ViewModeProvider>
-    </HashRouter>
+    </Router>
   )
 }
 

@@ -10,7 +10,9 @@ import {
   CloudOff,
   Zap,
   WifiOff,
-  Shield
+  Shield,
+  FileText as FileTextIcon,
+  Sparkles
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Tool, ToolCategory } from '../types'
@@ -210,6 +212,109 @@ export default function WebView({ tools }: { tools: Tool[] }) {
             >
               Start Using Tools
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Content Block */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <div className="rounded-[32px] bg-accent-yellow dark:bg-zinc-900/50 p-10 md:p-14 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800">
+          <h2 className="text-2xl font-bold text-text-main dark:text-white mb-4">All-in-one private PDF tools</h2>
+          <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-3xl mb-6">
+            PaperKnife handles everything from merge PDF, split PDF, compress PDF, protect PDF, unlock PDF,
+            rotate, watermark, metadata cleanup, signature, grayscale, PDF to image, image to PDF, extract images,
+            PDF to text, and repair. Every operation runs locally — no server, no cloud, no data collected.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {tools.map((tool) => (
+              <button
+                key={`seo-${tool.title}`}
+                onClick={() => navigate(tool.path || '/')}
+                className="px-3.5 py-1.5 bg-white dark:bg-zinc-800 rounded-full text-xs font-semibold text-text-muted dark:text-zinc-400 border border-orange-100 dark:border-zinc-700 hover:text-terracotta-500 hover:border-terracotta-500/30 shadow-clay-sm dark:shadow-none transition-all"
+              >
+                {tool.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="rounded-[32px] bg-white dark:bg-zinc-900/60 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800 overflow-hidden">
+          <div className="px-8 py-5 border-b border-orange-100 dark:border-zinc-800 bg-[#FFF9F7] dark:bg-zinc-900/80">
+            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-terracotta-500">Frequently Asked Questions</h2>
+          </div>
+          {[
+            {
+              q: 'Is this truly private and offline?',
+              a: 'Yes. All PDF processing runs using WebAssembly and JavaScript directly in your browser tab. No file is ever transmitted to a server. You can even use PaperKnife with your network disconnected.'
+            },
+            {
+              q: 'What file types are supported?',
+              a: 'PDF is the primary format. The Image to PDF and PDF to Image tools also accept JPG, PNG, and WebP images.'
+            },
+            {
+              q: 'Which PDF operations are available?',
+              a: 'Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, rearrange pages, add page numbers, watermark, metadata sanitization, signature, grayscale, PDF-to-image, image-to-PDF, extract embedded images, PDF-to-text, and structural repair.'
+            },
+            {
+              q: 'Where do processed files go?',
+              a: 'Output files are downloaded directly by your browser. They stay on your device and are never sent to any server.'
+            },
+            {
+              q: 'Is there a file size limit?',
+              a: 'There is no enforced size limit, but very large PDFs (100+ MB) may be slow since processing happens on your device CPU. Compression is recommended before working with large files.'
+            }
+          ].map((item, i, arr) => (
+            <details key={i} className={`group ${i < arr.length - 1 ? 'border-b border-orange-100 dark:border-zinc-800' : ''}`}>
+              <summary className="cursor-pointer px-8 py-5 text-sm font-semibold text-text-main dark:text-white hover:bg-[#FFF9F7] dark:hover:bg-zinc-800/50 transition-colors list-none flex justify-between items-center select-none">
+                {item.q}
+                <span className="text-terracotta-500 text-lg font-bold ml-4 shrink-0 group-open:hidden">+</span>
+                <span className="text-terracotta-500 text-lg font-bold ml-4 shrink-0 hidden group-open:inline">&minus;</span>
+              </summary>
+              <p className="px-8 pb-5 text-sm text-text-muted dark:text-zinc-400 leading-relaxed">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* ResuMate Cross-Promo */}
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#faf7f2] via-[#f0ebe4] to-[#fff1e8] dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
+            {/* Gradient top bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c96442] to-[#2d5a3d]" />
+
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-1 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2d5a3d]/10 dark:bg-emerald-900/20 text-[#2d5a3d] dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest">
+                  <Sparkles size={12} />
+                  Also by PaperKnife
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-[#2c1810] dark:text-white leading-tight">
+                  Working with resumes?<br />
+                  <span className="text-[#c96442]">Build one that lands interviews.</span>
+                </h3>
+                <p className="text-[#8b7355] dark:text-zinc-400 text-base leading-relaxed max-w-lg">
+                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
+                </p>
+                <a
+                  href="https://resumate.paperknife.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-[#c96442]/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#c96442]/30 transition-all duration-300 no-underline"
+                >
+                  <FileTextIcon size={16} />
+                  Try ResuMate — It's Free
+                </a>
+              </div>
+
+              {/* Visual */}
+              <div className="hidden md:flex w-36 h-36 rounded-[28px] bg-gradient-to-br from-[#c96442] to-[#2d5a3d] items-center justify-center shadow-xl shadow-[#c96442]/20 shrink-0 overflow-hidden">
+                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
+              </div>
+            </div>
           </div>
         </div>
       </section>

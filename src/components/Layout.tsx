@@ -243,6 +243,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
               <div className="col-span-1 md:col-span-3">
                 <h4 className="font-bold text-[10px] uppercase tracking-widest text-gray-900 dark:text-white mb-4">Ecosystem</h4>
                 <ul className="space-y-2.5 text-xs text-gray-500 dark:text-zinc-500">
+                  <li><a href="https://resumate.paperknife.app" target="_blank" className="hover:text-terracotta-500 transition-colors">ResuMate — AI Resume Builder</a></li>
                   <li><a href="https://github.com/sponsors/potatameister" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Sponsor <HeartIcon size={10} className="text-terracotta-500" /></a></li>
                   <li><a href="https://github.com/potatameister/PaperKnife/issues" target="_blank" className="hover:text-terracotta-500 transition-colors">Report Bug</a></li>
                   <li><Link to="/thanks" className="hover:text-terracotta-500 transition-colors">Hall of Fame</Link></li>

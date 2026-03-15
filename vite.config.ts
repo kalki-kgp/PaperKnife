@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react()
   ],
-  base: process.env.VITE_BASE || './',
+  base: process.env.VITE_BASE || '/',
   server: {
     host: true
   },

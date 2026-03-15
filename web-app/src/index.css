@@ -1630,3 +1630,189 @@ body::after {
   background: rgba(230, 138, 115, 0.2);
   color: var(--fg);
 }
+
+/* ─────────────────────────────────────────────────────────────
+   RESUMATE CROSS-PROMO
+───────────────────────────────────────────────────────────── */
+.promo-card {
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, #faf7f2 0%, #fff1e8 100%);
+  border: 1px solid rgba(201, 100, 66, 0.18);
+  padding: 1.15rem;
+  display: grid;
+  gap: 0.65rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.promo-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #c96442, #2d5a3d);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+.promo-eyebrow {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2d5a3d;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.promo-eyebrow svg {
+  flex-shrink: 0;
+}
+
+.promo-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2c1810;
+  line-height: 1.25;
+}
+
+.promo-desc {
+  font-size: 0.72rem;
+  color: #8b7355;
+  line-height: 1.55;
+}
+
+.promo-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: white;
+  background: linear-gradient(135deg, #c96442, #2d5a3d);
+  border: none;
+  border-radius: 20px;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+  text-decoration: none;
+  justify-self: start;
+}
+
+.promo-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201, 100, 66, 0.3);
+}
+
+.promo-dismiss {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(201, 100, 66, 0.08);
+  color: #8b7355;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--fast), color var(--fast);
+  padding: 0;
+}
+
+.promo-dismiss:hover {
+  background: rgba(201, 100, 66, 0.18);
+  color: #c96442;
+}
+
+/* Home page promo banner */
+.promo-banner {
+  border-radius: 28px;
+  background: linear-gradient(135deg, #faf7f2 0%, #f0ebe4 50%, #fff1e8 100%);
+  border: 1px solid rgba(201, 100, 66, 0.15);
+  padding: 2rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-clay);
+}
+
+.promo-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #c96442, #2d5a3d, transparent);
+  border-radius: 28px 28px 0 0;
+}
+
+.promo-banner-content {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.promo-banner .promo-eyebrow {
+  font-size: 0.65rem;
+}
+
+.promo-banner .promo-title {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  line-height: 1.2;
+}
+
+.promo-banner .promo-desc {
+  font-size: 0.82rem;
+  max-width: 48ch;
+}
+
+.promo-banner .promo-cta {
+  padding: 0.65rem 1.3rem;
+  font-size: 0.72rem;
+}
+
+.promo-banner-visual {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, #c96442 0%, #2d5a3d 100%);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 12px 32px rgba(201, 100, 66, 0.25);
+  overflow: hidden;
+}
+
+.promo-banner-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--r-xl);
+}
+
+.promo-banner-visual svg {
+  color: white;
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .promo-banner {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem;
+    border-radius: 22px;
+  }
+
+  .promo-banner-visual {
+    display: none;
+  }
+}
