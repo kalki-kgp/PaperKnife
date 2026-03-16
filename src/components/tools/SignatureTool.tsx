@@ -85,7 +85,7 @@ export default function SignatureTool() {
       {!pdfData ? (
         <button 
           onClick={() => !isProcessing && fileInputRef.current?.click()} 
-          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 transition-all cursor-pointer group"
+          className="w-full border-2 border-dashed border-terracotta-300 dark:border-terracotta-800 rounded-[2.5rem] p-12 md:p-16 text-center bg-white dark:bg-zinc-900/60 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 hover:border-terracotta-400 transition-all cursor-pointer group shadow-clay-sm dark:shadow-none"
         >
           <ImageIcon size={32} className="mx-auto mb-4 text-terracotta-500" />
           <h3 className="text-xl font-bold dark:text-white">Select PDF</h3>

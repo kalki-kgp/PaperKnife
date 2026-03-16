@@ -246,11 +246,11 @@ export default function CompressTool() {
       {files.length === 0 ? (
         <button 
           onClick={() => !isProcessing && fileInputRef.current?.click()} 
-          className="w-full border-4 border-dashed border-gray-100 dark:border-zinc-900 rounded-[2.5rem] p-12 text-center hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 transition-all cursor-pointer group"
+          className="w-full border-2 border-dashed border-terracotta-300 dark:border-terracotta-800 rounded-[2.5rem] p-12 md:p-16 text-center bg-white dark:bg-zinc-900/60 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/10 hover:border-terracotta-400 transition-all cursor-pointer group shadow-clay-sm dark:shadow-none"
         >
           <div className="w-20 h-20 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner"><Zap size={32} /></div>
           <h3 className="text-xl font-bold dark:text-white mb-2">Select PDFs</h3>
-          <p className="text-sm text-gray-400 font-medium">Tap to start batch compression</p>
+          <p className="text-sm text-gray-400 font-medium">Tap to browse or drag and drop here</p><span className="mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-terracotta-500 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-terracotta-500/20 group-hover:shadow-xl group-hover:scale-105 transition-all">Choose File</span>
         </button>
       ) : !showSuccess ? (
         <div className="space-y-6 animate-in fade-in duration-500">
