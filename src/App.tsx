@@ -18,7 +18,7 @@ import { BrowserRouter, HashRouter, Routes, Route, Navigate, useNavigate } from 
 import { Toaster, toast } from 'sonner'
 import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
-import { Theme, ViewMode, Tool } from './types'
+import { ViewMode, Tool } from './types'
 import Layout from './components/Layout'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { ViewModeProvider } from './utils/viewModeContext'
@@ -189,17 +189,6 @@ function App() {
   })
   const [droppedFile, setDroppedFile] = useState<File | null>(null)
   const [showQuickDrop, setShowQuickDrop] = useState(false)
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme
-      if (savedTheme) return savedTheme
-    }
-    return 'system'
-  })
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-  }
 
   // Improved Auto-Wipe Logic
   useEffect(() => {
@@ -224,32 +213,9 @@ function App() {
 
   useEffect(() => {
     const root = window.document.documentElement
-    
-    const applyTheme = (t: Theme) => {
-      let resolvedTheme = t
-      if (t === 'system') {
-        resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      }
-      
-      if (resolvedTheme === 'dark') {
-        root.classList.add('dark')
-        root.style.colorScheme = 'dark'
-      } else {
-        root.classList.remove('dark')
-        root.style.colorScheme = 'light'
-      }
-    }
-
-    applyTheme(theme)
-    localStorage.setItem('theme', theme)
-
-    if (theme === 'system') {
-      const media = window.matchMedia('(prefers-color-scheme: dark)')
-      const listener = () => applyTheme('system')
-      media.addEventListener('change', listener)
-      return () => media.removeEventListener('change', listener)
-    }
-  }, [theme])
+    root.classList.remove('dark')
+    root.style.colorScheme = 'light'
+  }, [])
 
   // Handle Intent Files (Android "Open With" / "Share to")
   useEffect(() => {
@@ -314,7 +280,7 @@ function App() {
       <ScrollToTop />
       <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
         <PipelineProvider>
-          <Layout theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} toggleTheme={toggleTheme} tools={activeTools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
+          <Layout theme="light" toggleTheme={() => {}} tools={activeTools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
             <Toaster 
               position="top-center" 
               expand={true} 
@@ -354,7 +320,7 @@ function App() {
                   viewMode === 'web' ? (
                     <WebView tools={activeTools} />
                   ) : (
-                    <AndroidView toggleTheme={toggleTheme} theme={theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme} onFileSelect={(file) => handleGlobalDrop([file] as any)} />
+                    <AndroidView toggleTheme={() => {}} theme="light" onFileSelect={(file) => handleGlobalDrop([file] as any)} />
                   )
                 } />
                 <Route path="/android-tools" element={<AndroidToolsView tools={activeTools} />} />
@@ -378,7 +344,7 @@ function App() {
                 <Route path="/grayscale" element={<GrayscaleTool />} />
                 <Route path="/about" element={<About viewMode={viewMode} />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/settings" element={<SettingsView theme={theme} setTheme={setTheme} />} />
+                <Route path="/settings" element={<SettingsView />} />
                 <Route path="/thanks" element={<Thanks />} />
                 {/* Catch-all: redirect unknown routes (e.g. old /home) to homepage */}
                 <Route path="*" element={<Navigate to="/" replace />} />

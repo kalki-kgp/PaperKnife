@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Trash2, Clock, Moon, Sun, Monitor,
+  Trash2, Clock,
   ChevronRight, Info, Zap, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
   FileText as FileTextIcon
@@ -8,7 +8,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'
-import { Theme } from '../types'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
 import { hapticImpact } from '../utils/haptics'
 
@@ -72,7 +71,7 @@ const SettingGroup = ({ title, children }: { title: string, children: React.Reac
   </div>
 )
 
-export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: (t: Theme) => void }) {
+export default function Settings() {
   const navigate = useNavigate()
   
   const [autoWipe, setAutoWipe] = useState(localStorage.getItem('autoWipe') === 'true')
@@ -122,26 +121,7 @@ export default function Settings({ theme, setTheme }: { theme: Theme, setTheme: 
 
         {/* Visual Interface */}
         <SettingGroup title="Interface">
-          <div className="p-2 grid grid-cols-3 gap-2">
-            {[
-              { id: 'light', icon: Sun, label: 'Light' },
-              { id: 'dark', icon: Moon, label: 'Dark' },
-              { id: 'system', icon: Monitor, label: 'System' }
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={() => {
-                  setTheme(t.id as Theme)
-                  hapticImpact()
-                }}
-                className={`flex flex-col items-center gap-2 py-3.5 rounded-[1.25rem] transition-all border border-transparent ${theme === t.id ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-xl scale-[1.02]' : 'bg-gray-50 dark:bg-black/40 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800'}`}
-              >
-                <t.icon size={18} strokeWidth={2.5} />
-                <span className="text-[9px] font-black uppercase tracking-[0.1em]">{t.label}</span>
-              </button>
-            ))}
-          </div>
-          <SettingItem 
+          <SettingItem
             icon={Zap} 
             title="Haptic Feedback" 
             subtitle="Tactile Response Engine"

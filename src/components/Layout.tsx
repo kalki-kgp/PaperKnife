@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { 
-  Download as DownloadIcon, 
-  Moon as MoonIcon, 
-  Sun as SunIcon, 
+  Download as DownloadIcon,
   History as HistoryIcon, 
   Upload as UploadIcon, 
   ChevronRight as ChevronRightIcon, 
@@ -42,7 +40,7 @@ const categoryColors: Record<ToolCategory, { bg: string, text: string, hover: st
   Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-500', hover: 'hover:bg-amber-50 dark:hover:bg-amber-900/10', iconBg: 'bg-amber-100 dark:bg-amber-900/30' }
 }
 
-export default function Layout({ children, theme, toggleTheme, tools, onFileDrop, viewMode }: LayoutProps) {
+export default function Layout({ children, tools, onFileDrop, viewMode }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isDragging, setIsDragging] = useState(false)
@@ -186,10 +184,7 @@ export default function Layout({ children, theme, toggleTheme, tools, onFileDrop
               <InfoIcon size={18} />
               <span className="hidden sm:block">About</span>
             </Link>
-            <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-terracotta-500 transition-colors">
-              {theme === 'light' ? <MoonIcon size={20} /> : <SunIcon size={20} />}
-            </button>
-            <button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-terracotta-500' : 'text-gray-400 hover:text-terracotta-500'}`}>
+<button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-terracotta-500' : 'text-gray-400 hover:text-terracotta-500'}`}>
               <HistoryIcon size={20} />
               {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta-500 rounded-full border-2 border-white dark:border-black" />}
             </button>

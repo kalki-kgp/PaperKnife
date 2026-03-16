@@ -8,8 +8,7 @@
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-rose.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/kalki-kgp/PaperKnife?style=flat&color=rose)](https://github.com/kalki-kgp/PaperKnife/stargazers)
-[![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://kalki-kgp.github.io/PaperKnife/)
-[![Android App](https://img.shields.io/badge/android-apk-blue.svg)](https://github.com/kalki-kgp/PaperKnife/releases/latest)
+[![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://paperknife.app)
 [![Twitter](https://img.shields.io/badge/twitter-@kalki-kgp-black?logo=x)](https://x.com/kalki-kgp)
 
 ---
@@ -17,8 +16,7 @@
 ## Preview
 
 <p align="center">
-  <img src="assets/preview/screenshot1.jpg" width="45%" alt="Web View">
-  <img src="assets/preview/screenshot2.jpg" width="45%" alt="Android View">
+  <img src="assets/preview/screenshot1.jpg" width="80%" alt="Web View">
 </p>
 
 ---
@@ -27,7 +25,7 @@
 
 Most PDF websites ask you to upload your sensitive documents—bank statements, IDs, contracts—to their servers. Even if they promise to delete them, your data still leaves your device and travels across the internet.
 
-I built **PaperKnife** to solve this. It's a collection of tools that run entirely in your browser or on your phone. Your files never leave your memory, they aren't stored in any database, and no server ever sees them. It works 100% offline.
+I built **PaperKnife** to solve this. It's a collection of tools that run entirely in your browser. Your files never leave your memory, they aren't stored in any database, and no server ever sees them. It works 100% offline.
 
 ### What it can do
 
@@ -40,11 +38,7 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 
 ### How to use it
 
-*   **On Android:** Download the [latest APK](https://github.com/kalki-kgp/PaperKnife/releases/latest) or get it from:
-
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/com.paperknife.app)
-
-*   **On the Web:** Visit the [live site](https://kalki-kgp.github.io/PaperKnife/). You can use it like any other website, or "install" it as a PWA for offline access.
+Visit [paperknife.app](https://paperknife.app) — no sign-up, no downloads. You can also "install" it as a PWA for offline access.
 
 ---
 
@@ -135,16 +129,6 @@ EXPOSE 3000
 CMD ["serve", "-s", "/app/dist", "-l", "3000"]
 ```
 
-#### Android APK
-
-The Android build still uses **HashRouter** automatically (detected via Capacitor). No server-side config needed — the APK works offline.
-
-```bash
-bun run build
-npx cap sync android
-npx cap open android    # opens Android Studio
-```
-
 #### Environment Variables
 
 | Variable | Default | Description |
@@ -156,9 +140,11 @@ npx cap open android    # opens Android Studio
 
 ### Under the hood
 
-PaperKnife is built with **React** and **TypeScript**. The core processing is handled by **pdf-lib** and **pdfjs-dist**, which run in a sandboxed environment using WebAssembly. The Android version is powered by **Capacitor**.
+PaperKnife is built with **React** and **TypeScript**. The core processing is handled by **pdf-lib** and **pdfjs-dist**, which run in a sandboxed environment using WebAssembly.
 
 This project is licensed under the **GNU AGPL v3** to ensure it remains open and transparent forever.
+
+Originally based on [PaperKnife](https://github.com/potatameister/PaperKnife) by potatameister, licensed under AGPL-3.0.
 
 ---
 *Made with care by [kalki-kgp](https://github.com/kalki-kgp)*
