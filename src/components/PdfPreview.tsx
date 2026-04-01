@@ -148,6 +148,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
         <div className="flex items-center gap-3">
           <button 
             onClick={onClose} 
+            aria-label="Close preview"
             className="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 active:bg-white/10 active:text-white transition-all"
           >
             <X size={22} strokeWidth={2.5} />
@@ -172,6 +173,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
               e.stopPropagation();
               handleShare();
             }} 
+            aria-label="Share file"
             className="w-10 h-10 flex items-center justify-center bg-white/5 text-zinc-300 rounded-2xl active:bg-white/10 transition-all border border-white/5"
           >
             <Share2 size={18} strokeWidth={2.5} />
@@ -182,6 +184,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
               e.stopPropagation();
               onProcess();
             }}
+            aria-label="Process with tools"
             className="w-10 h-10 flex items-center justify-center bg-terracotta-500 text-white rounded-2xl shadow-lg shadow-terracotta-500/20 active:scale-95 active:bg-terracotta-600 transition-all border border-terracotta-400/20"
           >
             <Plus size={22} strokeWidth={3} />

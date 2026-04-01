@@ -38,6 +38,7 @@ export const NativeToolLayout = ({
           <div className="flex items-center gap-2 h-14">
             <button 
               onClick={onBack || (() => navigate(-1))}
+              aria-label="Go back"
               className="w-10 h-10 flex items-center justify-center rounded-full active:bg-zinc-100 dark:active:bg-zinc-900 transition-colors -ml-1"
             >
               <ArrowLeft size={24} className="text-gray-900 dark:text-white" />

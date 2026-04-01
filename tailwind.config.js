@@ -26,7 +26,7 @@ export default {
         'accent-peach': '#FFE4DE',
         'accent-yellow': '#FFF9E6',
         'text-main': '#4A3B37',
-        'text-muted': '#7D6B66',
+        'text-muted': '#6B5A55',
       },
       boxShadow: {
         'clay': '12px 12px 24px rgba(230, 138, 115, 0.15), -12px -12px 24px rgba(255, 255, 255, 0.8)',

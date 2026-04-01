@@ -119,7 +119,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               <CloudOff className="w-6 h-6" />
             </div>
             <p className="text-sm font-bold text-text-muted uppercase tracking-wider mb-1">Privacy First</p>
-            <h3 className="text-2xl font-bold text-text-main dark:text-white">Zero Uploads</h3>
+            <h2 className="text-2xl font-bold text-text-main dark:text-white">Zero Uploads</h2>
           </div>
 
           <div className="clay-card-peach p-8 text-left border-4 border-white/50 hover:-translate-y-1 transition-transform duration-300">
@@ -127,7 +127,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               <Zap className="w-6 h-6" />
             </div>
             <p className="text-sm font-bold text-text-muted uppercase tracking-wider mb-1">Processing Speed</p>
-            <h3 className="text-2xl font-bold text-text-main dark:text-white">Instant</h3>
+            <h2 className="text-2xl font-bold text-text-main dark:text-white">Instant</h2>
           </div>
 
           <div className="clay-card p-8 text-left border-4 border-white/50 hover:-translate-y-1 transition-transform duration-300">
@@ -135,7 +135,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               <WifiOff className="w-6 h-6" />
             </div>
             <p className="text-sm font-bold text-text-muted uppercase tracking-wider mb-1">Offline Capable</p>
-            <h3 className="text-2xl font-bold text-text-main dark:text-white">100% Local</h3>
+            <h2 className="text-2xl font-bold text-text-main dark:text-white">100% Local</h2>
           </div>
         </div>
       </section>

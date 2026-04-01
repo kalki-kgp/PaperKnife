@@ -8,7 +8,7 @@
  * (at your option) any later version.
  */
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import { 
   Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
@@ -36,24 +36,24 @@ import PrivacyPolicy from './components/PrivacyPolicy'
 import SettingsView from './components/Settings'
 import PdfPreview from './components/PdfPreview'
 
-// Tools - Also moving to static imports for stability in APK
-import MergeTool from './components/tools/MergeTool'
-import SplitTool from './components/tools/SplitTool'
-import ProtectTool from './components/tools/ProtectTool'
-import CompressTool from './components/tools/CompressTool'
-import UnlockTool from './components/tools/UnlockTool'
-import PdfToImageTool from './components/tools/PdfToImageTool'
-import RotateTool from './components/tools/RotateTool'
-import PdfToTextTool from './components/tools/PdfToTextTool'
-import RearrangeTool from './components/tools/RearrangeTool'
-import WatermarkTool from './components/tools/WatermarkTool'
-import PageNumberTool from './components/tools/PageNumberTool'
-import MetadataTool from './components/tools/MetadataTool'
-import ImageToPdfTool from './components/tools/ImageToPdfTool'
-import SignatureTool from './components/tools/SignatureTool'
-import RepairTool from './components/tools/RepairTool'
-import ExtractImagesTool from './components/tools/ExtractImagesTool'
-import GrayscaleTool from './components/tools/GrayscaleTool'
+// Tools - lazy loaded so heavy deps (pdf-lib, pdfjs, tesseract) are fetched on-demand
+const MergeTool = lazy(() => import('./components/tools/MergeTool'))
+const SplitTool = lazy(() => import('./components/tools/SplitTool'))
+const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
+const CompressTool = lazy(() => import('./components/tools/CompressTool'))
+const UnlockTool = lazy(() => import('./components/tools/UnlockTool'))
+const PdfToImageTool = lazy(() => import('./components/tools/PdfToImageTool'))
+const RotateTool = lazy(() => import('./components/tools/RotateTool'))
+const PdfToTextTool = lazy(() => import('./components/tools/PdfToTextTool'))
+const RearrangeTool = lazy(() => import('./components/tools/RearrangeTool'))
+const WatermarkTool = lazy(() => import('./components/tools/WatermarkTool'))
+const PageNumberTool = lazy(() => import('./components/tools/PageNumberTool'))
+const MetadataTool = lazy(() => import('./components/tools/MetadataTool'))
+const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
+const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
+const RepairTool = lazy(() => import('./components/tools/RepairTool'))
+const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesTool'))
+const GrayscaleTool = lazy(() => import('./components/tools/GrayscaleTool'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-terracotta-500', bg: 'bg-terracotta-50 dark:bg-terracotta-900/20' },
@@ -116,7 +116,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center gap-3">
                 {onBack && (
-                  <button onClick={onBack} className="p-2 -ml-2 text-gray-400 hover:text-terracotta-500 transition-colors">
+                  <button onClick={onBack} aria-label="Go back" className="p-2 -ml-2 text-gray-400 hover:text-terracotta-500 transition-colors">
                     <ChevronDown className="rotate-90" size={20} />
                   </button>
                 )}
@@ -128,7 +128,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{(file.size / (1024*1024)).toFixed(2)} MB • PDF Document</p>
                 </div>
              </div>
-             <button onClick={onClear} className="p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-terracotta-500 transition-colors"><X size={18}/></button>
+             <button onClick={onClear} aria-label="Close" className="p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-terracotta-500 transition-colors"><X size={18}/></button>
           </div>
         </div>
         

@@ -64,6 +64,7 @@ export default function AndroidHistoryView() {
           {history.length > 0 && (
             <button 
               onClick={handleClear}
+              aria-label="Clear all history"
               className="p-3 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-2xl active:scale-90 transition-all shadow-sm"
             >
               <Trash2Icon size={20} />
@@ -85,6 +86,7 @@ export default function AndroidHistoryView() {
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
               className="absolute inset-y-0 right-4 flex items-center text-gray-400"
             >
               <XIcon size={16} />
@@ -127,6 +129,7 @@ export default function AndroidHistoryView() {
                     <a 
                       href={item.resultUrl} 
                       download={item.name} 
+                      aria-label={`Download ${item.name}`}
                       className="w-10 h-10 bg-terracotta-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-terracotta-500/20 active:scale-90 transition-all"
                     >
                       <DownloadIcon size={18} />

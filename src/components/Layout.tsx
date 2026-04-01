@@ -132,7 +132,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
         <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 border-b border-orange-100 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-[100]">
           <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
             {!isHome && (
-              <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-terracotta-500 shrink-0"><ArrowLeftIcon size={20} /></button>
+              <button onClick={() => navigate('/')} aria-label="Back to home" className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-terracotta-500 shrink-0"><ArrowLeftIcon size={20} /></button>
             )}
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
               <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} iconColor="#E68A73" />
@@ -180,11 +180,11 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
                 Get APK
               </a>
             )}
-            <Link to="/about" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
+            <Link to="/about" aria-label="About PaperKnife" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
               <InfoIcon size={18} />
               <span className="hidden sm:block">About</span>
             </Link>
-<button onClick={() => setShowHistory(true)} className={`p-2 transition-colors relative ${showHistory ? 'text-terracotta-500' : 'text-gray-400 hover:text-terracotta-500'}`}>
+<button onClick={() => setShowHistory(true)} aria-label="View activity history" className={`p-2 transition-colors relative ${showHistory ? 'text-terracotta-500' : 'text-gray-400 hover:text-terracotta-500'}`}>
               <HistoryIcon size={20} />
               {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta-500 rounded-full border-2 border-white dark:border-black" />}
             </button>
@@ -218,7 +218,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
                       <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                       Live Engine
                    </div>
-                   <a href="https://github.com/kalki-kgp/PaperKnife" target="_blank" className="p-2 bg-gray-50 dark:bg-zinc-900 rounded-xl hover:bg-terracotta-500 hover:text-white transition-all text-gray-500 dark:text-zinc-500">
+                   <a href="https://github.com/kalki-kgp/PaperKnife" target="_blank" rel="noopener noreferrer" aria-label="PaperKnife on GitHub" className="p-2 bg-gray-50 dark:bg-zinc-900 rounded-xl hover:bg-terracotta-500 hover:text-white transition-all text-gray-500 dark:text-zinc-500">
                      <GHIcon size={14} />
                    </a>
                 </div>
@@ -290,6 +290,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
                  }
                  input.click()
                }}
+               aria-label="Upload PDF"
                className="w-14 h-14 bg-terracotta-500 text-white rounded-2xl shadow-xl shadow-terracotta-500/40 flex items-center justify-center active:scale-90 transition-transform ring-4 ring-white dark:ring-black"
              >
                <PlusIcon size={32} strokeWidth={3} />
@@ -326,12 +327,13 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
               {activity.length > 0 && (
                 <button 
                   onClick={async () => { await clearActivity(); setActivity([]); }}
+                  aria-label="Clear activity history"
                   className="p-2 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/20 text-gray-400 hover:text-terracotta-500 rounded-xl transition-colors"
                 >
                   <Trash2Icon size={18} />
                 </button>
               )}
-              <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
+              <button onClick={() => setShowHistory(false)} aria-label="Close activity drawer" className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
                 <ChevronRightIcon size={20} className="text-gray-400" />
               </button>
             </div>

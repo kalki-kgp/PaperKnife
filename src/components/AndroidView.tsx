@@ -81,6 +81,7 @@ export default function AndroidView({ theme, toggleTheme, onFileSelect }: Androi
           
           <button 
             onClick={toggleTheme}
+            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-900 text-gray-500 dark:text-gray-400 active:bg-gray-200 dark:active:bg-zinc-800 transition-colors"
           >
             {theme === 'light' ? <MoonIcon size={18} /> : <SunIcon size={18} />}

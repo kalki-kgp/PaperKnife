@@ -15,6 +15,8 @@ import { hapticImpact } from '../utils/haptics'
 
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: () => void }) => (
   <button 
+    role="switch"
+    aria-checked={checked}
     onClick={(e) => { e.stopPropagation(); onChange() }}
     className={`w-12 h-7 rounded-full p-1 transition-all duration-300 ${checked ? 'bg-terracotta-500 shadow-lg shadow-terracotta-500/20' : 'bg-gray-200 dark:bg-zinc-700'}`}
   >
