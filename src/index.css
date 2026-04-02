@@ -49,7 +49,7 @@ body {
     @apply bg-accent-peach rounded-[32px] shadow-clay;
   }
   .clay-button {
-    @apply bg-terracotta-500 text-white shadow-clay-button transition-all duration-300 hover:-translate-y-0.5 hover:shadow-clay-button-hover;
+    @apply bg-terracotta-700 text-white shadow-clay-button transition-all duration-300 hover:-translate-y-0.5 hover:shadow-clay-button-hover;
   }
 }
 

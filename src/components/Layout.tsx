@@ -134,7 +134,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
             {!isHome && (
               <button onClick={() => navigate('/')} aria-label="Back to home" className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-xl transition-colors text-gray-500 hover:text-terracotta-500 shrink-0"><ArrowLeftIcon size={20} /></button>
             )}
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
+            <Link to="/" aria-label="PaperKnife home" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
               <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} iconColor="#E68A73" />
               <span className="font-black tracking-tighter text-lg md:text-xl dark:text-white hidden xs:block">PaperKnife</span>
             </Link>
@@ -214,7 +214,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
                   Zero servers. Open source and forever free.
                 </p>
                 <div className="flex items-center gap-2 pt-1">
-                   <div className="flex items-center gap-2 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 rounded-full text-[9px] font-bold uppercase tracking-wide border border-emerald-100 dark:border-emerald-900/20">
+                   <div className="flex items-center gap-2 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 rounded-full text-[9px] font-bold uppercase tracking-wide border border-emerald-100 dark:border-emerald-900/20">
                       <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                       Live Engine
                    </div>
@@ -247,7 +247,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
 
             </div>
             
-            <div className="pt-6 border-t border-orange-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-400 dark:text-zinc-600 font-medium">
+            <div className="pt-6 border-t border-orange-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 dark:text-zinc-500 font-medium">
               <p>© 2026 PaperKnife Project. No cookies used.</p>
               <div className="flex gap-6 items-center">
                  <a href="https://github.com/kalki-kgp" target="_blank" className="hover:text-gray-900 dark:hover:text-white transition-colors">@kalki-kgp</a>
@@ -339,7 +339,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
             </div>
           </div>
           <div className="flex-1 overflow-y-auto space-y-3 scrollbar-hide">
-            {activity.length === 0 ? (<div className="text-center py-20 opacity-40"><p className="text-xs font-bold uppercase tracking_widest text-gray-400">No recent files</p></div>) : (
+            {activity.length === 0 ? (<div className="text-center py-20 opacity-40"><p className="text-xs font-bold uppercase tracking_widest text-gray-500">No recent files</p></div>) : (
               activity.map((item) => (
                 <div key={item.id} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl border border-gray-100 dark:border-zinc-800 group relative">
                   <div className="flex items-center gap-3 mb-2"><div className="w-8 h-8 bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500 rounded-lg flex items-center justify-center"><CheckCircleIcon size={16} /></div><div className="flex-1 min-w-0"><p className="text-xs font-bold truncate dark:text-white">{item.name}</p><p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">{item.tool}</p></div></div>

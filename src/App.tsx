@@ -34,7 +34,7 @@ import About from './components/About'
 import Thanks from './components/Thanks'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import SettingsView from './components/Settings'
-import PdfPreview from './components/PdfPreview'
+const PdfPreview = lazy(() => import('./components/PdfPreview'))
 
 // Tools - lazy loaded so heavy deps (pdf-lib, pdfjs, tesseract) are fetched on-demand
 const MergeTool = lazy(() => import('./components/tools/MergeTool'))
@@ -293,14 +293,16 @@ function App() {
             />
             
             {droppedFile && (
-              <PdfPreview 
-                file={droppedFile} 
-                onClose={() => {
-                  setDroppedFile(null)
-                  setShowQuickDrop(false)
-                }} 
-                onProcess={() => setShowQuickDrop(true)} 
-              />
+              <Suspense fallback={<LoadingSpinner />}>
+                <PdfPreview 
+                  file={droppedFile} 
+                  onClose={() => {
+                    setDroppedFile(null)
+                    setShowQuickDrop(false)
+                  }} 
+                  onProcess={() => setShowQuickDrop(true)} 
+                />
+              </Suspense>
             )}
 
             {droppedFile && showQuickDrop && (

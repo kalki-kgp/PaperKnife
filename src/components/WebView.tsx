@@ -84,7 +84,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(230,138,115,0.08),transparent_70%)] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-100 dark:bg-terracotta-900/20 text-terracotta-500 rounded-full text-sm font-semibold mb-8 border border-orange-200/50 dark:border-terracotta-900/30">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-100 dark:bg-terracotta-900/20 text-terracotta-700 rounded-full text-sm font-semibold mb-8 border border-orange-200/50 dark:border-terracotta-900/30">
             <span>Your PDFs, processed locally with peace of mind.</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-text-main dark:text-white mb-8 leading-tight">
@@ -144,7 +144,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
       <section className="bg-accent-yellow dark:bg-zinc-950 py-20 rounded-[80px_80px_0_0]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-terracotta-500 font-bold tracking-widest uppercase text-sm mb-4 block">Powerful Toolkit</span>
+            <span className="text-terracotta-700 font-bold tracking-widest uppercase text-sm mb-4 block">Powerful Toolkit</span>
             <h2 className="text-4xl md:text-5xl font-bold text-text-main dark:text-white mb-6">Everything you need to manage PDFs</h2>
             <p className="text-text-muted dark:text-zinc-400 text-xl max-w-2xl mx-auto">
               All the essential tools, optimized for your machine, delivering a cozy and seamless experience.
@@ -160,8 +160,8 @@ export default function WebView({ tools }: { tools: Tool[] }) {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
                     activeCategory === cat
-                      ? 'bg-terracotta-500 text-white shadow-lg shadow-terracotta-500/30'
-                      : 'bg-white/70 dark:bg-zinc-900 text-text-muted dark:text-zinc-400 shadow-clay-sm dark:shadow-none dark:border dark:border-white/5 hover:text-terracotta-500'
+                      ? 'bg-terracotta-700 text-white shadow-lg shadow-terracotta-700/30'
+                      : 'bg-white/70 dark:bg-zinc-900 text-text-muted dark:text-zinc-400 shadow-clay-sm dark:shadow-none dark:border dark:border-white/5 hover:text-terracotta-700'
                   }`}
                 >
                   {cat}
@@ -243,7 +243,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
       <section className="max-w-4xl mx-auto px-6 pb-16">
         <div className="rounded-[32px] bg-white dark:bg-zinc-900/60 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800 overflow-hidden">
           <div className="px-8 py-5 border-b border-orange-100 dark:border-zinc-800 bg-[#FFF9F7] dark:bg-zinc-900/80">
-            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-terracotta-500">Frequently Asked Questions</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-terracotta-700">Frequently Asked Questions</h2>
           </div>
           {[
             {
