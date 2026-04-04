@@ -1,4 +1,4 @@
-import{u as X,C as Z,j as t,N as J,a as Q}from"./index-BBo2MNII.js";import{am as M,r as v,_ as K,s as I,X as ee,x as L,ai as te,aj as re}from"./vendor-ui-CBpEWT9a.js";import{e as se,P as O}from"./pdf-lib-core-9Mz4UURp.js";import{g as ae,u as ne}from"./pdfHelpers-CqyYSsCB.js";import{u as oe}from"./useObjectURL-CGNbpjpP.js";import{S as ce}from"./SuccessState-Dt0nfhkU.js";import{T as ie,P as le}from"./ToolSeoContent-DzSDkAPH.js";import"./pdfjs-viewer-BENO9Ct1.js";import"./PdfPreview-BCU8nMCc.js";const de=M(se);/**
+import{u as X,C as Z,j as t,N as J,a as Q}from"./index-BLwIb_DZ.js";import{am as M,r as v,_ as K,s as I,X as ee,x as L,ai as te,aj as re}from"./vendor-ui-CBpEWT9a.js";import{e as se,P as O}from"./pdf-lib-core-9Mz4UURp.js";import{g as ae,u as ne}from"./pdfHelpers-CvIN2SFr.js";import{u as oe}from"./useObjectURL-CGNbpjpP.js";import{S as ce}from"./SuccessState-D-nz6IgS.js";import{T as ie,P as le}from"./ToolSeoContent-DihHNqtu.js";import"./pdfjs-viewer-BENO9Ct1.js";import"./PdfPreview-B1C6GRbv.js";const de=M(se);/**
  * pdf-encrypt-lite - Ultra-lightweight PDF encryption library
  * Powers PDFSmaller.com's PDF encryption tool
  * 
