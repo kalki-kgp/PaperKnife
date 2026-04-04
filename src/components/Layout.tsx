@@ -23,6 +23,7 @@ import { Theme, Tool, ToolCategory, ViewMode } from '../types'
 import { PaperKnifeLogo } from './Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 import { hapticImpact } from '../utils/haptics'
+import { getInitialOfflineStatus, subscribeOfflineStatus, type OfflineStatus } from '../utils/offlineStatus'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -47,6 +48,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
   const [showHistory, setShowHistory] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [activity, setActivity] = useState<ActivityEntry[]>([])
+  const [offlineStatus, setOfflineStatus] = useState<OfflineStatus>(() => getInitialOfflineStatus())
   const dropdownRef = useRef<HTMLDivElement>(null)
   const isNative = Capacitor.isNativePlatform()
   const showMobileNav = isNative || viewMode === 'android'
@@ -67,6 +69,10 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  useEffect(() => {
+    return subscribeOfflineStatus(setOfflineStatus)
   }, [])
 
   useEffect(() => {
@@ -114,6 +120,22 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
     location.pathname.endsWith('/settings')
 
   const shouldShowNav = showMobileNav && isMainView && !activeTool
+
+  const offlineBadge = !showMobileNav && offlineStatus !== 'unsupported' && (
+    <div
+      title={offlineStatus === 'ready'
+        ? 'PaperKnife is cached for offline use. Deep OCR still needs a connection.'
+        : 'PaperKnife is preparing your offline pack. Keep this tab open for a moment.'}
+      className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all ${
+        offlineStatus === 'ready'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-100 shadow-[0_8px_24px_rgba(16,185,129,0.12)]'
+          : 'bg-amber-50 text-amber-700 border-amber-100 shadow-[0_8px_24px_rgba(245,158,11,0.12)]'
+      }`}
+    >
+      <span className={`w-2 h-2 rounded-full ${offlineStatus === 'ready' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+      <span>{offlineStatus === 'ready' ? 'Offline Ready' : 'Syncing Offline Pack'}</span>
+    </div>
+  )
 
   return (
     <div className={`min-h-screen flex flex-col bg-[#FFF3F0] dark:bg-black text-gray-900 dark:text-zinc-100 transition-colors duration-300`}>
@@ -170,6 +192,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
             </div>
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            {offlineBadge}
             {isMobileBrowser && (
               <a 
                 href="https://github.com/kalki-kgp/PaperKnife/releases/latest" 

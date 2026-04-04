@@ -26,7 +26,11 @@ export interface PdfMetaData {
 // Fixed cMapUrl for true offline usage (relative to base)
 const getCMapUrl = () => {
   const isCapacitor = Capacitor.isNativePlatform();
-  return isCapacitor ? 'cmaps/' : '/PaperKnife/cmaps/';
+  if (isCapacitor) return 'cmaps/';
+
+  const base = import.meta.env.BASE_URL || '/';
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+  return `${normalizedBase}cmaps/`;
 };
 
 /**
