@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/license-AGPL--3.0-rose.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/kalki-kgp/PaperKnife?style=flat&color=rose)](https://github.com/kalki-kgp/PaperKnife/stargazers)
 [![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://paperknife.app)
-[![Twitter](https://img.shields.io/badge/twitter-@kalki-kgp-black?logo=x)](https://x.com/kalki-kgp)
+[![Twitter](https://img.shields.io/badge/twitter-@kalki--kgp-black?logo=x)](https://x.com/kalki-kgp)
 
 ---
 
@@ -25,31 +25,49 @@
 
 Most PDF websites ask you to upload your sensitive documents—bank statements, IDs, contracts—to their servers. Even if they promise to delete them, your data still leaves your device and travels across the internet.
 
-I built **PaperKnife** to solve this. It's a collection of tools that run entirely in your browser. Your files never leave your memory, they aren't stored in any database, and no server ever sees them. It works 100% offline.
+I built **PaperKnife** to solve this. It's a collection of tools that run entirely in your browser. Your files never leave your device, they aren't stored in any database, and no server ever sees them. It works 100% offline.
 
 ### What it can do
 
-*   **Modify:** Merge multiple files, split pages, rotate, and rearrange.
-*   **Optimize:** Reduce file size with different quality presets.
-*   **Secure:** Encrypt files with passwords or remove them locally.
-*   **Convert:** Convert between PDF and images (JPG/PNG) or plain text.
-*   **Sign:** Add an electronic signature to your documents safely.
-*   **Sanitize:** Deep clean metadata (like Author or Producer) to keep your files anonymous.
+**Edit**
+- **Merge** — Combine multiple PDF files into one document.
+- **Split** — Visually extract specific pages or ranges.
+- **Rotate** — Fix page orientation permanently.
+- **Rearrange** — Drag and drop pages to reorder them.
+- **Watermark** — Overlay custom text for branding or security.
+- **Page Numbers** — Add numbering to your documents automatically.
+- **Signature** — Add your electronic signature to any document.
+
+**Optimize**
+- **Compress** — Reduce file size with different quality presets.
+- **Grayscale** — Convert all pages to black and white.
+- **Repair** — Attempt to fix corrupted or unreadable documents.
+
+**Secure**
+- **Protect** — Encrypt documents with a strong password.
+- **Unlock** — Remove passwords from protected files.
+- **Metadata** — Deep clean document properties for better privacy.
+
+**Convert**
+- **PDF to Image** — Convert pages into high-quality JPG or PNG.
+- **Image to PDF** — Convert JPG, PNG, and WebP into a PDF.
+- **Extract Images** — Pull out all original images embedded in a PDF.
+- **PDF to Text** — Extract plain text from your documents.
 
 ### How to use it
 
-Visit [paperknife.app](https://paperknife.app) — no sign-up, no downloads. You can also "install" it as a PWA for offline access.
+Visit [paperknife.app](https://paperknife.app) — no sign-up, no downloads. You can also install it as a PWA for offline access, or download the Android app.
 
 ---
 
 ### Support the project
 
-PaperKnife is a solo project. It's open-source, ad-free, and tracker-free because I believe privacy is a right, not a luxury.
+PaperKnife is a solo project. It's open-source and tracker-free because I believe privacy is a right, not a luxury.
 
 If this tool has saved you time or kept your data safe, please consider:
-*   **Sponsoring:** Support development via [GitHub Sponsors](https://github.com/sponsors/kalki-kgp).
-*   **Giving a Star:** It helps other people find the project.
-*   **Spreading the word:** Share it with anyone who handles sensitive documents.
+- **Sponsoring:** Support development via [GitHub Sponsors](https://github.com/sponsors/kalki-kgp).
+- **Giving a Star:** It helps other people find the project.
+- **Spreading the word:** Share it with anyone who handles sensitive documents.
 
 ---
 
@@ -72,25 +90,6 @@ npx serve -s dist -l 3000
 
 The `-s` (single-page) flag tells `serve` to rewrite all routes to `index.html`, which is exactly what BrowserRouter needs.
 
-#### With Cloudflare Tunnel
-
-If you're using `cloudflared` to expose a local server:
-
-```yaml
-# ~/.cloudflared/config.yml
-ingress:
-  - hostname: paperknife.app
-    service: http://localhost:3000
-  - service: http_status:404
-```
-
-Then run:
-
-```bash
-npx serve -s dist -l 3000   # SPA-aware static server
-cloudflared tunnel run       # expose to the internet
-```
-
 #### With Nginx
 
 ```nginx
@@ -110,6 +109,21 @@ server {
         add_header Cache-Control "public, immutable";
     }
 }
+```
+
+#### With Cloudflare Tunnel
+
+```yaml
+# ~/.cloudflared/config.yml
+ingress:
+  - hostname: paperknife.app
+    service: http://localhost:3000
+  - service: http_status:404
+```
+
+```bash
+npx serve -s dist -l 3000
+cloudflared tunnel run
 ```
 
 #### With Docker
@@ -140,7 +154,7 @@ CMD ["serve", "-s", "/app/dist", "-l", "3000"]
 
 ### Under the hood
 
-PaperKnife is built with **React** and **TypeScript**. The core processing is handled by **pdf-lib** and **pdfjs-dist**, which run in a sandboxed environment using WebAssembly.
+PaperKnife is built with **React** and **TypeScript**. Core processing is handled by **pdf-lib** and **pdfjs-dist**, running in a sandboxed environment using WebAssembly.
 
 This project is licensed under the **GNU AGPL v3** to ensure it remains open and transparent forever.
 

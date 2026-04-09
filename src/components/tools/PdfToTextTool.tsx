@@ -74,12 +74,9 @@ export default function PdfToTextTool() {
         }
       } else {
         let currentPageIndex = 1
-        const worker = await Tesseract.createWorker('eng', 1, { 
+        const worker = await Tesseract.createWorker('eng', 1, {
           workerPath: '/tesseract/worker.min.js',
           corePath: '/tesseract/tesseract-core.wasm.js',
-          langPath: '/tesseract/',
-          gzip: false,
-          cacheMethod: 'none',
           logger: (m: any) => { 
             if (m.status === 'recognizing text') { 
               const base = ((currentPageIndex - 1) / pdfData.pageCount) * 100; 

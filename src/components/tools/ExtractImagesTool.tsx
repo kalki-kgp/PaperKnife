@@ -70,44 +70,50 @@ export default function ExtractImagesTool() {
       
       for (let i = 1; i <= pdfData.pageCount; i++) {
         const page = await pdfData.pdfDoc.getPage(i)
+
+        // Render page to resolve all image objects before accessing them
+        const viewport = page.getViewport({ scale: 1.0 })
+        const canvas = document.createElement('canvas')
+        canvas.width = viewport.width
+        canvas.height = viewport.height
+        const ctx = canvas.getContext('2d')
+        if (ctx) await page.render({ canvasContext: ctx, viewport }).promise
+        canvas.width = 0; canvas.height = 0
+
         const operatorList = await page.getOperatorList()
-        
+
         for (let j = 0; j < operatorList.fnArray.length; j++) {
-          const fn = operatorList.fnArray[j]
-          // If the function is an image painting operation
-          if (fn === 85 || fn === 82 || fn === 92 || fn === 87) { // internal codes for image ops in some pdfjs versions, but let's be safer
-             // In modern pdfjs, we usually check the string names if possible or look at common image paint codes
-          }
-          
-          // Safer way: iterate all objects mentioned in the operator list
           const depName = operatorList.argsArray[j]?.[0]
           if (typeof depName === 'string' && depName.startsWith('img_')) {
             try {
-              const imgObj = await page.objs.get(depName)
+              const imgObj = await new Promise<any>((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('timeout')), 3000)
+                page.objs.get(depName, (data: any) => { clearTimeout(timeout); resolve(data) })
+              })
               if (imgObj && imgObj.data) {
                 imageCounter++
-                
-                // Convert Uint8ClampedArray to Canvas to DataURL
-                const canvas = document.createElement('canvas')
-                canvas.width = imgObj.width
-                canvas.height = imgObj.height
-                const ctx = canvas.getContext('2d')
-                if (ctx) {
-                  const imageData = ctx.createImageData(imgObj.width, imgObj.height)
+
+                const imgCanvas = document.createElement('canvas')
+                imgCanvas.width = imgObj.width
+                imgCanvas.height = imgObj.height
+                const imgCtx = imgCanvas.getContext('2d')
+                if (imgCtx) {
+                  const imageData = imgCtx.createImageData(imgObj.width, imgObj.height)
                   imageData.data.set(imgObj.data)
-                  ctx.putImageData(imageData, 0, 0)
-                  
-                  const dataUrl = canvas.toDataURL('image/png')
+                  imgCtx.putImageData(imageData, 0, 0)
+
+                  const dataUrl = imgCanvas.toDataURL('image/png')
                   const base64Data = dataUrl.split(',')[1]
                   zip.file(`image-${imageCounter.toString().padStart(3, '0')}.png`, base64Data, { base64: true })
                 }
+                imgCanvas.width = 0; imgCanvas.height = 0
               }
             } catch (e) {
               console.warn('Failed to extract an image object', e)
             }
           }
         }
-        
+
         setProgress(Math.round((i / pdfData.pageCount) * 100))
       }
       

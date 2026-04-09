@@ -5,18 +5,22 @@
 
 import { useState } from 'react'
 import { 
-  Heart as HeartIcon, 
-  Code as CodeIcon, 
-  Cpu as CpuIcon, 
-  Github as GHIcon, 
-  Shield as ShieldIcon, 
+  Heart as HeartIcon,
+  Code as CodeIcon,
+  Cpu as CpuIcon,
+  Github as GHIcon,
+  Shield as ShieldIcon,
   ChevronDown as ChevronDownIcon,
   ServerOff as ServerOffIcon,
   ExternalLink as ExternalLinkIcon,
   ChevronRight as ChevronRightIcon,
   Sparkles as SparklesIcon,
   HardDrive as DiskIcon,
-  EyeOff as PrivacyIcon
+  EyeOff as PrivacyIcon,
+  Coffee as CoffeeIcon,
+  Building2 as BuildingIcon,
+  Mail as MailIcon,
+  Server as ServerIcon
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
@@ -82,10 +86,13 @@ const AboutWeb = () => {
            <div className="flex-1 text-center md:text-left relative z-10">
               <h3 className="text-3xl font-black tracking-tighter mb-3 leading-tight text-text-main">Fuel the Engine.</h3>
               <p className="text-text-muted font-medium text-base mb-6 max-w-xl leading-relaxed">
-                 PaperKnife is self-funded and ad-free. Your support ensures the project stays alive and free for everyone.
+                 PaperKnife is built and maintained by one person. Your support keeps the project alive and free for everyone.
               </p>
               <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                 <a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="px-8 py-3.5 clay-button rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-transform flex items-center gap-2">
+                 <a href="https://ko-fi.com/kalkikgp" target="_blank" className="px-8 py-3.5 clay-button rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-transform flex items-center gap-2">
+                    <CoffeeIcon size={14} /> Buy me a Coffee
+                 </a>
+                 <a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="px-8 py-3.5 bg-white text-terracotta-500 border border-terracotta-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-terracotta-50 transition-colors flex items-center gap-2">
                     <HeartIcon size={14} fill="currentColor" /> Sponsor
                  </a>
                  <button onClick={() => navigate('/thanks')} className="px-8 py-3.5 bg-white text-terracotta-500 border border-terracotta-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-terracotta-50 transition-colors flex items-center gap-2">
@@ -145,6 +152,33 @@ const AboutWeb = () => {
              </SpecItem>
           </div>
 
+        </div>
+      </section>
+
+      {/* Enterprise Self-Hosted */}
+      <section className="max-w-5xl mx-auto px-6 mb-20">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white p-8 md:p-12 border border-white/10">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-terracotta-500 via-indigo-500 to-emerald-500" />
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <ServerIcon className="w-40 h-40" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+            <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center shrink-0 border border-white/10">
+              <BuildingIcon size={32} className="text-terracotta-400" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-3xl font-black tracking-tighter mb-3 leading-tight">Deploy on Your Infrastructure.</h3>
+              <p className="text-zinc-400 font-medium text-base mb-6 max-w-xl leading-relaxed">
+                Self-host PaperKnife for your organization. Air-gapped deployment, custom branding, priority support, and compliance-ready documentation.
+              </p>
+              <a
+                href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry"
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-lg shadow-terracotta-500/30 hover:scale-105 transition-transform no-underline"
+              >
+                <MailIcon size={14} /> Contact for Enterprise Licensing
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -225,16 +259,19 @@ const AboutAPK = () => {
                  <h3 className="text-lg font-black uppercase tracking-tight">Fuel the Engine</h3>
               </div>
               <p className="text-sm font-medium text-terracotta-100 leading-relaxed mb-6">
-                 We are 100% self-funded. Your support ensures PaperKnife stays free and open for everyone.
+                 Built and maintained by one person. Your support keeps PaperKnife free and open for everyone.
               </p>
               <div className="grid grid-cols-2 gap-3">
-                 <a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="flex items-center justify-center gap-2 py-3 bg-white text-terracotta-600 rounded-xl font-black uppercase text-[9px] tracking-widest shadow-sm active:scale-95 transition-transform">
-                    Sponsor
+                 <a href="https://ko-fi.com/kalkikgp" target="_blank" className="flex items-center justify-center gap-2 py-3 bg-white text-terracotta-600 rounded-xl font-black uppercase text-[9px] tracking-widest shadow-sm active:scale-95 transition-transform">
+                    <CoffeeIcon size={12} /> Ko-fi
                  </a>
-                 <button onClick={() => navigate('/thanks')} className="flex items-center justify-center gap-2 py-3 bg-terracotta-600 text-white border border-terracotta-400/50 rounded-xl font-black uppercase text-[9px] tracking-widest active:scale-95 transition-transform">
-                    Hall of Fame
-                 </button>
+                 <a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="flex items-center justify-center gap-2 py-3 bg-terracotta-600 text-white border border-terracotta-400/50 rounded-xl font-black uppercase text-[9px] tracking-widest active:scale-95 transition-transform">
+                    <HeartIcon size={12} /> Sponsor
+                 </a>
               </div>
+              <button onClick={() => navigate('/thanks')} className="w-full flex items-center justify-center gap-2 py-3 mt-3 bg-terracotta-600/50 text-white border border-terracotta-400/30 rounded-xl font-black uppercase text-[9px] tracking-widest active:scale-95 transition-transform">
+                 <SparklesIcon size={12} /> Hall of Fame
+              </button>
            </div>
         </div>
 
@@ -281,7 +318,20 @@ const AboutAPK = () => {
               </div>
               <ExternalLinkIcon size={16} className="text-gray-300" />
           </a>
-          
+
+          <a href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry" className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-[2rem] active:scale-[0.98] transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
+                   <BuildingIcon size={20} className="text-indigo-500" />
+                </div>
+                <div>
+                   <h4 className="font-bold text-sm dark:text-white">Enterprise</h4>
+                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Self-Hosted Licensing</p>
+                </div>
+              </div>
+              <MailIcon size={16} className="text-gray-300" />
+          </a>
+
           <button onClick={() => navigate('/thanks')} className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-[2rem] active:scale-[0.98] transition-all">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-terracotta-50 dark:bg-terracotta-900/20 rounded-xl flex items-center justify-center">
