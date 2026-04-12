@@ -16,7 +16,11 @@
 ## Preview
 
 <p align="center">
-  <img src="assets/preview/screenshot1.jpg" width="80%" alt="Web View">
+  <img src="assets/preview/SCR-20260412-fmcj.png" width="80%" alt="Web View">
+</p>
+
+<p align="center">
+  <img src="assets/preview/SCR-20260412-fmhe.png" width="80%" alt="Web View">
 </p>
 
 ---
