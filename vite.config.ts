@@ -43,7 +43,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         navigateFallback: `${base}index.html`,
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         globPatterns: [
           '**/*.{html,js,mjs,css,ico,png,svg,jpg,jpeg,webp,ttf,woff,woff2,bcmap,wasm,txt,xml}'
         ],
