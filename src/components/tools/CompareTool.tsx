@@ -755,13 +755,20 @@ function PageColumn({
   extraOverlayRef?: HostSetter
   fill?: boolean
 }) {
+  // When `fill` is set, desktop gives each column a bounded height (md:flex-1 md:min-h-0)
+  // with its own scroll. On mobile the column stays at natural height and the outer modal
+  // body scrolls instead, so tall pages remain fully reachable.
+  const rootFill = fill ? 'md:flex md:flex-col md:min-h-0 md:h-full md:flex-1 md:min-w-0' : ''
+  const scrollArea = fill
+    ? 'min-h-[240px] md:flex-1 md:min-h-0 md:overflow-auto'
+    : 'min-h-[240px] overflow-hidden'
   return (
-    <div className={`bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 p-3 md:p-4 shadow-sm ${fill ? 'flex flex-col min-h-0 h-full' : ''}`}>
+    <div className={`bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 p-3 md:p-4 shadow-sm overflow-hidden ${rootFill}`}>
       <div className="flex items-center justify-between px-2 pb-3 shrink-0">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-terracotta-500">{title}</p>
         <p className="text-[10px] text-gray-400 font-bold truncate max-w-[60%]">{sub}</p>
       </div>
-      <div className={`relative rounded-2xl overflow-hidden bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 ${fill ? 'flex-1 min-h-0 flex items-start justify-center overflow-auto' : 'min-h-[240px]'}`}>
+      <div className={`relative rounded-2xl bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 ${scrollArea}`}>
         {!present ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
             <div className="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-full flex items-center justify-center mb-3">
@@ -771,7 +778,7 @@ function PageColumn({
             <p className="text-[10px] text-gray-400 mt-1">This side has fewer pages.</p>
           </div>
         ) : (
-          <div className={`relative ${fill ? 'w-full' : ''}`}>
+          <div className="relative w-full">
             <div ref={hostRef} />
             {busy && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm">
@@ -861,14 +868,14 @@ function ExpandedCompareView({
         </button>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col p-3 md:p-5 gap-3">
+      <div className="flex-1 min-h-0 flex flex-col p-3 md:p-5 gap-3 overflow-auto md:overflow-hidden">
         {pageError && (
           <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-2xl text-amber-700 dark:text-amber-300 shrink-0">
             <AlertTriangle size={14} className="shrink-0" />
             <p className="text-[11px] font-bold">{pageError}</p>
           </div>
         )}
-        <div className="flex-1 min-h-0 grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:flex-1 md:min-h-0">
           <PageColumn
             title="Original"
             sub={slotA.file.name}
