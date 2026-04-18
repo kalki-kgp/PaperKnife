@@ -11,7 +11,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {
   GitCompare, Upload, X, Loader2, ChevronLeft, ChevronRight,
-  FileText, Image as ImageIcon, Lock, AlertTriangle, Maximize2, Minimize2,
+  FileText, Image as ImageIcon, Lock, AlertTriangle, Maximize2, Minimize2, Download,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -64,6 +64,7 @@ export default function CompareTool() {
   const [pageBusy, setPageBusy] = useState(false)
   const [pageError, setPageError] = useState<string | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   // Callback refs (state-backed) so the canvas mount effect re-fires when the host divs
   // unmount in the normal view and remount inside the expanded overlay.
@@ -313,6 +314,20 @@ export default function CompareTool() {
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault()
 
+  const handleDownload = async () => {
+    if (!slotA || !slotB || !slotA.pdfDoc || !slotB.pdfDoc) return
+    setDownloading(true)
+    try {
+      await downloadDiffReport(slotA, slotB, maxPages, mode)
+      toast.success('Diff report downloaded!')
+    } catch (err: any) {
+      console.error(err)
+      toast.error(`Download failed: ${err?.message || 'Unknown error'}`)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const bothReady = !!(slotA && slotB && !slotA.isLocked && !slotB.isLocked && slotA.pdfDoc && slotB.pdfDoc)
 
   const pageNumber = pageIndex + 1
@@ -372,6 +387,8 @@ export default function CompareTool() {
                 onSwap={swapSlots}
                 onExpand={() => setIsExpanded(true)}
                 isExpanded={false}
+                onDownload={handleDownload}
+                downloading={downloading}
               />
 
               <PageNavigator
@@ -571,7 +588,7 @@ function SlotDropZone({
 }
 
 function CompareHeader({
-  slotA, slotB, mode, setMode, onRemoveA, onRemoveB, onSwap, onExpand, isExpanded,
+  slotA, slotB, mode, setMode, onRemoveA, onRemoveB, onSwap, onExpand, isExpanded, onDownload, downloading,
 }: {
   slotA: SlotState
   slotB: SlotState
@@ -582,6 +599,8 @@ function CompareHeader({
   onSwap: () => void
   onExpand: () => void
   isExpanded: boolean
+  onDownload: () => void
+  downloading: boolean
 }) {
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 p-4 md:p-5 space-y-4">
@@ -603,6 +622,16 @@ function CompareHeader({
           <ModeTab active={mode === 'text'} onClick={() => setMode('text')} icon={<FileText size={14} />} label="Text diff" />
           <ModeTab active={mode === 'visual'} onClick={() => setMode('visual')} icon={<ImageIcon size={14} />} label="Visual diff" />
         </div>
+        <button
+          onClick={onDownload}
+          disabled={downloading}
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-zinc-400 hover:text-terracotta-500 hover:border-terracotta-300 dark:hover:border-terracotta-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Download diff report"
+          title="Download diff report as PDF"
+        >
+          {downloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+          <span className="hidden sm:inline">{downloading ? 'Exporting…' : 'Download'}</span>
+        </button>
         <button
           onClick={onExpand}
           className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-zinc-400 hover:text-terracotta-500 hover:border-terracotta-300 dark:hover:border-terracotta-800 transition-colors"
@@ -914,6 +943,92 @@ function ExpandedCompareView({
       </div>
     </div>
   )
+}
+
+// ---------- Diff PDF export ----------
+
+async function downloadDiffReport(slotA: SlotState, slotB: SlotState, totalPages: number, mode: Mode) {
+  const { PDFDocument } = await import('pdf-lib')
+  const pdfDoc = await PDFDocument.create()
+
+  const GAP = 8
+  const MAX_EDGE = 900
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    const pageA = pageNum <= slotA.pageCount ? await slotA.pdfDoc.getPage(pageNum) : null
+    const pageB = pageNum <= slotB.pageCount ? await slotB.pdfDoc.getPage(pageNum) : null
+
+    const { scaleA, scaleB, width: pageW, height: pageH } = pickSharedScale(pageA, pageB, MAX_EDGE)
+
+    const [renderedA, renderedB] = await Promise.all([
+      pageA ? renderPageCanvas(pageA, scaleA) : Promise.resolve(null),
+      pageB ? renderPageCanvas(pageB, scaleB) : Promise.resolve(null),
+    ])
+
+    const cW = pageW * 2 + GAP
+    const cH = pageH
+    const composite = document.createElement('canvas')
+    composite.width = cW
+    composite.height = cH
+    const ctx = composite.getContext('2d')!
+    ctx.fillStyle = '#e5e5e5'
+    ctx.fillRect(0, 0, cW, cH)
+
+    if (renderedA) ctx.drawImage(renderedA.canvas, 0, 0, pageW, pageH)
+    if (renderedB) ctx.drawImage(renderedB.canvas, pageW + GAP, 0, pageW, pageH)
+
+    if (mode === 'text') {
+      const diff = await diffPageText(pageA, pageB, Math.max(scaleA, scaleB))
+      for (const op of diff.ops) {
+        if (op.op === 'equal') continue
+        if ((op.op === 'remove' || op.op === 'modified') && op.aIndex !== undefined) {
+          const box = diff.wordsA[op.aIndex]
+          if (box) {
+            ctx.fillStyle = op.op === 'remove' ? 'rgba(248,113,113,0.55)' : 'rgba(251,191,36,0.55)'
+            ctx.fillRect(box.x, box.y, Math.max(box.w, 2), Math.max(box.h, 2))
+          }
+        }
+        if ((op.op === 'add' || op.op === 'modified') && op.bIndex !== undefined) {
+          const box = diff.wordsB[op.bIndex]
+          if (box) {
+            ctx.fillStyle = op.op === 'add' ? 'rgba(52,211,153,0.55)' : 'rgba(251,191,36,0.55)'
+            ctx.fillRect(pageW + GAP + box.x, box.y, Math.max(box.w, 2), Math.max(box.h, 2))
+          }
+        }
+      }
+    } else if (renderedA && renderedB) {
+      const visual = visualDiff(renderedA.canvas, renderedB.canvas, 0.1)
+      ctx.drawImage(visual.diffCanvas, pageW + GAP, 0, pageW, pageH)
+      visual.diffCanvas.width = 0
+    }
+
+    // Encode as JPEG and embed
+    const dataUrl = composite.toDataURL('image/jpeg', 0.92)
+    const base64 = dataUrl.split(',')[1]
+    const imgBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
+    const jpg = await pdfDoc.embedJpg(imgBytes)
+    const pdfW = cW / 2
+    const pdfH = cH / 2
+    const pdfPage = pdfDoc.addPage([pdfW, pdfH])
+    pdfPage.drawImage(jpg, { x: 0, y: 0, width: pdfW, height: pdfH })
+
+    // Free memory
+    composite.width = 0
+    if (renderedA) renderedA.canvas.width = 0
+    if (renderedB) renderedB.canvas.width = 0
+  }
+
+  const bytes = await pdfDoc.save()
+  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  const name = `diff_${slotA.file.name.replace(/\.pdf$/i, '')}_vs_${slotB.file.name.replace(/\.pdf$/i, '')}.pdf`
+  anchor.href = url
+  anchor.download = name
+  document.body.appendChild(anchor)
+  anchor.click()
+  document.body.removeChild(anchor)
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 // ---------- Helpers ----------
