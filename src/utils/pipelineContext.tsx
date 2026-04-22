@@ -15,6 +15,7 @@ interface PipelinedFile {
   name: string
   type?: string
   originalBuffer?: Uint8Array // To store the source before processing (e.g. for comparison)
+  sourceTool?: string // Tool that produced this file — lets a tool skip auto-consuming its own output
 }
 
 interface PipelineContextType {
