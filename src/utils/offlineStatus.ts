@@ -16,10 +16,15 @@ const readyProgress: OfflineProgress = {
   label: 'Offline cache ready'
 }
 
+const isReadyForThisBuild = () => {
+  if (typeof window === 'undefined') return false
+  return window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === __BUILD_ID__
+}
+
 export const getInitialOfflineStatus = (): OfflineStatus => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return 'unsupported'
   if (!('serviceWorker' in navigator)) return 'unsupported'
-  return window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true' ? 'ready' : 'preparing'
+  return isReadyForThisBuild() ? 'ready' : 'preparing'
 }
 
 export const getInitialOfflineProgress = (): OfflineProgress => {
@@ -32,13 +37,13 @@ export const getInitialOfflineProgress = (): OfflineProgress => {
 export const setOfflineStatus = (status: OfflineStatus, progress: Partial<Omit<OfflineProgress, 'status'>> = {}) => {
   if (typeof window === 'undefined') return
 
-  if (status === 'preparing' && window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true') {
+  if (status === 'preparing' && isReadyForThisBuild()) {
     status = 'ready'
     progress = readyProgress
   }
 
   if (status === 'ready') {
-    window.localStorage.setItem(OFFLINE_READY_STORAGE_KEY, 'true')
+    window.localStorage.setItem(OFFLINE_READY_STORAGE_KEY, __BUILD_ID__)
   }
 
   const detail: OfflineProgress = status === 'ready'
