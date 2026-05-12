@@ -3,9 +3,13 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const base = process.env.VITE_BASE || '/'
+const buildId = Date.now().toString(36)
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __BUILD_ID__: JSON.stringify(buildId)
+  },
   plugins: [
     react(),
     VitePWA({

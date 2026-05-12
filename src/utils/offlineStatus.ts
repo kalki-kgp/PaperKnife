@@ -1,4 +1,4 @@
-export type OfflineStatus = 'unsupported' | 'preparing' | 'ready'
+export type OfflineStatus = 'unsupported' | 'preparing' | 'updating' | 'ready'
 export interface OfflineProgress {
   status: OfflineStatus
   completed: number
@@ -16,29 +16,48 @@ const readyProgress: OfflineProgress = {
   label: 'Offline cache ready'
 }
 
+const storedMark = () => {
+  if (typeof window === 'undefined') return null
+  return window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY)
+}
+
+const isReadyForThisBuild = () => storedMark() === __BUILD_ID__
+
 export const getInitialOfflineStatus = (): OfflineStatus => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return 'unsupported'
   if (!('serviceWorker' in navigator)) return 'unsupported'
-  return window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true' ? 'ready' : 'preparing'
+  if (isReadyForThisBuild()) return 'ready'
+  // Pre-existing offline cache (any prior value, including legacy 'true') means
+  // the user already has working offline access — we are just refreshing it.
+  if (storedMark() !== null) return 'updating'
+  return 'preparing'
 }
 
 export const getInitialOfflineProgress = (): OfflineProgress => {
   const status = getInitialOfflineStatus()
   if (status === 'unsupported') return { status, completed: 0, total: 0, label: 'Offline cache unsupported' }
   if (status === 'ready') return readyProgress
+  if (status === 'updating') return { status, completed: 0, total: 0, label: 'Updating offline pack' }
   return { status, completed: 0, total: 0, label: 'Starting offline cache' }
 }
 
 export const setOfflineStatus = (status: OfflineStatus, progress: Partial<Omit<OfflineProgress, 'status'>> = {}) => {
   if (typeof window === 'undefined') return
 
-  if (status === 'preparing' && window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true') {
+  // Soft transition: when warmup says 'preparing' but the user already had a prior
+  // offline cache for an older build, surface this as an 'updating' state instead.
+  if (status === 'preparing' && !isReadyForThisBuild() && storedMark() !== null) {
+    status = 'updating'
+  }
+
+  // Already cached for this build — anything trying to revert stays as ready.
+  if ((status === 'preparing' || status === 'updating') && isReadyForThisBuild()) {
     status = 'ready'
     progress = readyProgress
   }
 
   if (status === 'ready') {
-    window.localStorage.setItem(OFFLINE_READY_STORAGE_KEY, 'true')
+    window.localStorage.setItem(OFFLINE_READY_STORAGE_KEY, __BUILD_ID__)
   }
 
   const detail: OfflineProgress = status === 'ready'

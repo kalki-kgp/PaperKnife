@@ -45,7 +45,10 @@ export const warmOfflineBundles = () => {
   const runNext = () => {
     const next = queue.shift()
     if (!next) {
-      setOfflineStatus('preparing', { completed: total, total, label: 'Finalizing offline cache' })
+      // Warmup completion is our reliable signal that the current build's
+      // chunks are now cached. onOfflineReady from registerSW only fires on
+      // first install, so we cannot rely on it for build-to-build updates.
+      setOfflineStatus('ready', { completed: total, total, label: 'Offline cache ready' })
       return
     }
 

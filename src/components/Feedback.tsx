@@ -8,8 +8,8 @@
  * (at your option) any later version.
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { Bug, Building2, CheckCircle2, Clipboard, Github, Lightbulb, Mail, MessageSquare, Send, ShieldCheck } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Bug, Building2, CheckCircle2, Clipboard, Github, ImagePlus, Lightbulb, Mail, MessageSquare, Send, ShieldCheck, X } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Tool } from '../types'
@@ -19,6 +19,7 @@ type FeedbackType = 'enterprise' | 'bug' | 'tool' | 'general'
 
 const CONTACT_EMAIL = 'krishnapaikine777@gmail.com'
 const GITHUB_ISSUE_URL = 'https://github.com/kalki-kgp/PaperKnife/issues/new'
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024
 
 const feedbackOptions: Record<FeedbackType, {
   label: string
@@ -71,6 +72,24 @@ const compact = (value: string) => value.trim().replace(/\s+/g, ' ')
 
 const fieldClass = 'w-full rounded-2xl border border-orange-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 text-sm font-bold text-gray-900 dark:text-white outline-none transition-all focus:border-terracotta-500 focus:ring-4 focus:ring-terracotta-500/10 placeholder:text-gray-400 dark:placeholder:text-zinc-600'
 
+const blobToPngBlob = async (input: Blob): Promise<Blob> => {
+  if (input.type === 'image/png') return input
+  const bitmap = await createImageBitmap(input)
+  const canvas = document.createElement('canvas')
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas unavailable')
+  ctx.drawImage(bitmap, 0, 0)
+  bitmap.close?.()
+  return await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob)
+      else reject(new Error('Conversion failed'))
+    }, 'image/png')
+  })
+}
+
 export default function Feedback({ tools }: { tools: Tool[] }) {
   const [searchParams] = useSearchParams()
   const initialType = normalizeFeedbackType(searchParams.get('type'))
@@ -83,12 +102,25 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
   const [details, setDetails] = useState('')
   const [contact, setContact] = useState('')
   const [copied, setCopied] = useState(false)
+  const [screenshot, setScreenshot] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setFeedbackType(initialType)
     setRelatedTool(initialTool)
     if (initialQuery) setSummary(`Request: ${initialQuery}`)
   }, [initialType, initialTool, initialQuery])
+
+  useEffect(() => {
+    if (!screenshot) {
+      setPreviewUrl(null)
+      return
+    }
+    const url = URL.createObjectURL(screenshot)
+    setPreviewUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [screenshot])
 
   const activeOption = feedbackOptions[feedbackType]
 
@@ -102,12 +134,13 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
       details.trim() || '(not provided)',
       '',
       contact.trim() ? `Contact: ${contact.trim()}` : 'Contact: (not provided)',
+      screenshot ? `Screenshot: attached separately via clipboard — paste it into this message` : '',
       '',
       `Page: ${typeof window !== 'undefined' ? window.location.href : '/feedback'}`,
       `User agent: ${typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'}`
     ]
     return lines.filter((line, index) => line !== '' || lines[index - 1] !== '').join('\n')
-  }, [activeOption.label, contact, details, relatedTool, summary])
+  }, [activeOption.label, contact, details, relatedTool, screenshot, summary])
 
   const subject = useMemo(() => {
     const cleanSummary = compact(summary)
@@ -119,6 +152,34 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
   const emailUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
   const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
   const githubUrl = `${GITHUB_ISSUE_URL}?title=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
+
+  const handleScreenshotChange = (file: File | null) => {
+    if (!file) {
+      setScreenshot(null)
+      return
+    }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Pick an image file')
+      return
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      toast.error('Image is over 8MB — try a smaller screenshot')
+      return
+    }
+    setScreenshot(file)
+  }
+
+  const copyScreenshotToClipboard = async (): Promise<boolean> => {
+    if (!screenshot) return false
+    if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) return false
+    try {
+      const pngBlob = await blobToPngBlob(screenshot)
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })])
+      return true
+    } catch {
+      return false
+    }
+  }
 
   const copyDetails = async (showToast = true) => {
     try {
@@ -133,24 +194,48 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
     }
   }
 
-  const handleCopy = () => {
-    void copyDetails()
+  const handleCopy = async () => {
+    const okText = await copyDetails(false)
+    if (screenshot) {
+      const okImage = await copyScreenshotToClipboard()
+      if (okText && okImage) {
+        toast.success('Text copied. Screenshot is on its own clipboard slot — paste it where you need it.')
+      } else if (okText) {
+        toast.message('Text copied. Screenshot copy failed in this browser — attach it manually.')
+      } else {
+        toast.error('Copy failed. Select the text and copy it manually.')
+      }
+    } else if (okText) {
+      toast.success('Feedback copied')
+    }
+  }
+
+  const dispatchWithScreenshot = async (action: () => void) => {
+    void copyDetails(false)
+    if (screenshot) {
+      const ok = await copyScreenshotToClipboard()
+      if (ok) toast.message('Screenshot copied to clipboard — paste it into the message.')
+      else toast.message('Screenshot copy failed — attach it manually after the window opens.')
+    }
+    window.setTimeout(action, 60)
   }
 
   const handleEmail = () => {
-    void copyDetails(false)
-    toast.message('Opening your email app. If nothing opens, use Gmail or Copy Details.')
-    window.setTimeout(() => {
+    void dispatchWithScreenshot(() => {
       window.location.href = emailUrl
-    }, 50)
+    })
   }
 
   const handleGmail = () => {
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer')
+    void dispatchWithScreenshot(() => {
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer')
+    })
   }
 
   const handleGitHub = () => {
-    window.open(githubUrl, '_blank', 'noopener,noreferrer')
+    void dispatchWithScreenshot(() => {
+      window.open(githubUrl, '_blank', 'noopener,noreferrer')
+    })
   }
 
   return (
@@ -224,6 +309,45 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
                 className={fieldClass}
               />
             </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Screenshot (Optional)</label>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Early preview</span>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleScreenshotChange(e.target.files?.[0] || null)}
+              />
+              {previewUrl ? (
+                <div className="relative overflow-hidden rounded-2xl border border-orange-100 dark:border-zinc-800 bg-gray-50 dark:bg-black">
+                  <img src={previewUrl} alt="Screenshot preview" className="max-h-64 w-full object-contain" />
+                  <button
+                    onClick={() => {
+                      setScreenshot(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                    className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full bg-black/70 p-1.5 text-white hover:bg-black/90 transition"
+                    aria-label="Remove screenshot"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-orange-200 dark:border-zinc-800 bg-[#FFF9F7] dark:bg-black px-4 py-8 text-gray-500 transition hover:border-terracotta-400 hover:text-terracotta-500"
+                >
+                  <ImagePlus size={22} />
+                  <span className="text-[11px] font-black uppercase tracking-widest">Pick a screenshot</span>
+                  <span className="text-[10px] font-bold normal-case tracking-normal text-gray-400">Copied to your clipboard on send. Paste into the email or issue.</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <aside className="space-y-4">
@@ -276,7 +400,7 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
                 <div>
                   <h3 className="text-sm font-black text-text-main dark:text-white mb-2">No files are sent</h3>
                   <p className="text-xs text-text-muted dark:text-zinc-400 leading-relaxed">
-                    This page only prepares your message. Email and GitHub open outside PaperKnife, so the app keeps its no-backend, no-upload promise.
+                    This page only prepares your message. Email and GitHub open outside PaperKnife, so the app keeps its no-backend, no-upload promise. The optional screenshot stays in memory and is only copied to your clipboard for you to paste.
                   </p>
                 </div>
               </div>
