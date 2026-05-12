@@ -1,7 +1,20 @@
 export type OfflineStatus = 'unsupported' | 'preparing' | 'ready'
+export interface OfflineProgress {
+  status: OfflineStatus
+  completed: number
+  total: number
+  label?: string
+}
 
 const OFFLINE_STATUS_EVENT = 'paperknife:offline-status'
 const OFFLINE_READY_STORAGE_KEY = 'paperknife:offline-ready'
+
+const readyProgress: OfflineProgress = {
+  status: 'ready',
+  completed: 1,
+  total: 1,
+  label: 'Offline cache ready'
+}
 
 export const getInitialOfflineStatus = (): OfflineStatus => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return 'unsupported'
@@ -9,26 +22,47 @@ export const getInitialOfflineStatus = (): OfflineStatus => {
   return window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true' ? 'ready' : 'preparing'
 }
 
-export const setOfflineStatus = (status: OfflineStatus) => {
+export const getInitialOfflineProgress = (): OfflineProgress => {
+  const status = getInitialOfflineStatus()
+  if (status === 'unsupported') return { status, completed: 0, total: 0, label: 'Offline cache unsupported' }
+  if (status === 'ready') return readyProgress
+  return { status, completed: 0, total: 0, label: 'Starting offline cache' }
+}
+
+export const setOfflineStatus = (status: OfflineStatus, progress: Partial<Omit<OfflineProgress, 'status'>> = {}) => {
   if (typeof window === 'undefined') return
+
+  if (status === 'preparing' && window.localStorage.getItem(OFFLINE_READY_STORAGE_KEY) === 'true') {
+    status = 'ready'
+    progress = readyProgress
+  }
 
   if (status === 'ready') {
     window.localStorage.setItem(OFFLINE_READY_STORAGE_KEY, 'true')
   }
 
+  const detail: OfflineProgress = status === 'ready'
+    ? { ...readyProgress, ...progress, status }
+    : {
+        status,
+        completed: progress.completed ?? 0,
+        total: progress.total ?? 0,
+        label: progress.label
+      }
+
   window.dispatchEvent(
-    new CustomEvent<{ status: OfflineStatus }>(OFFLINE_STATUS_EVENT, {
-      detail: { status }
+    new CustomEvent<OfflineProgress>(OFFLINE_STATUS_EVENT, {
+      detail
     })
   )
 }
 
-export const subscribeOfflineStatus = (listener: (status: OfflineStatus) => void) => {
+export const subscribeOfflineStatus = (listener: (progress: OfflineProgress) => void) => {
   if (typeof window === 'undefined') return () => {}
 
   const handleStatusChange = (event: Event) => {
-    const customEvent = event as CustomEvent<{ status: OfflineStatus }>
-    listener(customEvent.detail.status)
+    const customEvent = event as CustomEvent<OfflineProgress>
+    listener(customEvent.detail)
   }
 
   window.addEventListener(OFFLINE_STATUS_EVENT, handleStatusChange as EventListener)

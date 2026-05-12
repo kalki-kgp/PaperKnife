@@ -81,6 +81,22 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
             </div>
           </section>
         ))}
+
+        {filteredTools.length === 0 && (
+          <section className="py-16 text-center">
+            <div className="w-16 h-16 bg-white dark:bg-zinc-900 rounded-[1.5rem] border border-gray-100 dark:border-white/5 flex items-center justify-center mx-auto mb-5 text-gray-400 shadow-sm">
+              <Search size={26} />
+            </div>
+            <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">No tool found</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed mb-6">Tell me what tool you were looking for and I can use that to prioritize the roadmap.</p>
+            <button
+              onClick={() => navigate(`/feedback?type=tool&query=${encodeURIComponent(searchQuery)}`)}
+              className="inline-flex items-center justify-center rounded-2xl bg-terracotta-500 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-terracotta-500/20 active:scale-95 transition-transform"
+            >
+              Request Tool
+            </button>
+          </section>
+        )}
       </main>
 
       <footer className="text-center py-12 opacity-20">

@@ -171,12 +171,12 @@ const AboutWeb = () => {
               <p className="text-zinc-400 font-medium text-base mb-6 max-w-xl leading-relaxed">
                 Self-host PaperKnife for your organization. Air-gapped deployment, custom branding, priority support, and compliance-ready documentation.
               </p>
-              <a
-                href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry"
+              <button
+                onClick={() => navigate('/feedback?type=enterprise')}
                 className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-lg shadow-terracotta-500/30 hover:scale-105 transition-transform no-underline"
               >
                 <MailIcon size={14} /> Contact for Enterprise Licensing
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -319,7 +319,7 @@ const AboutAPK = () => {
               <ExternalLinkIcon size={16} className="text-gray-300" />
           </a>
 
-          <a href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry" className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-[2rem] active:scale-[0.98] transition-all">
+          <button onClick={() => navigate('/feedback?type=enterprise')} className="w-full flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-[2rem] active:scale-[0.98] transition-all text-left">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
                    <BuildingIcon size={20} className="text-indigo-500" />
@@ -330,7 +330,7 @@ const AboutAPK = () => {
                 </div>
               </div>
               <MailIcon size={16} className="text-gray-300" />
-          </a>
+          </button>
 
           <button onClick={() => navigate('/thanks')} className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-[2rem] active:scale-[0.98] transition-all">
               <div className="flex items-center gap-4">

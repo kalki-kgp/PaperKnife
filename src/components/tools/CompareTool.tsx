@@ -81,7 +81,6 @@ export default function CompareTool() {
       void loadSlot('A', file)
     }
     // We intentionally only consume on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const resetPageOutputs = useCallback(() => {
@@ -199,8 +198,8 @@ export default function CompareTool() {
           pageB ? renderPageCanvas(pageB, scaleB) : Promise.resolve(null),
         ])
         if (cancelled) {
-          renderedA && (renderedA.canvas.width = 0)
-          renderedB && (renderedB.canvas.width = 0)
+          if (renderedA) renderedA.canvas.width = 0
+          if (renderedB) renderedB.canvas.width = 0
           return
         }
 

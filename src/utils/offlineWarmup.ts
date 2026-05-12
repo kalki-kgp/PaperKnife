@@ -1,3 +1,5 @@
+import { setOfflineStatus } from './offlineStatus'
+
 const warmupImports: Array<() => Promise<unknown>> = [
   () => import('../components/PdfPreview'),
   () => import('../components/tools/MergeTool'),
@@ -6,6 +8,7 @@ const warmupImports: Array<() => Promise<unknown>> = [
   () => import('../components/tools/ProtectTool'),
   () => import('../components/tools/UnlockTool'),
   () => import('../components/tools/RotateTool'),
+  () => import('../components/tools/CropTool'),
   () => import('../components/tools/RearrangeTool'),
   () => import('../components/tools/PageNumberTool'),
   () => import('../components/tools/WatermarkTool'),
@@ -35,14 +38,22 @@ export const warmOfflineBundles = () => {
 
   warmupStarted = true
   const queue = [...warmupImports]
+  const total = queue.length
+  let completed = 0
+  setOfflineStatus('preparing', { completed, total, label: 'Loading app bundles' })
 
   const runNext = () => {
     const next = queue.shift()
-    if (!next) return
+    if (!next) {
+      setOfflineStatus('preparing', { completed: total, total, label: 'Finalizing offline cache' })
+      return
+    }
 
     void next()
       .catch(() => undefined)
       .finally(() => {
+        completed += 1
+        setOfflineStatus('preparing', { completed, total, label: 'Loading app bundles' })
         globalThis.setTimeout(runNext, 150)
       })
   }
