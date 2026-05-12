@@ -117,21 +117,36 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
   }, [activeOption.subject, relatedTool, summary])
 
   const emailUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
   const githubUrl = `${GITHUB_ISSUE_URL}?title=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`
 
-  const handleCopy = async () => {
+  const copyDetails = async (showToast = true) => {
     try {
       await navigator.clipboard.writeText(`${subject}\n\n${messageBody}`)
       setCopied(true)
-      toast.success('Feedback copied')
+      if (showToast) toast.success('Feedback copied')
       window.setTimeout(() => setCopied(false), 1800)
+      return true
     } catch {
-      toast.error('Copy failed. Select the text and copy it manually.')
+      if (showToast) toast.error('Copy failed. Select the text and copy it manually.')
+      return false
     }
   }
 
+  const handleCopy = () => {
+    void copyDetails()
+  }
+
   const handleEmail = () => {
-    window.location.href = emailUrl
+    void copyDetails(false)
+    toast.message('Opening your email app. If nothing opens, use Gmail or Copy Details.')
+    window.setTimeout(() => {
+      window.location.href = emailUrl
+    }, 50)
+  }
+
+  const handleGmail = () => {
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer')
   }
 
   const handleGitHub = () => {
@@ -221,11 +236,18 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
               <p className="text-sm text-zinc-400 leading-relaxed mb-6">{activeOption.description}</p>
               <div className="space-y-3">
                 <button
-                  onClick={handleEmail}
+                  onClick={handleGmail}
                   className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-terracotta-500 px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-terracotta-500/25 transition-all hover:-translate-y-0.5 hover:bg-terracotta-600 active:scale-95"
                 >
                   <Mail size={16} />
-                  Open Email
+                  Open Gmail
+                </button>
+                <button
+                  onClick={handleEmail}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-95"
+                >
+                  <Mail size={16} />
+                  Email App
                 </button>
                 {(feedbackType === 'bug' || feedbackType === 'tool') && (
                   <button
@@ -238,7 +260,7 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
                 )}
                 <button
                   onClick={handleCopy}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-transparent px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-95"
                 >
                   {copied ? <CheckCircle2 size={16} /> : <Clipboard size={16} />}
                   {copied ? 'Copied' : 'Copy Details'}

@@ -23,7 +23,7 @@ import { Theme, Tool, ToolCategory, ViewMode } from '../types'
 import { PaperKnifeLogo } from './Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 import { hapticImpact } from '../utils/haptics'
-import { getInitialOfflineStatus, subscribeOfflineStatus, type OfflineStatus } from '../utils/offlineStatus'
+import { getInitialOfflineProgress, subscribeOfflineStatus, type OfflineProgress } from '../utils/offlineStatus'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -48,7 +48,7 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
   const [showHistory, setShowHistory] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [activity, setActivity] = useState<ActivityEntry[]>([])
-  const [offlineStatus, setOfflineStatus] = useState<OfflineStatus>(() => getInitialOfflineStatus())
+  const [offlineProgress, setOfflineProgress] = useState<OfflineProgress>(() => getInitialOfflineProgress())
   const dropdownRef = useRef<HTMLDivElement>(null)
   const isNative = Capacitor.isNativePlatform()
   const showMobileNav = isNative || viewMode === 'android'
@@ -72,24 +72,30 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
   }, [])
 
   useEffect(() => {
-    return subscribeOfflineStatus(setOfflineStatus)
+    return subscribeOfflineStatus(setOfflineProgress)
   }, [])
 
   useEffect(() => {
     // Disable global drop on mobile to prevent accidental triggers/bugs
     if (Capacitor.isNativePlatform()) return
+    const hasDraggedFiles = (dataTransfer: DataTransfer | null) => {
+      return !!dataTransfer && Array.from(dataTransfer.types).includes('Files')
+    }
 
     const handleDragOver = (e: DragEvent) => {
+      if (!hasDraggedFiles(e.dataTransfer)) return
       e.preventDefault()
       if (onFileDrop) setIsDragging(true)
     }
     const handleDragLeave = (e: DragEvent) => {
+      if (!hasDraggedFiles(e.dataTransfer)) return
       e.preventDefault()
       if (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
         setIsDragging(false)
       }
     }
     const handleDrop = (e: DragEvent) => {
+      if (!hasDraggedFiles(e.dataTransfer)) return
       e.preventDefault()
       setIsDragging(false)
       if (onFileDrop && e.dataTransfer?.files) {
@@ -121,19 +127,42 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
 
   const shouldShowNav = showMobileNav && isMainView && !activeTool
 
-  const offlineBadge = !showMobileNav && offlineStatus !== 'unsupported' && (
+  const offlinePercent = offlineProgress.status === 'ready'
+    ? 100
+    : offlineProgress.total > 0
+      ? Math.min(99, Math.round((offlineProgress.completed / offlineProgress.total) * 100))
+      : 18
+
+  const offlineBadge = !showMobileNav && offlineProgress.status !== 'unsupported' && (
     <div
-      title={offlineStatus === 'ready'
-        ? 'PaperKnife is cached for offline use. Deep OCR still needs a connection.'
-        : 'PaperKnife is preparing your offline pack. Keep this tab open for a moment.'}
-      className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all ${
-        offlineStatus === 'ready'
+      className={`group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all ${
+        offlineProgress.status === 'ready'
           ? 'bg-emerald-50 text-emerald-700 border-emerald-100 shadow-[0_8px_24px_rgba(16,185,129,0.12)]'
           : 'bg-amber-50 text-amber-700 border-amber-100 shadow-[0_8px_24px_rgba(245,158,11,0.12)]'
       }`}
     >
-      <span className={`w-2 h-2 rounded-full ${offlineStatus === 'ready' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
-      <span>{offlineStatus === 'ready' ? 'Offline Ready' : 'Syncing Offline Pack'}</span>
+      <span className={`w-2 h-2 rounded-full ${offlineProgress.status === 'ready' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+      <span>{offlineProgress.status === 'ready' ? 'Offline Ready' : 'Syncing Offline Pack'}</span>
+      <span className="rounded-full bg-white/70 px-2 py-0.5 tracking-normal">{offlinePercent}%</span>
+      <div className="pointer-events-none absolute right-0 top-full mt-3 w-72 origin-top-right rounded-2xl border border-orange-100 bg-white p-4 text-left text-gray-700 opacity-0 shadow-2xl shadow-terracotta-500/10 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
+            {offlineProgress.status === 'ready' ? 'Offline cache ready' : 'Preparing offline cache'}
+          </p>
+          <p className={`text-xs font-black ${offlineProgress.status === 'ready' ? 'text-emerald-600' : 'text-amber-600'}`}>{offlinePercent}%</p>
+        </div>
+        <div className="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-black">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${offlineProgress.status === 'ready' ? 'bg-emerald-500' : 'bg-amber-500'}`}
+            style={{ width: `${offlinePercent}%` }}
+          />
+        </div>
+        <p className="mt-3 text-[11px] font-bold normal-case leading-relaxed tracking-normal text-gray-500 dark:text-zinc-400">
+          {offlineProgress.status === 'ready'
+            ? 'Core app files are cached for offline use. Deep OCR can still need network support.'
+            : `${offlineProgress.label || 'Caching app bundles'}${offlineProgress.total > 0 ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`}
+        </p>
+      </div>
     </div>
   )
 

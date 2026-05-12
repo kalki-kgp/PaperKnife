@@ -8,7 +8,7 @@
  * (at your option) any later version.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Crop, Loader2, Lock, RefreshCcw, ScissorsLineDashed, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
@@ -37,6 +37,9 @@ type CropMargins = {
   left: number
 }
 
+type CropScope = 'all' | 'specific'
+type DragHandle = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
 const defaultMargins: CropMargins = { top: 8, right: 8, bottom: 8, left: 8 }
 const minRemainingPercent = 15
 const presets: Array<{ label: string, margins: CropMargins }> = [
@@ -52,8 +55,52 @@ const numberValue = (value: string) => {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
-const CropPreview = ({ pdfDoc, margins }: { pdfDoc: any, margins: CropMargins }) => {
+const sanitizeMargins = (raw: CropMargins): CropMargins => {
+  const next = {
+    top: clamp(raw.top, 0, 80),
+    right: clamp(raw.right, 0, 80),
+    bottom: clamp(raw.bottom, 0, 80),
+    left: clamp(raw.left, 0, 80)
+  }
+  const maxCombined = 100 - minRemainingPercent
+  const horizontalOver = next.left + next.right - maxCombined
+  if (horizontalOver > 0) {
+    if (next.left >= next.right) next.left = clamp(next.left - horizontalOver, 0, 80)
+    else next.right = clamp(next.right - horizontalOver, 0, 80)
+  }
+  const verticalOver = next.top + next.bottom - maxCombined
+  if (verticalOver > 0) {
+    if (next.top >= next.bottom) next.top = clamp(next.top - verticalOver, 0, 80)
+    else next.bottom = clamp(next.bottom - verticalOver, 0, 80)
+  }
+  return next
+}
+
+const parsePageRange = (text: string, pageCount: number) => {
+  const pages = new Set<number>()
+  const chunks = text.split(',').map(part => part.trim()).filter(Boolean)
+
+  chunks.forEach((chunk) => {
+    if (chunk.includes('-')) {
+      const [rawStart, rawEnd] = chunk.split('-').map(Number)
+      if (!Number.isFinite(rawStart) || !Number.isFinite(rawEnd)) return
+      const start = clamp(Math.min(rawStart, rawEnd), 1, pageCount)
+      const end = clamp(Math.max(rawStart, rawEnd), 1, pageCount)
+      for (let page = start; page <= end; page++) pages.add(page)
+      return
+    }
+
+    const page = Number(chunk)
+    if (Number.isFinite(page) && page >= 1 && page <= pageCount) pages.add(page)
+  })
+
+  return pages
+}
+
+const CropPreview = ({ pdfDoc, margins, onChange }: { pdfDoc: any, margins: CropMargins, onChange: (margins: CropMargins) => void }) => {
   const [src, setSrc] = useState<string | null>(null)
+  const [activeHandle, setActiveHandle] = useState<DragHandle | null>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setSrc(null)
@@ -68,21 +115,76 @@ const CropPreview = ({ pdfDoc, margins }: { pdfDoc: any, margins: CropMargins })
     left: `${margins.left}%`
   }
 
+  const updateFromPointer = (handle: DragHandle, event: PointerEvent<HTMLElement>) => {
+    const rect = previewRef.current?.getBoundingClientRect()
+    if (!rect) return
+
+    const xPercent = clamp(((event.clientX - rect.left) / rect.width) * 100, 0, 100)
+    const yPercent = clamp(((event.clientY - rect.top) / rect.height) * 100, 0, 100)
+    const next = { ...margins }
+
+    if (handle.includes('left')) next.left = xPercent
+    if (handle.includes('right')) next.right = 100 - xPercent
+    if (handle.includes('top')) next.top = yPercent
+    if (handle.includes('bottom')) next.bottom = 100 - yPercent
+
+    onChange(sanitizeMargins(next))
+  }
+
+  const startHandleDrag = (handle: DragHandle, event: PointerEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setActiveHandle(handle)
+    event.currentTarget.setPointerCapture(event.pointerId)
+    updateFromPointer(handle, event)
+  }
+
+  const moveHandle = (handle: DragHandle, event: PointerEvent<HTMLButtonElement>) => {
+    if (activeHandle !== handle) return
+    event.preventDefault()
+    event.stopPropagation()
+    updateFromPointer(handle, event)
+  }
+
+  const endHandleDrag = (event: PointerEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setActiveHandle(null)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const HandleButton = ({ handle, className, label }: { handle: DragHandle, className: string, label: string }) => (
+    <button
+      type="button"
+      aria-label={label}
+      onPointerDown={(event) => startHandleDrag(handle, event)}
+      onPointerMove={(event) => moveHandle(handle, event)}
+      onPointerUp={endHandleDrag}
+      onPointerCancel={endHandleDrag}
+      onDragStart={(event) => event.preventDefault()}
+      className={`absolute z-10 h-8 w-8 rounded-full border-[3px] border-white bg-terracotta-500 shadow-xl shadow-black/25 transition-transform hover:scale-110 active:scale-95 ${activeHandle === handle ? 'scale-110 ring-4 ring-terracotta-500/20' : ''} ${className}`}
+    >
+      <span className="sr-only">{label}</span>
+    </button>
+  )
+
   return (
     <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[2rem] border border-gray-100 dark:border-white/5 bg-gray-100 dark:bg-black shadow-inner">
       <div className={`relative flex items-center justify-center ${src ? '' : 'aspect-[3/4]'}`}>
         {src ? (
-          <div className="relative w-full bg-white">
-            <img src={src} alt="Crop preview" className="block w-full h-auto" />
+          <div ref={previewRef} className="relative w-full bg-white select-none" onDragStart={(event) => event.preventDefault()}>
+            <img src={src} alt="Crop preview" draggable={false} className="block w-full h-auto select-none" />
             <div className="absolute inset-0 bg-black/35 pointer-events-none" />
-            <div className="absolute border-2 border-terracotta-500 bg-terracotta-500/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.28)] pointer-events-none" style={overlayStyle}>
+            <div className="absolute border-2 border-terracotta-500 bg-terracotta-500/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.28)]" style={overlayStyle}>
               <div className="absolute -top-7 left-2 rounded-full bg-terracotta-500 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
                 Kept Area
               </div>
-              <div className="absolute -left-1 -top-1 h-4 w-4 rounded-full border-2 border-white bg-terracotta-500" />
-              <div className="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-white bg-terracotta-500" />
-              <div className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-white bg-terracotta-500" />
-              <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white bg-terracotta-500" />
+              <HandleButton handle="top-left" label="Drag top left crop corner" className="-left-4 -top-4 cursor-nwse-resize" />
+              <HandleButton handle="top-right" label="Drag top right crop corner" className="-right-4 -top-4 cursor-nesw-resize" />
+              <HandleButton handle="bottom-left" label="Drag bottom left crop corner" className="-bottom-4 -left-4 cursor-nesw-resize" />
+              <HandleButton handle="bottom-right" label="Drag bottom right crop corner" className="-bottom-4 -right-4 cursor-nwse-resize" />
             </div>
           </div>
         ) : (
@@ -106,6 +208,15 @@ export default function CropTool() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState('paperknife-cropped')
   const [unlockPassword, setUnlockPassword] = useState('')
+  const [cropScope, setCropScope] = useState<CropScope>('all')
+  const [pageRange, setPageRange] = useState('')
+
+  const specificPages = useMemo(() => {
+    if (!pdfData || cropScope === 'all') return new Set<number>()
+    return parsePageRange(pageRange, pdfData.pageCount)
+  }, [cropScope, pageRange, pdfData])
+
+  const selectedPageCount = cropScope === 'all' ? (pdfData?.pageCount || 0) : specificPages.size
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -118,24 +229,18 @@ export default function CropTool() {
   const updateMargin = (side: keyof CropMargins, value: number) => {
     setMargins((current) => {
       const next = { ...current, [side]: clamp(value, 0, 80) }
-      if (next.left + next.right > 100 - minRemainingPercent) {
-        next[side === 'left' ? 'right' : 'left'] = 100 - minRemainingPercent - next[side]
-      }
-      if (next.top + next.bottom > 100 - minRemainingPercent) {
-        next[side === 'top' ? 'bottom' : 'top'] = 100 - minRemainingPercent - next[side]
-      }
-      return {
-        top: clamp(next.top, 0, 80),
-        right: clamp(next.right, 0, 80),
-        bottom: clamp(next.bottom, 0, 80),
-        left: clamp(next.left, 0, 80)
-      }
+      return sanitizeMargins(next)
     })
     setDownloadUrl(null)
   }
 
+  const updateMargins = (nextMargins: CropMargins) => {
+    setMargins(sanitizeMargins(nextMargins))
+    setDownloadUrl(null)
+  }
+
   const applyPreset = (presetMargins: CropMargins) => {
-    setMargins(presetMargins)
+    setMargins(sanitizeMargins(presetMargins))
     setDownloadUrl(null)
   }
 
@@ -151,6 +256,8 @@ export default function CropTool() {
         setPdfData({ file, pageCount: meta.pageCount, isLocked: false, pdfDoc, thumbnail: meta.thumbnail })
         setCustomFileName(`${file.name.replace(/\.pdf$/i, '')}-cropped`)
         setMargins(defaultMargins)
+        setCropScope('all')
+        setPageRange(`1-${meta.pageCount}`)
       }
     } catch (error: any) {
       toast.error(error.message || 'Could not read this PDF')
@@ -180,6 +287,8 @@ export default function CropTool() {
       })
       setCustomFileName(`${pdfData.file.name.replace(/\.pdf$/i, '')}-cropped`)
       setMargins(defaultMargins)
+      setCropScope('all')
+      setPageRange(`1-${result.pageCount}`)
     } else {
       toast.error('Incorrect password')
     }
@@ -192,14 +301,28 @@ export default function CropTool() {
       toast.error('Crop area is too small')
       return
     }
+    const pagesToCrop = cropScope === 'all' ? null : parsePageRange(pageRange, pdfData.pageCount)
+    if (cropScope === 'specific' && (!pagesToCrop || pagesToCrop.size === 0)) {
+      toast.error('Choose at least one page to crop')
+      return
+    }
 
     setIsProcessing(true)
     try {
       const arrayBuffer = await pdfData.file.arrayBuffer()
       const sourceDoc = await PDFDocument.load(arrayBuffer, { password: pdfData.password || undefined, ignoreEncryption: true } as any)
       const outputDoc = await PDFDocument.create()
+      const sourcePages = sourceDoc.getPages()
 
-      for (const sourcePage of sourceDoc.getPages()) {
+      for (const [index, sourcePage] of sourcePages.entries()) {
+        const pageNumber = index + 1
+        const shouldCropPage = !pagesToCrop || pagesToCrop.has(pageNumber)
+        if (!shouldCropPage) {
+          const [copiedPage] = await outputDoc.copyPages(sourceDoc, [index])
+          outputDoc.addPage(copiedPage)
+          continue
+        }
+
         const { width, height } = sourcePage.getSize()
         const left = width * (margins.left / 100)
         const right = width * (1 - margins.right / 100)
@@ -230,7 +353,7 @@ export default function CropTool() {
   const ActionButton = () => (
     <button
       onClick={cropPDF}
-      disabled={isProcessing}
+      disabled={isProcessing || (cropScope === 'specific' && selectedPageCount === 0)}
       className="w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl"
     >
       {isProcessing ? <Loader2 className="animate-spin" /> : <Crop size={20} />}
@@ -295,7 +418,7 @@ export default function CropTool() {
             </div>
             <div>
               <h4 className="text-sm font-black text-amber-700 dark:text-amber-400 uppercase tracking-tight leading-none mb-1">Hard crop rebuild</h4>
-              <p className="text-xs text-amber-700/70 dark:text-amber-400/70 font-bold">The same crop applies to every page and creates new page sizes from the kept area.</p>
+              <p className="text-xs text-amber-700/70 dark:text-amber-400/70 font-bold">Drag the corner pins or tune the sliders. Unselected pages stay unchanged.</p>
             </div>
           </div>
 
@@ -307,7 +430,7 @@ export default function CropTool() {
                   <RefreshCcw size={12} /> Reset
                 </button>
               </div>
-              <CropPreview pdfDoc={pdfData.pdfDoc} margins={margins} />
+              <CropPreview pdfDoc={pdfData.pdfDoc} margins={margins} onChange={updateMargins} />
             </div>
 
             <div className="bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
@@ -331,6 +454,31 @@ export default function CropTool() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  <div>
+                    <p className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Pages to Crop</p>
+                    <div className="grid grid-cols-2 gap-2 bg-gray-50 dark:bg-black p-1 rounded-2xl mb-3">
+                      <button onClick={() => setCropScope('all')} className={`py-2.5 px-3 rounded-xl text-[9px] font-black uppercase transition-all ${cropScope === 'all' ? 'bg-white dark:bg-zinc-800 text-terracotta-500 shadow-sm' : 'text-gray-400'}`}>All Pages</button>
+                      <button onClick={() => setCropScope('specific')} className={`py-2.5 px-3 rounded-xl text-[9px] font-black uppercase transition-all ${cropScope === 'specific' ? 'bg-white dark:bg-zinc-800 text-terracotta-500 shadow-sm' : 'text-gray-400'}`}>Specific</button>
+                    </div>
+                    {cropScope === 'specific' && (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={pageRange}
+                          onChange={(e) => {
+                            setPageRange(e.target.value)
+                            setDownloadUrl(null)
+                          }}
+                          placeholder="e.g. 1, 3-5, 9"
+                          className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-terracotta-500 outline-none font-bold text-sm dark:text-white"
+                        />
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight">
+                          {selectedPageCount} of {pdfData.pageCount} pages selected
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -364,6 +512,9 @@ export default function CropTool() {
                     <p className="text-xl font-black text-terracotta-500">
                       {Math.round(100 - margins.left - margins.right)}% x {Math.round(100 - margins.top - margins.bottom)}%
                     </p>
+                    <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                      Cropping {selectedPageCount} page{selectedPageCount === 1 ? '' : 's'}
+                    </p>
                   </div>
                 </>
               ) : (
@@ -380,7 +531,7 @@ export default function CropTool() {
         headline="Crop PDF Margins Without Uploading"
         description="Remove unwanted white space, scanner borders, and presentation margins from every page. PaperKnife rebuilds the PDF locally with the selected area as the new page size."
         benefits={[
-          "Crop all pages with one consistent visual selection.",
+          "Crop all pages or only the page ranges you choose.",
           "Hard-crop rebuild creates new page dimensions instead of only hiding margins.",
           "Useful for scanned notes, slides, receipts, and documents with large borders.",
           "100% local: your PDF never leaves your device.",
@@ -392,10 +543,10 @@ export default function CropTool() {
           "Download the rebuilt cropped PDF.",
         ]}
         faqs={[
-          { q: "Does Crop PDF apply to every page?", a: "Yes. This first version applies the same crop rectangle to all pages so multi-page documents stay consistent." },
+          { q: "Does Crop PDF apply to every page?", a: "By default, yes. You can switch to Specific mode and enter ranges like 1, 3-5, 9 to crop only those pages." },
           { q: "Is this a real crop or just hidden margins?", a: "PaperKnife rebuilds pages from the selected area so the output page size matches the kept region. It is not only setting a viewer crop box." },
           { q: "Will annotations or form fields survive?", a: "Hard-cropping may flatten or drop annotations and form fields because pages are rebuilt from their visible content. Normal text and images are preserved." },
-          { q: "Can I crop one page differently?", a: "Not yet. For now, use one crop for the whole document. You can request per-page crop controls from the Feedback page." },
+          { q: "Can I crop one page differently?", a: "You can crop only selected pages, but the same crop rectangle is used for every selected page in this version." },
         ]}
       />
       <PrivacyBadge />
