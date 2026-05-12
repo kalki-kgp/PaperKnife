@@ -225,8 +225,11 @@ export default function WebView({ tools }: { tools: Tool[] }) {
                 <SearchIcon size={32} />
               </div>
               <h3 className="text-2xl font-bold text-text-main dark:text-white mb-2">No tools matched.</h3>
-              <p className="text-text-muted dark:text-zinc-400">Try searching for a different keyword or clear your filters.</p>
-              <button onClick={() => { setSearchQuery(''); setActiveCategory('All'); }} className="mt-8 text-terracotta-500 font-bold text-sm hover:underline underline-offset-8">Reset Dashboard</button>
+              <p className="text-text-muted dark:text-zinc-400">Try searching for a different keyword, or request the tool you wanted.</p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <button onClick={() => navigate(`/feedback?type=tool&query=${encodeURIComponent(searchQuery || activeCategory)}`)} className="px-6 py-3 bg-terracotta-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-terracotta-500/20 hover:-translate-y-0.5 transition-all">Request Tool</button>
+                <button onClick={() => { setSearchQuery(''); setActiveCategory('All'); }} className="px-6 py-3 bg-white dark:bg-zinc-900 text-terracotta-500 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-orange-100 dark:border-zinc-800 shadow-sm hover:-translate-y-0.5 transition-all">Reset Dashboard</button>
+              </div>
             </div>
           )}
         </div>
@@ -259,7 +262,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
           <h2 className="text-2xl font-bold text-text-main dark:text-white mb-4">All-in-one private PDF tools</h2>
           <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-3xl mb-6">
             PaperKnife handles everything from merge PDF, split PDF, compress PDF, protect PDF, unlock PDF,
-            rotate, watermark, metadata cleanup, signature, grayscale, PDF to image, image to PDF, extract images,
+            rotate, crop, watermark, metadata cleanup, signature, grayscale, PDF to image, image to PDF, extract images,
             PDF to text, and repair. Every operation runs locally — no server, no cloud, no data collected.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -293,7 +296,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
             },
             {
               q: 'Which PDF operations are available?',
-              a: 'Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, rearrange pages, add page numbers, watermark, metadata sanitization, signature, grayscale, PDF-to-image, image-to-PDF, extract embedded images, PDF-to-text, and structural repair.'
+              a: 'Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, crop, rearrange pages, add page numbers, watermark, metadata sanitization, signature, grayscale, PDF-to-image, image-to-PDF, extract embedded images, PDF-to-text, and structural repair.'
             },
             {
               q: 'Where do processed files go?',
@@ -318,6 +321,32 @@ export default function WebView({ tools }: { tools: Tool[] }) {
 
       {/* Ad Unit */}
       <AdUnit className="max-w-4xl mx-auto px-6 mb-8" />
+
+      {/* Feedback */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="rounded-[32px] bg-white dark:bg-zinc-900/60 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800 p-8 md:p-10">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-terracotta-500/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-600 dark:text-terracotta-400 mb-4">
+                <MailIcon size={12} />
+                Feedback
+              </div>
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight text-text-main dark:text-white mb-3">Need a tool or found a problem?</h3>
+              <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-xl">
+                Tell me what is missing, what broke, or what would make PaperKnife faster for your workflow. The app prepares the message locally and hands it off to email or GitHub.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <button onClick={() => navigate('/feedback?type=tool')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/25 hover:-translate-y-0.5 transition-all">
+                Request Tool
+              </button>
+              <button onClick={() => navigate('/feedback?type=bug')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-accent-yellow dark:bg-black text-text-main dark:text-white border border-orange-100 dark:border-zinc-800 font-black text-[10px] uppercase tracking-widest rounded-xl shadow-sm hover:-translate-y-0.5 transition-all">
+                Report Problem
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Enterprise Self-Hosted */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
@@ -349,12 +378,12 @@ export default function WebView({ tools }: { tools: Tool[] }) {
                 <BuildingIcon size={14} className="text-amber-400" /> Custom branding
               </div>
             </div>
-            <a
-              href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry"
+            <button
+              onClick={() => navigate('/feedback?type=enterprise')}
               className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/30 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
             >
               <MailIcon size={14} /> Contact for Licensing
-            </a>
+            </button>
           </div>
         </div>
       </section>

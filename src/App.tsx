@@ -12,7 +12,7 @@ import { useState, useEffect, Suspense, lazy } from 'react'
 import { 
   Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
-  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare
+  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon
 } from 'lucide-react'
 import { BrowserRouter, HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -34,6 +34,7 @@ import About from './components/About'
 import Thanks from './components/Thanks'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import SettingsView from './components/Settings'
+import Feedback from './components/Feedback'
 const PdfPreview = lazy(() => import('./components/PdfPreview'))
 
 // Tools - lazy loaded so heavy deps (pdf-lib, pdfjs, tesseract) are fetched on-demand
@@ -55,6 +56,7 @@ const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesTool'))
 const GrayscaleTool = lazy(() => import('./components/tools/GrayscaleTool'))
 const CompareTool = lazy(() => import('./components/tools/CompareTool'))
+const CropTool = lazy(() => import('./components/tools/CropTool'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-terracotta-500', bg: 'bg-terracotta-50 dark:bg-terracotta-900/20' },
@@ -63,6 +65,7 @@ const tools: Tool[] = [
   { title: 'Protect PDF', desc: 'Secure your documents with strong encryption.', icon: Lock, implemented: true, path: '/protect', category: 'Secure', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
   { title: 'Unlock PDF', desc: 'Remove passwords from your protected files.', icon: Unlock, implemented: true, path: '/unlock', category: 'Secure', color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-900/20' },
   { title: 'Rotate PDF', desc: 'Fix page orientation permanently.', icon: RotateCw, implemented: true, path: '/rotate-pdf', category: 'Edit', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
+  { title: 'Crop PDF', desc: 'Trim margins with a local hard-crop rebuild.', icon: CropIcon, implemented: true, path: '/crop-pdf', category: 'Edit', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
   { title: 'Rearrange PDF', desc: 'Drag and drop pages to reorder them.', icon: ArrowUpDown, implemented: true, path: '/rearrange-pdf', category: 'Edit', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
   { title: 'Page Numbers', desc: 'Add numbering to your documents automatically.', icon: Hash, implemented: true, path: '/page-numbers', category: 'Edit', color: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-900/20' },
   { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
@@ -336,6 +339,7 @@ function App() {
                 <Route path="/compress" element={<CompressTool />} />
                 <Route path="/pdf-to-image" element={<PdfToImageTool />} />
                 <Route path="/rotate-pdf" element={<RotateTool />} />
+                <Route path="/crop-pdf" element={<CropTool />} />
                 {!IS_OCR_DISABLED && <Route path="/pdf-to-text" element={<PdfToTextTool />} />}
                 <Route path="/rearrange-pdf" element={<RearrangeTool />} />
                 <Route path="/watermark" element={<WatermarkTool />} />
@@ -349,6 +353,7 @@ function App() {
                 <Route path="/compare" element={<CompareTool />} />
                 <Route path="/about" element={<About viewMode={viewMode} />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/feedback" element={<Feedback tools={activeTools} />} />
                 <Route path="/settings" element={<SettingsView />} />
                 <Route path="/thanks" element={<Thanks />} />
                 {/* Catch-all: redirect unknown routes (e.g. old /home) to homepage */}

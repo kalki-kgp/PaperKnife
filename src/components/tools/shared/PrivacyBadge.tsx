@@ -1,5 +1,6 @@
 import { Github } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
+import { Link } from 'react-router-dom'
 
 export default function PrivacyBadge() {
   // Only show this footer in the native APK version
@@ -14,9 +15,9 @@ export default function PrivacyBadge() {
         </div>
 
         <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
-          <a href="https://github.com/kalki-kgp/PaperKnife/issues" target="_blank" className="hover:text-terracotta-500 transition-colors flex items-center gap-2">
+          <Link to="/feedback?type=bug" className="hover:text-terracotta-500 transition-colors flex items-center gap-2">
             <Github size={14} /> Support
-          </a>
+          </Link>
           <span className="opacity-20">•</span>
           <p className="opacity-60">Made by <span className="text-terracotta-500/80">kalki-kgp</span></p>
         </div>

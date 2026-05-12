@@ -3,7 +3,7 @@ import {
   Trash2, Clock,
   ChevronRight, Info, Zap, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
-  FileText as FileTextIcon
+  FileText as FileTextIcon, Lightbulb
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -221,11 +221,18 @@ export default function Settings() {
             iconColor="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
             onClick={() => window.open('https://github.com/sponsors/kalki-kgp', '_blank')}
           />
-          <SettingItem 
+          <SettingItem
+            icon={Lightbulb}
+            title="Request Tool"
+            subtitle="Missing workflow"
+            iconColor="text-amber-600 bg-amber-50 dark:bg-amber-900/20"
+            onClick={() => navigate('/feedback?type=tool')}
+          />
+          <SettingItem
             icon={Bug} 
             title="Report Issue" 
-            subtitle="GitHub Tracker"
-            onClick={() => window.open('https://github.com/kalki-kgp/PaperKnife/issues', '_blank')}
+            subtitle="Feedback handoff"
+            onClick={() => navigate('/feedback?type=bug')}
           />
           <SettingItem 
             icon={Info} 

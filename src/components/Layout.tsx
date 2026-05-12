@@ -264,8 +264,9 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
                   <li><a href="https://resumate.paperknife.app" target="_blank" className="hover:text-terracotta-500 transition-colors">ResuMate — AI Resume Builder</a></li>
                   <li><a href="https://ko-fi.com/kalkikgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Buy me a Coffee ☕</a></li>
                   <li><a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Sponsor <HeartIcon size={10} className="text-terracotta-500" /></a></li>
-                  <li><a href="mailto:krishnapaikine777@gmail.com?subject=PaperKnife Enterprise Inquiry" className="hover:text-terracotta-500 transition-colors">Enterprise Licensing</a></li>
-                  <li><a href="https://github.com/kalki-kgp/PaperKnife/issues" target="_blank" className="hover:text-terracotta-500 transition-colors">Report Bug</a></li>
+                  <li><Link to="/feedback?type=enterprise" className="hover:text-terracotta-500 transition-colors">Enterprise Licensing</Link></li>
+                  <li><Link to="/feedback?type=tool" className="hover:text-terracotta-500 transition-colors">Request Tool</Link></li>
+                  <li><Link to="/feedback?type=bug" className="hover:text-terracotta-500 transition-colors">Report Bug</Link></li>
                   <li><Link to="/thanks" className="hover:text-terracotta-500 transition-colors">Hall of Fame</Link></li>
                 </ul>
               </div>
