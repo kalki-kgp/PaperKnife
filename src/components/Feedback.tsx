@@ -194,48 +194,58 @@ export default function Feedback({ tools }: { tools: Tool[] }) {
     }
   }
 
+  const openExternalTab = (url: string) => {
+    const tab = window.open('about:blank', '_blank')
+    if (!tab) return false
+    tab.opener = null
+    tab.location.href = url
+    return true
+  }
+
   const handleCopy = async () => {
     const okText = await copyDetails(false)
-    if (screenshot) {
-      const okImage = await copyScreenshotToClipboard()
-      if (okText && okImage) {
-        toast.success('Text copied. Screenshot is on its own clipboard slot — paste it where you need it.')
-      } else if (okText) {
-        toast.message('Text copied. Screenshot copy failed in this browser — attach it manually.')
-      } else {
-        toast.error('Copy failed. Select the text and copy it manually.')
-      }
+    if (okText && screenshot) {
+      toast.success('Feedback text copied. Use Gmail or GitHub to copy the screenshot for pasting.')
     } else if (okText) {
       toast.success('Feedback copied')
+    } else {
+      toast.error('Copy failed. Select the text and copy it manually.')
     }
   }
 
-  const dispatchWithScreenshot = async (action: () => void) => {
-    void copyDetails(false)
+  const copyScreenshotForHandoff = async () => {
     if (screenshot) {
       const ok = await copyScreenshotToClipboard()
       if (ok) toast.message('Screenshot copied to clipboard — paste it into the message.')
       else toast.message('Screenshot copy failed — attach it manually after the window opens.')
     }
-    window.setTimeout(action, 60)
   }
 
   const handleEmail = () => {
-    void dispatchWithScreenshot(() => {
-      window.location.href = emailUrl
-    })
+    void copyDetails(false)
+    void copyScreenshotForHandoff()
+    toast.message('Opening your email app. If nothing opens, use Gmail or Copy Details.')
+    window.location.href = emailUrl
   }
 
   const handleGmail = () => {
-    void dispatchWithScreenshot(() => {
-      window.open(gmailUrl, '_blank', 'noopener,noreferrer')
-    })
+    const opened = openExternalTab(gmailUrl)
+    if (!opened) {
+      void copyDetails()
+      toast.message('Gmail was blocked by the browser. Feedback copied instead.')
+      return
+    }
+    void copyScreenshotForHandoff()
   }
 
   const handleGitHub = () => {
-    void dispatchWithScreenshot(() => {
-      window.open(githubUrl, '_blank', 'noopener,noreferrer')
-    })
+    const opened = openExternalTab(githubUrl)
+    if (!opened) {
+      void copyDetails()
+      toast.message('GitHub was blocked by the browser. Feedback copied instead.')
+      return
+    }
+    void copyScreenshotForHandoff()
   }
 
   return (
