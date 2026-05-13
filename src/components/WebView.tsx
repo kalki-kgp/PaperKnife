@@ -74,6 +74,109 @@ const categoryColors: Record<ToolCategory, { bg: string, text: string, iconBg: s
   }
 }
 
+const toolAliases: Record<string, string> = {
+  'Merge PDF': 'combine join append collate stitch concatenate multiple files',
+  'Split PDF': 'extract pages remove pages page range separate divide slice',
+  'Compress PDF': 'reduce size shrink optimize smaller zip lightweight',
+  'Protect PDF': 'password encrypt lock secure restrict permissions',
+  'Unlock PDF': 'remove password decrypt open locked pdf',
+  'Rotate PDF': 'turn orientation landscape portrait upside down',
+  'Crop PDF': 'trim margins cut edges page box resize',
+  'Rearrange PDF': 'reorder organize sort move pages drag pages',
+  'Page Numbers': 'pagination footer header number pages',
+  Watermark: 'stamp overlay brand confidential text mark',
+  Metadata: 'properties author title privacy cleanup document info',
+  Signature: 'sign e-sign autograph draw signature',
+  Grayscale: 'black white monochrome bw grey scale print',
+  'PDF to Image': 'jpg jpeg png export pages pictures convert',
+  'Image to PDF': 'jpg png webp photos pictures convert',
+  'Extract Images': 'pull pictures assets embedded photos',
+  'PDF to Text': 'ocr scan read extract copy selectable words',
+  'Repair PDF': 'fix corrupt broken damaged unreadable recover',
+  'Compare PDFs': 'diff differences changes side by side review'
+}
+
+const normalizeSearchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+
+const makeAcronym = (value: string) => normalizeSearchText(value).split(' ').filter(Boolean).map(word => word[0]).join('')
+
+const isSubsequence = (needle: string, haystack: string) => {
+  let index = 0
+  for (const char of haystack) {
+    if (char === needle[index]) index += 1
+    if (index === needle.length) return true
+  }
+  return false
+}
+
+const editDistance = (a: string, b: string) => {
+  const previous = Array.from({ length: b.length + 1 }, (_, index) => index)
+  const current = Array.from({ length: b.length + 1 }, () => 0)
+
+  for (let i = 1; i <= a.length; i += 1) {
+    current[0] = i
+    for (let j = 1; j <= b.length; j += 1) {
+      current[j] = a[i - 1] === b[j - 1]
+        ? previous[j - 1]
+        : Math.min(previous[j - 1], previous[j], current[j - 1]) + 1
+    }
+    for (let j = 0; j <= b.length; j += 1) previous[j] = current[j]
+  }
+
+  return previous[b.length]
+}
+
+const scoreTokenAgainstWords = (token: string, words: string[]) => {
+  let best = Number.POSITIVE_INFINITY
+  for (const word of words) {
+    if (!word) continue
+    if (word === token) best = Math.min(best, 0)
+    else if (word.startsWith(token)) best = Math.min(best, 1)
+    else if (word.includes(token)) best = Math.min(best, 3)
+    else if (token.length > 2 && isSubsequence(token, word)) best = Math.min(best, 8 + Math.max(0, word.length - token.length))
+    else if (token.length > 2) {
+      const distance = editDistance(token, word)
+      const allowedDistance = token.length > 6 ? 2 : 1
+      if (distance <= allowedDistance) best = Math.min(best, 12 + distance)
+    }
+  }
+  return best
+}
+
+const scoreToolMatch = (tool: Tool, rawQuery: string) => {
+  const query = normalizeSearchText(rawQuery)
+  if (!query) return Number.POSITIVE_INFINITY
+
+  const title = normalizeSearchText(tool.title)
+  const haystack = normalizeSearchText([
+    tool.title,
+    tool.desc,
+    tool.category,
+    tool.path || '',
+    toolAliases[tool.title] || ''
+  ].join(' '))
+  const words = haystack.split(' ').filter(Boolean)
+  const tokens = query.split(' ').filter(Boolean)
+  const acronym = makeAcronym(tool.title)
+
+  if (title === query) return -20
+  if (title.startsWith(query)) return -12
+  if (haystack.includes(query)) return -6
+  if (acronym && acronym.includes(query.replace(/\s+/g, ''))) return -4
+
+  let score = 0
+  for (const token of tokens) {
+    const tokenScore = Math.min(
+      scoreTokenAgainstWords(token, words),
+      acronym.includes(token) ? 2 : Number.POSITIVE_INFINITY
+    )
+    if (!Number.isFinite(tokenScore)) return Number.POSITIVE_INFINITY
+    score += tokenScore
+  }
+
+  return score + Math.max(0, tool.title.length - query.length) * 0.03
+}
+
 const ToolCard = ({ title, desc, icon: Icon, onClick, category }: Tool & { onClick?: () => void }) => {
   const colors = categoryColors[category]
 
@@ -99,22 +202,50 @@ export default function WebView({ tools }: { tools: Tool[] }) {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<ToolCategory | 'All'>('All')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
 
   const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Convert', 'Optimize']
+  const normalizedSearchQuery = normalizeSearchText(searchQuery)
 
-  const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
-      const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           tool.desc.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory = activeCategory === 'All' || tool.category === activeCategory
-      return matchesSearch && matchesCategory
-    })
-  }, [tools, searchQuery, activeCategory])
+  const categoryTools = useMemo(() => {
+    return tools.filter(tool => activeCategory === 'All' || tool.category === activeCategory)
+  }, [tools, activeCategory])
+
+  const searchSuggestions = useMemo(() => {
+    if (!normalizedSearchQuery) return []
+    return tools
+      .map(tool => ({ tool, score: scoreToolMatch(tool, searchQuery) }))
+      .filter(item => Number.isFinite(item.score))
+      .sort((a, b) => a.score - b.score || a.tool.title.localeCompare(b.tool.title))
+      .slice(0, 7)
+      .map(item => item.tool)
+  }, [tools, searchQuery, normalizedSearchQuery])
+
+  const requestToolPath = `/feedback?type=tool&query=${encodeURIComponent(searchQuery.trim() || activeCategory)}`
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [])
+
+  const openTool = (tool: Tool) => {
+    if (!tool.path) return
+    setSearchQuery('')
+    setIsSearchOpen(false)
+    navigate(tool.path)
+  }
 
   return (
     <div className="min-h-screen bg-[#FFF3F0] dark:bg-black transition-colors duration-500">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 px-6 overflow-hidden">
+      <section className="relative pt-20 pb-16 px-6 overflow-visible">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(230,138,115,0.08),transparent_70%)] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -130,7 +261,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
           </p>
 
           {/* Search */}
-          <div className="max-w-2xl mx-auto relative group mt-8">
+          <div ref={searchRef} className="max-w-2xl mx-auto relative z-50 group mt-8">
             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-text-muted group-focus-within:text-terracotta-500 transition-colors">
               <SearchIcon size={22} />
             </div>
@@ -138,9 +269,71 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               type="text"
               placeholder="Search tools (e.g. merge, compress, protect...)"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchOpen(true)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setIsSearchOpen(true)
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') setIsSearchOpen(false)
+                if (event.key === 'Enter' && searchSuggestions[0]) openTool(searchSuggestions[0])
+              }}
               className="w-full bg-white dark:bg-zinc-900 rounded-[32px] py-6 pl-16 pr-8 shadow-clay dark:shadow-none dark:border dark:border-white/5 border border-white/40 focus:border-terracotta-500 focus:ring-4 focus:ring-terracotta-500/10 outline-none transition-all font-bold text-xl text-text-main dark:text-white placeholder:text-text-muted/50"
             />
+            {isSearchOpen && searchQuery.trim() && (
+              <div className="absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 overflow-hidden rounded-[2rem] border border-orange-100/80 bg-white/95 text-left shadow-2xl shadow-terracotta-500/15 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-900/95 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="px-5 py-3 border-b border-orange-100 dark:border-zinc-800 flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Tool search</span>
+                  <span className="text-[10px] font-bold text-terracotta-600 dark:text-terracotta-400">Fuzzy match</span>
+                </div>
+
+                <div className="max-h-[24rem] overflow-y-auto p-2">
+                  {searchSuggestions.length > 0 ? (
+                    searchSuggestions.map((tool) => {
+                      const Icon = tool.icon
+                      const colors = categoryColors[tool.category]
+                      return (
+                        <button
+                          key={`search-${tool.title}`}
+                          onMouseDown={(event) => event.preventDefault()}
+                          onClick={() => openTool(tool)}
+                          className="group/result flex w-full items-center gap-4 rounded-[1.35rem] px-4 py-3 text-left transition-all hover:bg-[#FFF3F0] dark:hover:bg-black"
+                        >
+                          <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${colors.iconBg} ${colors.text} dark:bg-white/5`}>
+                            <Icon size={21} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-black text-text-main dark:text-white">{tool.title}</span>
+                            <span className="block truncate text-xs font-bold text-text-muted dark:text-zinc-400">{tool.desc}</span>
+                          </span>
+                          <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-gray-400 shadow-sm dark:bg-zinc-950">{tool.category}</span>
+                        </button>
+                      )
+                    })
+                  ) : (
+                    <div className="px-5 py-8 text-center">
+                      <p className="text-sm font-black text-text-main dark:text-white">No close tool match.</p>
+                      <p className="mt-1 text-xs font-bold text-text-muted dark:text-zinc-400">Tell me what workflow you wanted and I can add it to the roadmap.</p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    setIsSearchOpen(false)
+                    navigate(requestToolPath)
+                  }}
+                  className="flex w-full items-center justify-between gap-4 border-t border-orange-100 bg-[#FFF9F7] px-5 py-4 text-left transition-all hover:bg-terracotta-50 dark:border-zinc-800 dark:bg-black dark:hover:bg-zinc-950"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-black text-text-main dark:text-white">Want to add a tool?</span>
+                    <span className="block truncate text-xs font-bold text-text-muted dark:text-zinc-400">{`Request "${searchQuery.trim()}" or report a missing workflow.`}</span>
+                  </span>
+                  <ChevronRightIcon size={18} className="shrink-0 text-terracotta-500" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -205,12 +398,12 @@ export default function WebView({ tools }: { tools: Tool[] }) {
                 </button>
               ))}
             </div>
-            <p className="hidden md:block text-sm font-bold text-text-muted">{filteredTools.length} tools available</p>
+            <p className="hidden md:block text-sm font-bold text-text-muted">{categoryTools.length} tools available</p>
           </div>
 
           {/* Tool Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredTools.map((tool) => (
+            {categoryTools.map((tool) => (
               <ToolCard
                 key={tool.title}
                 {...tool}
@@ -219,15 +412,15 @@ export default function WebView({ tools }: { tools: Tool[] }) {
             ))}
           </div>
 
-          {filteredTools.length === 0 && (
+          {categoryTools.length === 0 && (
             <div className="py-32 text-center">
               <div className="w-20 h-20 bg-white dark:bg-zinc-900 rounded-[32px] shadow-clay dark:shadow-none flex items-center justify-center mx-auto mb-6 text-text-muted">
                 <SearchIcon size={32} />
               </div>
-              <h3 className="text-2xl font-bold text-text-main dark:text-white mb-2">No tools matched.</h3>
-              <p className="text-text-muted dark:text-zinc-400">Try searching for a different keyword, or request the tool you wanted.</p>
+              <h3 className="text-2xl font-bold text-text-main dark:text-white mb-2">No tools in this category yet.</h3>
+              <p className="text-text-muted dark:text-zinc-400">Tell me what workflow you need and I can prioritize it.</p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <button onClick={() => navigate(`/feedback?type=tool&query=${encodeURIComponent(searchQuery || activeCategory)}`)} className="px-6 py-3 bg-terracotta-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-terracotta-500/20 hover:-translate-y-0.5 transition-all">Request Tool</button>
+                <button onClick={() => navigate(`/feedback?type=tool&query=${encodeURIComponent(activeCategory)}`)} className="px-6 py-3 bg-terracotta-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-terracotta-500/20 hover:-translate-y-0.5 transition-all">Request Tool</button>
                 <button onClick={() => { setSearchQuery(''); setActiveCategory('All'); }} className="px-6 py-3 bg-white dark:bg-zinc-900 text-terracotta-500 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-orange-100 dark:border-zinc-800 shadow-sm hover:-translate-y-0.5 transition-all">Reset Dashboard</button>
               </div>
             </div>
@@ -247,7 +440,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               Start processing your PDFs with complete peace of mind today. Your files are in safe hands — yours.
             </p>
             <button
-              onClick={() => setActiveCategory('All')}
+              onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
               className="clay-button px-12 py-5 rounded-3xl text-lg font-bold relative z-10"
             >
               Start Using Tools
