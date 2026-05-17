@@ -20,9 +20,14 @@ import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
 import { ViewMode, Tool } from './types'
 import Layout from './components/Layout'
+import LayoutRazor from './components/razor/LayoutRazor'
+import WebViewRazor from './components/razor/WebViewRazor'
+import LayoutMidnight from './components/midnight/LayoutMidnight'
+import WebViewMidnight from './components/midnight/WebViewMidnight'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { ViewModeProvider } from './utils/viewModeContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
+import { useDesignVariant } from './utils/designVariant'
 import ScrollToTop from './components/ScrollToTop'
 
 // Critical Views - No lazy loading to prevent dynamic import errors on Android
@@ -194,6 +199,7 @@ function App() {
   })
   const [droppedFile, setDroppedFile] = useState<File | null>(null)
   const [showQuickDrop, setShowQuickDrop] = useState(false)
+  const [designVariant, setDesignVariant] = useDesignVariant()
 
   // Improved Auto-Wipe Logic
   useEffect(() => {
@@ -280,13 +286,30 @@ function App() {
   // Use HashRouter for native apps (Android APK), BrowserRouter for web (SEO-friendly)
   const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter
 
+  const ShellComponent: React.ComponentType<any> =
+    designVariant === 'razor' ? LayoutRazor :
+    designVariant === 'midnight' ? LayoutMidnight :
+    Layout
+  const HomeView =
+    designVariant === 'razor' ? <WebViewRazor tools={activeTools} /> :
+    designVariant === 'midnight' ? <WebViewMidnight tools={activeTools} /> :
+    <WebView tools={activeTools} />
+
   return (
     <Router>
       <ScrollToTop />
       <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
         <PipelineProvider>
-          <Layout theme="light" toggleTheme={() => {}} tools={activeTools} onFileDrop={handleGlobalDrop} viewMode={viewMode}>
-            <Toaster 
+          <ShellComponent
+            theme="light"
+            toggleTheme={() => {}}
+            tools={activeTools}
+            onFileDrop={handleGlobalDrop}
+            viewMode={viewMode}
+            variant={designVariant}
+            onChangeVariant={setDesignVariant}
+          >
+            <Toaster
               position="top-center" 
               expand={true} 
               richColors 
@@ -325,7 +348,7 @@ function App() {
               <Routes>
                 <Route path="/" element={
                   viewMode === 'web' ? (
-                    <WebView tools={activeTools} />
+                    HomeView
                   ) : (
                     <AndroidView toggleTheme={() => {}} theme="light" onFileSelect={(file) => handleGlobalDrop([file] as any)} />
                   )
@@ -362,7 +385,7 @@ function App() {
             </Suspense>
 
             {/* Chameleon Toggle — hidden, viewMode auto-detects via Capacitor */}
-          </Layout>
+          </ShellComponent>
         </PipelineProvider>
       </ViewModeProvider>
     </Router>

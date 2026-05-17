@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* RAZOR variant fonts — served from bunny.net (privacy-friendly Google Fonts mirror, no tracking) */
+@import url('https://fonts.bunny.net/css?family=fraunces:900i,400i|jetbrains-mono:400,500,700');
+
+/* MIDNIGHT variant fonts — same privacy-friendly mirror */
+@import url('https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|instrument-sans:400,500,600,700|instrument-serif:400i');
+
 @font-face {
   font-family: 'Plus Jakarta Sans';
   src: url('/fonts/PlusJakartaSans-Regular.ttf') format('truetype');
@@ -100,4 +106,824 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-terracotta-300 dark:bg-zinc-700;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RAZOR — tech-noir brutalist redesign (canary variant)
+   Activated via [data-design="razor"] on <html>.
+   ════════════════════════════════════════════════════════════════ */
+
+[data-design="razor"] {
+  --pk-bg:           #0A0A0A;
+  --pk-bg-deep:      #050505;
+  --pk-bg-elev:      #131313;
+  --pk-bg-hi:        #1B1B1B;
+  --pk-hairline:     rgba(245, 244, 238, 0.08);
+  --pk-hairline-mid: rgba(245, 244, 238, 0.14);
+  --pk-hairline-hi:  rgba(245, 244, 238, 0.22);
+  --pk-bone:         #F5F4EE;
+  --pk-stone:        #8A857B;
+  --pk-stone-dim:    #5A554E;
+  --pk-char:         #1F1F1F;
+  --pk-razor:        #D4FF3D;
+  --pk-razor-glow:   rgba(212, 255, 61, 0.22);
+  --pk-ember:        #FF6B47;
+  --pk-ember-glow:   rgba(255, 107, 71, 0.22);
+  color-scheme: dark;
+}
+
+[data-design="razor"] html,
+[data-design="razor"] body {
+  background: var(--pk-bg);
+  color: var(--pk-bone);
+}
+
+[data-design="razor"] body {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-feature-settings: 'ss01', 'cv02', 'cv03';
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[data-design="razor"] ::selection {
+  background: var(--pk-razor);
+  color: #0A0A0A;
+}
+
+[data-design="razor"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-design="razor"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-design="razor"] ::-webkit-scrollbar-thumb {
+  background: var(--pk-hairline-mid);
+  border-radius: 0;
+}
+[data-design="razor"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--pk-razor);
+}
+
+/* Typography utilities for razor */
+.razor-display {
+  font-family: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+}
+.razor-display-roman {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-weight: 900;
+  font-style: normal;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+}
+.razor-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.razor-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Atmospheric grain — subtle film noise overlay */
+.razor-grain {
+  position: relative;
+  isolation: isolate;
+}
+.razor-grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.6'/></svg>");
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+}
+
+/* Crosshair grid backdrop for hero areas */
+.razor-grid {
+  background-image:
+    linear-gradient(to right, var(--pk-hairline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--pk-hairline) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: -1px -1px;
+}
+
+/* Razor card — sharp surfaces */
+.razor-card {
+  background: var(--pk-bg-elev);
+  border: 1px solid var(--pk-hairline);
+  position: relative;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+.razor-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 1px;
+  width: 0;
+  background: var(--pk-razor);
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.razor-card:hover {
+  border-color: var(--pk-hairline-hi);
+  background: var(--pk-bg-hi);
+}
+.razor-card:hover::after { width: 100%; }
+
+.razor-card-invert {
+  background: var(--pk-bg-elev);
+  border: 1px solid var(--pk-hairline);
+  transition: all 0.3s ease;
+}
+.razor-card-invert:hover {
+  background: var(--pk-bone);
+  color: var(--pk-bg);
+  border-color: var(--pk-bone);
+}
+
+/* Razor button — sharp tactile primary */
+.razor-btn-primary {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--pk-razor);
+  color: var(--pk-bg);
+  border: 1px solid var(--pk-razor);
+  padding: 16px 28px;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.razor-btn-primary:hover {
+  background: var(--pk-bone);
+  border-color: var(--pk-bone);
+  box-shadow: 0 0 0 2px var(--pk-razor-glow);
+  transform: translate(-2px, -2px);
+}
+.razor-btn-ghost {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--pk-bone);
+  border: 1px solid var(--pk-hairline-hi);
+  padding: 16px 28px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.razor-btn-ghost:hover {
+  border-color: var(--pk-razor);
+  color: var(--pk-razor);
+}
+
+/* Animations */
+@keyframes razor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes razor-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes razor-tick {
+  0%   { transform: translateY(0); opacity: 0.7; }
+  50%  { transform: translateY(-1px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.7; }
+}
+@keyframes razor-scan {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100vh); }
+}
+@keyframes razor-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.razor-blink { animation: razor-blink 1.05s steps(1, end) infinite; }
+.razor-marquee {
+  display: inline-flex;
+  animation: razor-marquee 60s linear infinite;
+  will-change: transform;
+}
+.razor-tick { animation: razor-tick 1.2s ease-in-out infinite; }
+.razor-fade-in {
+  opacity: 0;
+  animation: razor-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Optional thin scanline for hero — very subtle */
+.razor-scanline::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--pk-razor) 50%, transparent);
+  opacity: 0.4;
+  animation: razor-scan 9s linear infinite;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MIDNIGHT — modern dark re-skin of the classic layout (canary).
+   Same component positions; new aesthetic. Activated via
+   [data-design="midnight"] on <html>.
+   ════════════════════════════════════════════════════════════════ */
+
+[data-design="midnight"] {
+  --mid-bg:           #0B0B12;
+  --mid-bg-deep:      #060609;
+  --mid-bg-elev:      #131320;
+  --mid-bg-hi:        #1A1A2A;
+  --mid-bg-glass:     rgba(19, 19, 32, 0.62);
+  --mid-bone:         #ECEAE4;
+  --mid-stone:        #8B8595;
+  --mid-stone-dim:    #5A5565;
+  --mid-hairline:     rgba(236, 234, 228, 0.06);
+  --mid-hairline-mid: rgba(236, 234, 228, 0.12);
+  --mid-hairline-hi:  rgba(236, 234, 228, 0.22);
+  --mid-coral:        #FF5C7C;
+  --mid-coral-soft:   #FF8FA3;
+  --mid-coral-glow:   rgba(255, 92, 124, 0.28);
+  --mid-mint:         #5BFFB0;
+  --mid-violet:       #8B6FFF;
+  --mid-amber:        #FFC857;
+  color-scheme: dark;
+}
+
+/* The data-design attribute is set on the <html> element itself, so the bare
+   selector targets html. We also re-cover body so that overscroll, footers,
+   and content past the viewport show the obsidian — never the inherited cream. */
+[data-design="midnight"],
+[data-design="midnight"] body {
+  background-color: var(--mid-bg) !important;
+  color: var(--mid-bone);
+}
+
+[data-design="midnight"] body {
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[data-design="midnight"] ::selection {
+  background: var(--mid-coral);
+  color: var(--mid-bg);
+}
+
+[data-design="midnight"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-design="midnight"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-design="midnight"] ::-webkit-scrollbar-thumb {
+  background: var(--mid-hairline-mid);
+  border-radius: 999px;
+}
+[data-design="midnight"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--mid-coral);
+}
+
+/* Aurora atmosphere — fixed background mesh that anchors the whole shell.
+   Stays consistent at every scroll position because it's anchored to the viewport. */
+[data-design="midnight"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(55% 45% at 12% 6%, rgba(139, 111, 255, 0.16), transparent 65%),
+    radial-gradient(45% 38% at 92% 14%, rgba(255, 92, 124, 0.16), transparent 65%),
+    radial-gradient(70% 55% at 50% 105%, rgba(91, 255, 176, 0.08), transparent 70%);
+}
+
+/* Film grain overlay removed — mix-blend-mode: overlay on a viewport-sized
+   fixed layer forced a full re-composite on every scroll frame. The aurora
+   carries the atmosphere on its own. */
+
+[data-design="midnight"] #root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Typography utilities */
+.mid-display {
+  font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 100, 'opsz' 96;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
+}
+.mid-display-tight {
+  font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+}
+.mid-italic {
+  font-family: 'Instrument Serif', ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.mid-mono-label {
+  font-family: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Glass card — opaque elevated surface. Backdrop-filter was triggering a
+   composite layer per card; the aurora reads fine through a near-opaque fill. */
+.mid-card {
+  background: rgba(22, 22, 34, 0.9);
+  border: 1px solid var(--mid-hairline-mid);
+  border-radius: 28px;
+  position: relative;
+  transition: border-color 0.4s ease, transform 0.35s ease, box-shadow 0.4s ease;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+.mid-card:hover {
+  border-color: var(--mid-hairline-hi);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 40px 80px -30px rgba(0, 0, 0, 0.7),
+    0 0 0 1px var(--mid-coral-glow);
+}
+
+/* Gradient-bordered card — premium accent surface */
+.mid-card-grad {
+  position: relative;
+  border-radius: 28px;
+  background: var(--mid-bg-elev);
+  isolation: isolate;
+}
+.mid-card-grad::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--mid-coral) 0%, var(--mid-violet) 50%, var(--mid-mint) 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.4s ease;
+}
+.mid-card-grad:hover::before { opacity: 1; }
+
+/* Pill chip */
+.mid-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 92, 124, 0.10);
+  border: 1px solid rgba(255, 92, 124, 0.25);
+  color: var(--mid-coral-soft);
+  font-family: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Primary CTA — coral with glow */
+.mid-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--mid-coral) 0%, #FF7A5C 100%);
+  color: #1A0A12;
+  font-family: 'Instrument Sans', ui-sans-serif, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 14px 30px -10px var(--mid-coral-glow);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.mid-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 20px 40px -10px var(--mid-coral-glow);
+}
+
+.mid-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 16px;
+  background: rgba(236, 234, 228, 0.04);
+  color: var(--mid-bone);
+  font-family: 'Instrument Sans', ui-sans-serif, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--mid-hairline-mid);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.mid-btn-ghost:hover {
+  background: rgba(236, 234, 228, 0.08);
+  border-color: var(--mid-hairline-hi);
+  color: var(--mid-coral-soft);
+}
+
+.mid-btn-pill {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: rgba(236, 234, 228, 0.04);
+  color: var(--mid-stone);
+  border: 1px solid var(--mid-hairline-mid);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.mid-btn-pill:hover {
+  color: var(--mid-bone);
+  border-color: var(--mid-hairline-hi);
+}
+.mid-btn-pill[data-active="true"] {
+  background: var(--mid-bone);
+  color: var(--mid-bg);
+  border-color: var(--mid-bone);
+  box-shadow: 0 8px 24px -8px rgba(236, 234, 228, 0.4);
+}
+
+/* Tool card surface — opaque fill instead of backdrop-filter. The grid renders
+   ~19 of these at once; each backdrop-filter forced its own composite layer
+   and a blur sample, tanking scroll FPS on integrated GPUs. */
+.mid-tool-card {
+  background: rgba(22, 22, 34, 0.92);
+  border: 1px solid var(--mid-hairline-mid);
+  border-radius: 28px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, background 0.35s ease;
+}
+.mid-tool-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 40%, var(--mid-coral) 70%, transparent 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.mid-tool-card:hover {
+  transform: translateY(-4px);
+  background: rgba(26, 26, 42, 0.78);
+}
+.mid-tool-card:hover::before {
+  opacity: 1;
+}
+
+/* Search input shell */
+.mid-search-shell {
+  background: var(--mid-bg-glass);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--mid-hairline-mid);
+  border-radius: 999px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+.mid-search-shell:focus-within {
+  border-color: var(--mid-coral);
+  box-shadow:
+    0 30px 60px -30px rgba(0, 0, 0, 0.6),
+    0 0 0 4px var(--mid-coral-glow);
+}
+
+/* Underline link */
+.mid-link {
+  color: var(--mid-stone);
+  transition: color 0.2s ease;
+}
+.mid-link:hover {
+  color: var(--mid-coral-soft);
+}
+
+/* Ambient pulsing dot */
+@keyframes mid-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.92); }
+}
+.mid-pulse-dot {
+  animation: mid-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes mid-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.mid-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.mid-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%);
+  animation: mid-shimmer 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Section dividers — soft hairline that fades */
+.mid-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--mid-hairline-hi), transparent);
+}
+
+/* Scoped resets so Tailwind dark: classes don't fight with midnight's own surfaces.
+   Inside data-design="midnight" we re-skin the cloned components via .mid-* classes. */
+[data-design="midnight"] .mid-bg          { background-color: var(--mid-bg) !important; }
+[data-design="midnight"] .mid-bg-elev     { background-color: var(--mid-bg-elev) !important; }
+[data-design="midnight"] .mid-text        { color: var(--mid-bone) !important; }
+[data-design="midnight"] .mid-text-stone  { color: var(--mid-stone) !important; }
+[data-design="midnight"] .mid-text-dim    { color: var(--mid-stone-dim) !important; }
+[data-design="midnight"] .mid-text-coral  { color: var(--mid-coral) !important; }
+[data-design="midnight"] .mid-border      { border-color: var(--mid-hairline-mid) !important; }
+
+/* ════════════════════════════════════════════════════════════════
+   MIDNIGHT — broad overrides for shared components (tools, /about,
+   /feedback, /thanks, settings, etc.) that still ship with the
+   classic warm palette. We re-skin them in place rather than
+   cloning every component.
+   ════════════════════════════════════════════════════════════════ */
+
+/* Page wrapper backgrounds — let the body aurora show through */
+[data-design="midnight"] .bg-\[\#FFF3F0\] { background-color: transparent !important; }
+[data-design="midnight"] .bg-\[\#FFF9F7\] { background-color: rgba(236, 234, 228, 0.03) !important; }
+
+/* Card / surface backgrounds */
+[data-design="midnight"] .bg-white,
+[data-design="midnight"] .bg-white\/95,
+[data-design="midnight"] .bg-white\/90,
+[data-design="midnight"] .bg-white\/80,
+[data-design="midnight"] .bg-white\/70,
+[data-design="midnight"] .bg-white\/60,
+[data-design="midnight"] .bg-white\/50,
+[data-design="midnight"] .bg-white\/40 {
+  background-color: var(--mid-bg-glass) !important;
+}
+[data-design="midnight"] .bg-white\/30,
+[data-design="midnight"] .bg-white\/20,
+[data-design="midnight"] .bg-white\/10,
+[data-design="midnight"] .bg-white\/5 {
+  background-color: rgba(236, 234, 228, 0.04) !important;
+}
+[data-design="midnight"] .bg-gray-50,
+[data-design="midnight"] .bg-gray-100,
+[data-design="midnight"] .bg-zinc-50,
+[data-design="midnight"] .bg-zinc-100 {
+  background-color: rgba(236, 234, 228, 0.04) !important;
+}
+[data-design="midnight"] .bg-zinc-800,
+[data-design="midnight"] .bg-zinc-900,
+[data-design="midnight"] .bg-zinc-950 {
+  background-color: var(--mid-bg-elev) !important;
+}
+
+/* Warm accent surfaces → coral tints */
+[data-design="midnight"] .bg-orange-50,
+[data-design="midnight"] .bg-orange-100,
+[data-design="midnight"] .bg-orange-100\/50,
+[data-design="midnight"] .bg-orange-100\/80,
+[data-design="midnight"] .bg-terracotta-50,
+[data-design="midnight"] .bg-terracotta-100,
+[data-design="midnight"] .bg-terracotta-100\/50,
+[data-design="midnight"] .bg-accent-peach {
+  background-color: rgba(255, 92, 124, 0.10) !important;
+}
+[data-design="midnight"] .bg-accent-yellow {
+  background-color: rgba(255, 200, 87, 0.04) !important;
+}
+
+/* Category accent surfaces */
+[data-design="midnight"] .bg-amber-50,
+[data-design="midnight"] .bg-amber-100 { background-color: rgba(255, 200, 87, 0.10) !important; }
+[data-design="midnight"] .bg-emerald-50,
+[data-design="midnight"] .bg-emerald-100 { background-color: rgba(91, 255, 176, 0.10) !important; }
+[data-design="midnight"] .bg-indigo-50,
+[data-design="midnight"] .bg-indigo-100 { background-color: rgba(139, 111, 255, 0.10) !important; }
+[data-design="midnight"] .bg-violet-50,
+[data-design="midnight"] .bg-violet-100 { background-color: rgba(139, 111, 255, 0.10) !important; }
+[data-design="midnight"] .bg-blue-50,
+[data-design="midnight"] .bg-blue-100 { background-color: rgba(91, 173, 255, 0.10) !important; }
+[data-design="midnight"] .bg-sky-50,
+[data-design="midnight"] .bg-sky-100 { background-color: rgba(91, 173, 255, 0.10) !important; }
+[data-design="midnight"] .bg-cyan-50,
+[data-design="midnight"] .bg-cyan-100 { background-color: rgba(91, 255, 230, 0.10) !important; }
+[data-design="midnight"] .bg-pink-50,
+[data-design="midnight"] .bg-pink-100 { background-color: rgba(255, 92, 124, 0.10) !important; }
+[data-design="midnight"] .bg-purple-50,
+[data-design="midnight"] .bg-purple-100 { background-color: rgba(139, 111, 255, 0.10) !important; }
+[data-design="midnight"] .bg-rose-50,
+[data-design="midnight"] .bg-rose-100 { background-color: rgba(255, 92, 124, 0.10) !important; }
+[data-design="midnight"] .bg-yellow-50,
+[data-design="midnight"] .bg-yellow-100 { background-color: rgba(255, 200, 87, 0.10) !important; }
+[data-design="midnight"] .bg-lime-50,
+[data-design="midnight"] .bg-lime-100 { background-color: rgba(91, 255, 176, 0.10) !important; }
+[data-design="midnight"] .bg-teal-50,
+[data-design="midnight"] .bg-teal-100 { background-color: rgba(91, 255, 176, 0.10) !important; }
+[data-design="midnight"] .bg-red-50,
+[data-design="midnight"] .bg-red-100 { background-color: rgba(255, 92, 124, 0.10) !important; }
+
+/* Primary CTA — keep coral feel, brighten foreground */
+[data-design="midnight"] .bg-terracotta-500,
+[data-design="midnight"] .bg-terracotta-600,
+[data-design="midnight"] .bg-terracotta-700 {
+  background-color: var(--mid-coral) !important;
+  color: var(--mid-bg) !important;
+}
+[data-design="midnight"] .bg-terracotta-500\/90 {
+  background-color: rgba(255, 92, 124, 0.92) !important;
+}
+[data-design="midnight"] .bg-terracotta-500\/20,
+[data-design="midnight"] .bg-terracotta-500\/10,
+[data-design="midnight"] .bg-terracotta-600\/50 {
+  background-color: rgba(255, 92, 124, 0.14) !important;
+}
+
+/* Text colors */
+[data-design="midnight"] .text-text-main,
+[data-design="midnight"] .text-gray-900,
+[data-design="midnight"] .text-zinc-900,
+[data-design="midnight"] .text-black { color: var(--mid-bone) !important; }
+
+[data-design="midnight"] .text-text-muted,
+[data-design="midnight"] .text-gray-500,
+[data-design="midnight"] .text-gray-600,
+[data-design="midnight"] .text-zinc-500,
+[data-design="midnight"] .text-zinc-600 { color: var(--mid-stone) !important; }
+
+[data-design="midnight"] .text-gray-400,
+[data-design="midnight"] .text-zinc-400 { color: var(--mid-stone) !important; }
+
+[data-design="midnight"] .text-gray-300,
+[data-design="midnight"] .text-zinc-300 { color: var(--mid-stone-dim) !important; }
+
+[data-design="midnight"] .text-gray-700,
+[data-design="midnight"] .text-zinc-700 { color: var(--mid-bone) !important; }
+
+[data-design="midnight"] .text-zinc-100,
+[data-design="midnight"] .text-zinc-200 { color: var(--mid-bone) !important; }
+
+[data-design="midnight"] .text-white { color: var(--mid-bone) !important; }
+
+/* Coral accent text */
+[data-design="midnight"] .text-terracotta-300,
+[data-design="midnight"] .text-terracotta-400,
+[data-design="midnight"] .text-terracotta-500,
+[data-design="midnight"] .text-terracotta-600,
+[data-design="midnight"] .text-terracotta-700 { color: var(--mid-coral) !important; }
+[data-design="midnight"] .text-terracotta-100 { color: var(--mid-coral-soft) !important; }
+[data-design="midnight"] .text-terracotta-500\/60 { color: rgba(255, 92, 124, 0.6) !important; }
+
+/* Custom hex text colors used in cross-promo etc. */
+[data-design="midnight"] .text-\[\#2c1810\] { color: var(--mid-bone) !important; }
+[data-design="midnight"] .text-\[\#8b7355\] { color: var(--mid-stone) !important; }
+[data-design="midnight"] .text-\[\#2d5a3d\] { color: var(--mid-mint) !important; }
+[data-design="midnight"] .text-\[\#c96442\] { color: var(--mid-coral) !important; }
+
+/* Category text accents — keep semantic coloring but in midnight palette */
+[data-design="midnight"] .text-amber-500,
+[data-design="midnight"] .text-amber-600,
+[data-design="midnight"] .text-amber-700 { color: var(--mid-amber) !important; }
+[data-design="midnight"] .text-emerald-400,
+[data-design="midnight"] .text-emerald-500,
+[data-design="midnight"] .text-emerald-600,
+[data-design="midnight"] .text-emerald-700 { color: var(--mid-mint) !important; }
+[data-design="midnight"] .text-indigo-400,
+[data-design="midnight"] .text-indigo-500 { color: var(--mid-violet) !important; }
+
+/* Borders — soften everything to hairlines */
+[data-design="midnight"] .border-orange-100,
+[data-design="midnight"] .border-orange-200,
+[data-design="midnight"] .border-orange-200\/50,
+[data-design="midnight"] .border-gray-50,
+[data-design="midnight"] .border-gray-100,
+[data-design="midnight"] .border-gray-200,
+[data-design="midnight"] .border-gray-200\/50,
+[data-design="midnight"] .border-zinc-700,
+[data-design="midnight"] .border-zinc-800,
+[data-design="midnight"] .border-white\/40,
+[data-design="midnight"] .border-white\/50,
+[data-design="midnight"] .border-white\/60,
+[data-design="midnight"] .border-white\/30,
+[data-design="midnight"] .border-white\/20,
+[data-design="midnight"] .border-white\/10,
+[data-design="midnight"] .border-white\/5,
+[data-design="midnight"] .border-indigo-100 { border-color: var(--mid-hairline-mid) !important; }
+
+[data-design="midnight"] .border-terracotta-200,
+[data-design="midnight"] .border-terracotta-300,
+[data-design="midnight"] .border-terracotta-400\/30,
+[data-design="midnight"] .border-terracotta-400\/50,
+[data-design="midnight"] .border-terracotta-500,
+[data-design="midnight"] .border-terracotta-500\/20,
+[data-design="midnight"] .border-terracotta-200\/50,
+[data-design="midnight"] .border-\[rgba\(201\,100\,66\,0\.15\)\] { border-color: rgba(255, 92, 124, 0.30) !important; }
+
+/* Soften clay shadows — replace with deep, ambient drops */
+[data-design="midnight"] .shadow-clay,
+[data-design="midnight"] .shadow-clay-sm,
+[data-design="midnight"] .shadow-clay-lg,
+[data-design="midnight"] .shadow-clay-button,
+[data-design="midnight"] .shadow-clay-button-hover {
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+}
+
+/* Ring colors used by focus states */
+[data-design="midnight"] .ring-white { --tw-ring-color: var(--mid-bg) !important; }
+[data-design="midnight"] .focus\:ring-terracotta-500\/10:focus { --tw-ring-color: var(--mid-coral-glow) !important; }
+[data-design="midnight"] .focus\:border-terracotta-500:focus { border-color: var(--mid-coral) !important; }
+
+/* Placeholder color */
+[data-design="midnight"] .placeholder\:text-text-muted\/50::placeholder,
+[data-design="midnight"] input::placeholder,
+[data-design="midnight"] textarea::placeholder { color: var(--mid-stone-dim) !important; opacity: 1 !important; }
+
+/* Inputs / textareas / selects baseline */
+[data-design="midnight"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+[data-design="midnight"] textarea,
+[data-design="midnight"] select {
+  color: var(--mid-bone);
+  caret-color: var(--mid-coral);
+}
+
+/* Backdrop on modals */
+[data-design="midnight"] .bg-black\/20,
+[data-design="midnight"] .bg-black\/40 { background-color: rgba(0, 0, 0, 0.6) !important; }
+[data-design="midnight"] .bg-black\/60,
+[data-design="midnight"] .bg-black\/70,
+[data-design="midnight"] .bg-black\/80 { background-color: rgba(5, 5, 9, 0.78) !important; }
+
+/* Clay component classes — re-skin so any existing usage still looks right */
+[data-design="midnight"] .clay-card { background-color: var(--mid-bg-glass) !important; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6) !important; border-color: var(--mid-hairline-mid) !important; }
+[data-design="midnight"] .clay-card-yellow { background-color: rgba(255, 200, 87, 0.06) !important; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6) !important; }
+[data-design="midnight"] .clay-card-peach { background-color: rgba(255, 92, 124, 0.08) !important; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6) !important; }
+[data-design="midnight"] .clay-button { background-color: var(--mid-coral) !important; color: var(--mid-bg) !important; box-shadow: 0 14px 30px -8px var(--mid-coral-glow) !important; }
+
+/* HR / dividers */
+[data-design="midnight"] hr { border-color: var(--mid-hairline-mid) !important; }
+
+/* The big rounded "wave" sections in WebView use solid backgrounds. Keep them
+   transparent so the aurora flows continuously when the classic WebView is
+   accidentally displayed (defensive). */
+[data-design="midnight"] .rounded-\[80px_80px_0_0\],
+[data-design="midnight"] .rounded-\[0_0_80px_80px\] {
+  background-color: transparent !important;
 }
