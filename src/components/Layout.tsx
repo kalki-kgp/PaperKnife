@@ -16,10 +16,12 @@ import {
   Settings as SettingsIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Download
+  Download,
+  Moon as MoonIcon
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { Theme, Tool, ToolCategory, ViewMode } from '../types'
+import type { DesignVariant } from '../utils/designVariant'
 import { PaperKnifeLogo } from './Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../utils/recentActivity'
 import { hapticImpact } from '../utils/haptics'
@@ -32,6 +34,8 @@ interface LayoutProps {
   tools: Tool[]
   onFileDrop?: (files: FileList) => void
   viewMode: ViewMode
+  variant?: DesignVariant
+  onChangeVariant?: (v: DesignVariant) => void
 }
 
 const categoryColors: Record<ToolCategory, { bg: string, text: string, hover: string, iconBg: string }> = {
@@ -41,7 +45,7 @@ const categoryColors: Record<ToolCategory, { bg: string, text: string, hover: st
   Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-500', hover: 'hover:bg-amber-50 dark:hover:bg-amber-900/10', iconBg: 'bg-amber-100 dark:bg-amber-900/30' }
 }
 
-export default function Layout({ children, tools, onFileDrop, viewMode }: LayoutProps) {
+export default function Layout({ children, tools, onFileDrop, viewMode, variant, onChangeVariant }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isDragging, setIsDragging] = useState(false)
@@ -256,6 +260,16 @@ export default function Layout({ children, tools, onFileDrop, viewMode }: Layout
               <InfoIcon size={18} />
               <span className="hidden sm:block">About</span>
             </Link>
+            {variant && onChangeVariant && (
+              <button
+                onClick={() => onChangeVariant('midnight')}
+                aria-label="Switch to dark mode"
+                title="Dark mode"
+                className="p-2 text-gray-400 hover:text-terracotta-500 transition-colors"
+              >
+                <MoonIcon size={20} />
+              </button>
+            )}
 <button onClick={() => setShowHistory(true)} aria-label="View activity history" className={`p-2 transition-colors relative ${showHistory ? 'text-terracotta-500' : 'text-gray-400 hover:text-terracotta-500'}`}>
               <HistoryIcon size={20} />
               {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta-500 rounded-full border-2 border-white dark:border-black" />}

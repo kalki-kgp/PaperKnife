@@ -20,8 +20,6 @@ import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
 import { ViewMode, Tool } from './types'
 import Layout from './components/Layout'
-import LayoutRazor from './components/razor/LayoutRazor'
-import WebViewRazor from './components/razor/WebViewRazor'
 import LayoutMidnight from './components/midnight/LayoutMidnight'
 import WebViewMidnight from './components/midnight/WebViewMidnight'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
@@ -287,13 +285,11 @@ function App() {
   const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter
 
   const ShellComponent: React.ComponentType<any> =
-    designVariant === 'razor' ? LayoutRazor :
-    designVariant === 'midnight' ? LayoutMidnight :
-    Layout
+    designVariant === 'midnight' ? LayoutMidnight : Layout
   const HomeView =
-    designVariant === 'razor' ? <WebViewRazor tools={activeTools} /> :
-    designVariant === 'midnight' ? <WebViewMidnight tools={activeTools} /> :
-    <WebView tools={activeTools} />
+    designVariant === 'midnight'
+      ? <WebViewMidnight tools={activeTools} />
+      : <WebView tools={activeTools} />
 
   return (
     <Router>

@@ -1,38 +1,33 @@
 /**
  * PaperKnife - Design Variant
- * Canary toggle between three shells:
- *   - 'classic'  : the original warm clay-morphism design (default)
- *   - 'razor'    : a brutalist tech-noir redesign with re-arranged layout
- *   - 'midnight' : the classic layout re-skinned with a modern dark aesthetic
+ * Two shells, user-controlled:
+ *   - 'midnight' (default): modern dark aesthetic
+ *   - 'classic'           : the original warm clay-morphism design
  *
- * Bucketing:
+ * Resolution:
  *   - URL override (?design=...) always wins and persists.
- *   - Otherwise, returns whatever was last persisted in localStorage.
- *   - First-time visitors are bucketed: ROLLOUT_RAZOR % to razor,
- *     ROLLOUT_MIDNIGHT % to midnight, remainder to classic.
- *     The choice is then persisted.
+ *   - Otherwise, whatever the user last picked (header toggle) is restored.
+ *   - First-time visitors get midnight.
+ *
+ * Storage key was bumped to migrate canary users who were randomly bucketed
+ * to classic — they now land on the new default and can flip back via the
+ * header toggle if they prefer.
  */
 
 import { useEffect, useState, useCallback } from 'react'
 
-export type DesignVariant = 'classic' | 'razor' | 'midnight'
+export type DesignVariant = 'classic' | 'midnight'
 
-const STORAGE_KEY = 'pk-design-variant'
-const ROLLOUT_RAZOR = 10
-const ROLLOUT_MIDNIGHT = 10
+const STORAGE_KEY = 'pk-design-choice'
 
 const URL_ALIASES: Record<string, DesignVariant> = {
-  new: 'razor',
-  razor: 'razor',
-  noir: 'razor',
-  brutal: 'razor',
   old: 'classic',
   classic: 'classic',
   original: 'classic',
   light: 'classic',
   midnight: 'midnight',
   dark: 'midnight',
-  obsidian: 'midnight',
+  new: 'midnight',
   modern: 'midnight',
   cool: 'midnight',
 }
@@ -52,7 +47,7 @@ function readUrlOverride(): DesignVariant | null {
 function readStored(): DesignVariant | null {
   try {
     const v = localStorage.getItem(STORAGE_KEY)
-    return v === 'razor' || v === 'classic' || v === 'midnight' ? v : null
+    return v === 'classic' || v === 'midnight' ? v : null
   } catch {
     return null
   }
@@ -70,14 +65,7 @@ export function resolveInitialVariant(): DesignVariant {
     persist(url)
     return url
   }
-  const stored = readStored()
-  if (stored) return stored
-  const roll = Math.random() * 100
-  let v: DesignVariant = 'classic'
-  if (roll < ROLLOUT_RAZOR) v = 'razor'
-  else if (roll < ROLLOUT_RAZOR + ROLLOUT_MIDNIGHT) v = 'midnight'
-  persist(v)
-  return v
+  return readStored() ?? 'midnight'
 }
 
 export function useDesignVariant(): [DesignVariant, (v: DesignVariant) => void] {

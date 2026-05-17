@@ -24,7 +24,7 @@ import {
   Github as GHIcon,
   Heart as HeartIcon,
   Download,
-  Sparkles
+  Sun as SunIcon
 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { Theme, Tool, ToolCategory, ViewMode } from '../../types'
@@ -315,6 +315,19 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
               <InfoIcon size={18} />
               <span className="hidden sm:block">About</span>
             </Link>
+            {variant && onChangeVariant && (
+              <button
+                onClick={() => onChangeVariant('classic')}
+                aria-label="Switch to light mode"
+                title="Light mode"
+                className="p-2 transition-colors"
+                style={{ color: 'var(--mid-stone)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--mid-coral)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--mid-stone)')}
+              >
+                <SunIcon size={20} />
+              </button>
+            )}
             <button onClick={() => setShowHistory(true)} aria-label="View activity history" className="p-2 transition-colors relative" style={{ color: showHistory ? 'var(--mid-coral)' : 'var(--mid-stone)' }}>
               <HistoryIcon size={20} />
               {activity.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: 'var(--mid-coral)', boxShadow: '0 0 0 2px var(--mid-bg)' }} />}
@@ -391,18 +404,6 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
               <p>© 2026 PaperKnife Project. No cookies used.</p>
               <div className="flex gap-6 items-center">
                 <a href="https://github.com/kalki-kgp" target="_blank" className="mid-link no-underline">@kalki-kgp</a>
-                {variant && onChangeVariant && (
-                  <button
-                    onClick={() => onChangeVariant(variant === 'midnight' ? 'classic' : 'midnight')}
-                    className="mid-mono-label transition-colors flex items-center gap-1.5"
-                    style={{ color: 'var(--mid-stone-dim)' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--mid-coral-soft)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--mid-stone-dim)')}
-                    aria-label="Switch design"
-                  >
-                    <Sparkles size={10} /> Design: Midnight · Switch
-                  </button>
-                )}
               </div>
             </div>
           </div>
