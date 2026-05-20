@@ -9,7 +9,6 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist';
-import { PDFDocument } from 'pdf-lib';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -292,21 +291,43 @@ export const pdfHasEncryptionMarker = (data: ArrayBuffer | Uint8Array): boolean 
   return ENCRYPT_MARKER_RE.test(decoder.decode(bytes.subarray(tailStart)))
 }
 
-/** Rebuild the PDF without encryption (load + save alone keeps the Encrypt dictionary). */
+/** Render each page via pdfjs (which decrypts content) and rebuild a clean PDF with pdf-lib. */
 export const stripPdfEncryption = async (file: File, password?: string): Promise<Uint8Array> => {
   const arrayBuffer = await file.arrayBuffer()
-  const sourcePdf = await PDFDocument.load(arrayBuffer, {
-    password: password || undefined,
-    ignoreEncryption: true,
-  } as Parameters<typeof PDFDocument.load>[1])
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(arrayBuffer),
+    password: password || '',
+    cMapUrl: getCMapUrl(),
+    cMapPacked: true,
+  })
+  const pdf = await loadingTask.promise
+  const { PDFDocument } = await import('pdf-lib')
   const newPdf = await PDFDocument.create()
-  const pages = await newPdf.copyPages(sourcePdf, sourcePdf.getPageIndices())
-  pages.forEach((page) => newPdf.addPage(page))
-  const pdfBytes = await newPdf.save()
-  if (pdfHasEncryptionMarker(pdfBytes)) {
-    throw new Error('Could not remove encryption. Check the password and try again.')
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i)
+    const baseViewport = page.getViewport({ scale: 1.0 })
+    const renderViewport = page.getViewport({ scale: 2.0 })
+
+    const canvas = document.createElement('canvas')
+    canvas.width = renderViewport.width
+    canvas.height = renderViewport.height
+    const ctx = canvas.getContext('2d')!
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    await page.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise
+
+    const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.92)
+    const jpegBytes = Uint8Array.from(atob(jpegDataUrl.split(',')[1]), c => c.charCodeAt(0))
+    const img = await newPdf.embedJpg(jpegBytes)
+    const newPage = newPdf.addPage([baseViewport.width, baseViewport.height])
+    newPage.drawImage(img, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height })
+
+    canvas.width = 0
+    canvas.height = 0
   }
-  return pdfBytes
+
+  return await newPdf.save()
 }
 
 export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
