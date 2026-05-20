@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Lock, Unlock, Loader2, X } from 'lucide-react'
-import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
 
-import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
+import { getPdfMetaData, stripPdfEncryption, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
@@ -52,14 +51,17 @@ export default function UnlockTool() {
   }
 
   const performUnlock = async () => {
-    if (!pdfData || (pdfData.isLocked && !password)) return
+    if (!pdfData || (pdfData.isLocked && !password && pdfData.pageCount === 0)) return
     setIsProcessing(true); await new Promise(resolve => setTimeout(resolve, 100))
     try {
-      const result = await unlockPdf(pdfData.file, password)
-      if (!result.success) throw new Error('Incorrect password.')
-      const arrayBuffer = await pdfData.file.arrayBuffer()
-      const pdfDoc = await PDFDocument.load(arrayBuffer, { password: password || undefined, ignoreEncryption: true } as any)
-      const pdfBytes = await pdfDoc.save()
+      if (pdfData.isLocked && pdfData.pageCount === 0) {
+        const result = await unlockPdf(pdfData.file, password)
+        if (!result.success) throw new Error('Incorrect password.')
+      } else if (password) {
+        const result = await unlockPdf(pdfData.file, password)
+        if (!result.success) throw new Error('Incorrect password.')
+      }
+      const pdfBytes = await stripPdfEncryption(pdfData.file, password || undefined)
       const blob = new Blob([pdfBytes as any], { type: 'application/pdf' })
       const url = createUrl(blob)
       addActivity({ name: `${customFileName || 'unlocked'}.pdf`, tool: 'Unlock', size: blob.size, resultUrl: url })
@@ -67,7 +69,7 @@ export default function UnlockTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={performUnlock} disabled={isProcessing || (pdfData?.isLocked && !password)} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20`}>
+    <button onClick={performUnlock} disabled={isProcessing || (pdfData?.isLocked && !password && pdfData?.pageCount === 0)} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 py-4 rounded-2xl text-sm md:p-6 md:rounded-3xl md:text-xl flex items-center justify-center gap-3 shadow-lg shadow-terracotta-500/20`}>
       {isProcessing ? <Loader2 className="animate-spin" /> : <Unlock size={20} />} Unlock PDF
     </button>
   )
@@ -97,13 +99,19 @@ export default function UnlockTool() {
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-6 shadow-sm">
             {!objectUrl ? (
               <div className="space-y-6">
-                {pdfData.isLocked ? (
+                {pdfData.isLocked && pdfData.pageCount === 0 ? (
                   <div>
                     <label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Master Password</label>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-4 border border-transparent focus:border-terracotta-500 outline-none font-bold text-lg text-center dark:text-white" placeholder="••••••••" autoFocus />
                   </div>
+                ) : pdfData.isLocked ? (
+                  <div>
+                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Password (if prompted when opening)</label>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-4 border border-transparent focus:border-terracotta-500 outline-none font-bold text-lg text-center dark:text-white" placeholder="Optional" />
+                    <p className="mt-2 text-[10px] text-gray-400 font-medium text-center">This file has encryption metadata. Click Unlock to remove it.</p>
+                  </div>
                 ) : (
-                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20 text-center"><p className="text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">File is already unlocked!</p></div>
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20 text-center"><p className="text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">No encryption detected</p></div>
                 )}
                 <div>
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-3">Output Filename</label>
