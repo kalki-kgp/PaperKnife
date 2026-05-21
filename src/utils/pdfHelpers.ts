@@ -278,18 +278,9 @@ export const generateThumbnail = async (file: File, pageNum: number = 1): Promis
 const isPasswordRequiredError = (error: { message?: string; name?: string }) =>
   error.message === 'PASSWORD_REQUIRED' || error.name === 'PasswordException'
 
-const ENCRYPT_MARKER_RE = /\/Encrypt[\s\n\r/<>]/
+import { pdfHasEncryptionMarker } from './pdfEncryption'
 
-/** Detect /Encrypt in the PDF (head and trailer; trailer is often beyond the first 256KB). */
-export const pdfHasEncryptionMarker = (data: ArrayBuffer | Uint8Array): boolean => {
-  const bytes = data instanceof Uint8Array ? data : new Uint8Array(data)
-  const decoder = new TextDecoder('latin1')
-  const windowSize = 256 * 1024
-  const head = decoder.decode(bytes.subarray(0, Math.min(bytes.length, windowSize)))
-  if (ENCRYPT_MARKER_RE.test(head)) return true
-  const tailStart = Math.max(0, bytes.length - windowSize)
-  return ENCRYPT_MARKER_RE.test(decoder.decode(bytes.subarray(tailStart)))
-}
+export { pdfHasEncryptionMarker } from './pdfEncryption'
 
 /** Render each page via pdfjs (which decrypts content) and rebuild a clean PDF with pdf-lib. */
 export const stripPdfEncryption = async (file: File, password?: string): Promise<Uint8Array> => {

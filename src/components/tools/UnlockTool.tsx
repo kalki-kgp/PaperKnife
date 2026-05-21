@@ -143,7 +143,7 @@ export default function UnlockTool() {
         faqs={[
           { q: "Can I unlock a PDF without the password?", a: "No. You must know the correct password to unlock the file. PaperKnife does not crack or bypass PDF encryption — it removes protection using the authorized password." },
           { q: "Is it legal to unlock PDFs?", a: "Yes, if you have the right to access the document. Unlocking your own password-protected files or files you've been given the password for is perfectly legal." },
-          { q: "Will unlocking affect the PDF content?", a: "No. The content, formatting, images, and fonts remain identical. Only the password protection is removed." },
+          { q: "Will unlocking affect the PDF content?", a: "Visually, pages should look the same, but Unlock rebuilds the file by re-rendering each page. That removes digital signatures (including UIDAI e-Aadhaar signatures), embedded fonts as vectors, and other PDF-native features. Use Verify Signature on the original signed file before unlocking." },
           { q: "What if the password doesn't work?", a: "Make sure you're entering the correct password including any uppercase letters, numbers, or special characters. PDF passwords are case-sensitive." },
         ]}
       />

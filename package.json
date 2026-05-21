@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "bun test"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.2",
@@ -21,13 +22,16 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@localonlytools/pdf-decrypt": "^1.0.1",
     "@pdfsmaller/pdf-encrypt-lite": "^1.0.1",
     "@types/jszip": "^3.4.0",
+    "asn1js": "^3.0.10",
     "jszip": "^3.10.1",
     "lucide-react": "^0.446.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.530",
     "pixelmatch": "^7.1.0",
+    "pkijs": "^3.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.13.0",
@@ -35,6 +39,7 @@
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.14",
     "@types/pixelmatch": "^5.2.6",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",

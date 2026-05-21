@@ -14,7 +14,8 @@ export default function AndroidToolsView({ tools }: { tools: Tool[] }) {
     Edit: { bg: 'bg-terracotta-50 dark:bg-terracotta-900/10', text: 'text-terracotta-600 dark:text-terracotta-400', icon: 'text-terracotta-500', border: 'border-terracotta-100/50 dark:border-terracotta-900/20' },
     Secure: { bg: 'bg-indigo-50 dark:bg-indigo-900/10', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500', border: 'border-indigo-100/50 dark:border-indigo-900/20' },
     Convert: { bg: 'bg-emerald-50 dark:bg-emerald-900/10', text: 'text-emerald-600 dark:text-emerald-400', icon: 'text-emerald-500', border: 'border-emerald-100/50 dark:border-emerald-900/20' },
-    Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/10', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500', border: 'border-amber-100/50 dark:border-amber-900/20' }
+    Optimize: { bg: 'bg-amber-50 dark:bg-amber-900/10', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500', border: 'border-amber-100/50 dark:border-amber-900/20' },
+    Signatures: { bg: 'bg-teal-50 dark:bg-teal-900/10', text: 'text-teal-600 dark:text-teal-400', icon: 'text-teal-600', border: 'border-teal-100/50 dark:border-teal-900/20' }
   }
 
   const filteredTools = useMemo(() => {

@@ -79,7 +79,8 @@ export default defineConfig({
           'pdfjs-viewer': ['pdfjs-dist'],
           'tesseract-core': ['tesseract.js'],
           'vendor-ui': ['react', 'react-dom', 'react-router-dom', 'lucide-react', 'sonner'],
-          'vendor-utils': ['jszip', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities']
+          'vendor-utils': ['jszip', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+          'signature-crypto': ['pkijs', 'asn1js']
         }
       }
     }

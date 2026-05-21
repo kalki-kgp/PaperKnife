@@ -1,0 +1,842 @@
+{
+  "/Users/onepiece/Developer/PaperKnife/tsconfig.node.json": {
+    "mtime": 1771457126.7703347,
+    "ast_hash": "df562a73dce2f53f022bc93ee20099c2",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tailwind.config.js": {
+    "mtime": 1775076594.19157,
+    "ast_hash": "327128917994985e6e4d1e60d0448b79",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/package.json": {
+    "mtime": 1779316642.0652437,
+    "ast_hash": "bfc19986d094423e744a788f216e844c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tsconfig.json": {
+    "mtime": 1779315332.0585525,
+    "ast_hash": "ff8246f6f0b10f9c7222ccbb22e61a29",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/eslint.config.js": {
+    "mtime": 1779039629.485247,
+    "ast_hash": "4e4a5d27b5b1d3346506c6c565d5c325",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/vite.config.ts": {
+    "mtime": 1779315216.2211082,
+    "ast_hash": "7f3b11fa997e3537a322a2b8c26c4ede",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/postcss.config.js": {
+    "mtime": 1771457126.725388,
+    "ast_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/capacitor.config.ts": {
+    "mtime": 1771457126.7148461,
+    "ast_hash": "97dd53646c4483ad9fd6f136b8155171",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/verifyUidaiSignature.test.ts": {
+    "mtime": 1779346254.8586779,
+    "ast_hash": "8218c986a09686ba5542df9140e38a7e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/pdfSignature.test.ts": {
+    "mtime": 1779316304.9320424,
+    "ast_hash": "fff9f3567e6b628c491d30704f2a2f31",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/trustStore.test.ts": {
+    "mtime": 1779315253.0846224,
+    "ast_hash": "1c43c4bf052ab7dba40488fe79df3788",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/pdfSignatureAppearance.test.ts": {
+    "mtime": 1779315317.8810556,
+    "ast_hash": "f2293e9722fb4e2c16a9f48265af3d3c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/pkcs7.test.ts": {
+    "mtime": 1779315254.351385,
+    "ast_hash": "a1702a06a3dcee2dd704b9774048cacc",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/helpers/pdfTestUtils.ts": {
+    "mtime": 1779346808.9591367,
+    "ast_hash": "f7c87bd783e41734e1958167f2e61163",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/.claude/settings.local.json": {
+    "mtime": 1778838488.5556557,
+    "ast_hash": "e1d998f55a2bed71b9cf82cda105b8d7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/serve.json": {
+    "mtime": 1775728030.5793943,
+    "ast_hash": "d81fd761d9e1e5efd4e3827587a1d8f7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/tesseract/worker.min.js": {
+    "mtime": 1775728030.5994043,
+    "ast_hash": "b1ab464237e687b323da236fff45ba05",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/tesseract/tesseract-core.wasm.js": {
+    "mtime": 1775728030.5982246,
+    "ast_hash": "7ec67b8a67ab4d41b74dd8df49db9224",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/capacitor.settings.gradle": {
+    "mtime": 1771457126.7093828,
+    "ast_hash": "76eee67dab198788b3aef09594f5b35d",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/variables.gradle": {
+    "mtime": 1771457126.7108781,
+    "ast_hash": "4b3fce8ea2a515a9d2e47e74757172ec",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/gradlew": {
+    "mtime": 1771457126.7105045,
+    "ast_hash": "794669d78aef1dd5c7d889ef618b311a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/build.gradle": {
+    "mtime": 1771457126.7092483,
+    "ast_hash": "682315a426653617c6a74fc12bef55b6",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/settings.gradle": {
+    "mtime": 1771457126.7107608,
+    "ast_hash": "f6cd925b3f859e23c3d819fe2459e0e4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/build.gradle": {
+    "mtime": 1771457126.6973238,
+    "ast_hash": "c43b7ae6d45dbdaa4b64a066c44531c4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/capacitor.build.gradle": {
+    "mtime": 1771457126.6974735,
+    "ast_hash": "82da87181400b6348a2da4a88a186fcd",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": {
+    "mtime": 1771457126.6982188,
+    "ast_hash": "fbaf7cc870c663eb52dcf218531c439d",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java": {
+    "mtime": 1771457126.7091062,
+    "ast_hash": "e91b4501c14da821682fa5c26a16d616",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/java/com/paperknife/app/MainActivity.java": {
+    "mtime": 1771457126.6989512,
+    "ast_hash": "9ad81f19c221ea032b96e0f74300a996",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/App.tsx": {
+    "mtime": 1779315216.5358343,
+    "ast_hash": "6c1597e3902ec5e069ae6d4162557d3d",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/main.tsx": {
+    "mtime": 1775275050.3170722,
+    "ast_hash": "e6dac73ca5fdc3403e0645ee2cce524a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/types.ts": {
+    "mtime": 1779315214.850809,
+    "ast_hash": "a8c70e2364899b7531bf2bdb7c2f0d0f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/vite-env.d.ts": {
+    "mtime": 1779039629.4893703,
+    "ast_hash": "f16fbda967445875f4234b0040efd545",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/useObjectURL.ts": {
+    "mtime": 1772543276.2266476,
+    "ast_hash": "a8c6afb47ea4089a5cb6348021f8b54a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/offlineWarmup.ts": {
+    "mtime": 1779312920.8126423,
+    "ast_hash": "61f9616546b1d07fe9c8b592559f09d6",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pdfDiff.ts": {
+    "mtime": 1776423425.4248555,
+    "ast_hash": "cb85f323fa577a0073f471ea130752c5",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pdfWorker.ts": {
+    "mtime": 1773585475.2547493,
+    "ast_hash": "63b93a8cd032d0771365a7d7b6702b47",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/workspacePersistence.ts": {
+    "mtime": 1772543276.2291558,
+    "ast_hash": "8e2c8419a87c4cfd859806e1c61820f7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/offlineStatus.ts": {
+    "mtime": 1779039629.4887524,
+    "ast_hash": "e6e5c5b35026b026ab5a9fbb8ee2284f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pdfHelpers.ts": {
+    "mtime": 1779316666.7963905,
+    "ast_hash": "e59538308d9e0a02da6f75e90a094522",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/viewModeContext.tsx": {
+    "mtime": 1772543397.5871975,
+    "ast_hash": "253e77016b98e3c01ecbde6bb3eaf867",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/haptics.ts": {
+    "mtime": 1772543276.2327905,
+    "ast_hash": "48dde4c2dbf82606477296000e5e6aaf",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pipelineContext.tsx": {
+    "mtime": 1776872041.4809048,
+    "ast_hash": "54011758ebf10c4750dc77d0b860ca25",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/recentActivity.ts": {
+    "mtime": 1772543276.2343237,
+    "ast_hash": "5b9bd4317e08dff33e9a05ed4c784b09",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/designVariant.ts": {
+    "mtime": 1779040408.434887,
+    "ast_hash": "e65e76c27ab26f4c655b459d117af101",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/trustStore.ts": {
+    "mtime": 1779347149.2206185,
+    "ast_hash": "cc68ff3411d40a92ae40c67696a9e0b7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/verifyUidaiSignature.ts": {
+    "mtime": 1779347316.765557,
+    "ast_hash": "f9488bc9ab9a016d2fa0fec3a9469046",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/pkcs7.ts": {
+    "mtime": 1779315332.467231,
+    "ast_hash": "3ae117cd069d4ba8d1aa7cd4b5fd690a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/pdfSignatureAppearance.ts": {
+    "mtime": 1779315334.9725225,
+    "ast_hash": "9c1246b9f9fcc6121adfd6e91ec35686",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/types.ts": {
+    "mtime": 1779346575.8955781,
+    "ast_hash": "f0b6252e83829b4af5d50f03d503af45",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/embeddedRevocation.ts": {
+    "mtime": 1779346567.0450227,
+    "ast_hash": "52ad363b3ee4403848d05f450a5cfa5a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/pdfSignature.ts": {
+    "mtime": 1779347301.8855717,
+    "ast_hash": "e8fcc2f2bbfbedbacc4abf4760dd6e0c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/Settings.tsx": {
+    "mtime": 1779039629.487199,
+    "ast_hash": "22de37d2b69eb939eab3bbdfa91dbbb8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/PdfPreview.tsx": {
+    "mtime": 1775074807.8220046,
+    "ast_hash": "5cf46f9f3f78af5609141ce290fb9c70",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/ScrollToTop.tsx": {
+    "mtime": 1772543397.589394,
+    "ast_hash": "b047aad331f23bf9cdc9bafe44a20ded",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/AndroidHistoryView.tsx": {
+    "mtime": 1775074828.9697773,
+    "ast_hash": "bba70047255b5450d5640c412a5cc7a4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/PrivacyPolicy.tsx": {
+    "mtime": 1773585458.346661,
+    "ast_hash": "1dc5336c13296cd32286b2e6f07581b4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/WebView.tsx": {
+    "mtime": 1779315221.7210362,
+    "ast_hash": "d689aa1cbe39054c7dac49f5a87c7a79",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/AndroidToolsView.tsx": {
+    "mtime": 1779315226.037875,
+    "ast_hash": "d2eaf43086e2ede89a7eaa3796cab2af",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/AndroidView.tsx": {
+    "mtime": 1775074813.754787,
+    "ast_hash": "d9d0b28ad02f087abe97cfb6983b3520",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/Layout.tsx": {
+    "mtime": 1779315225.0733776,
+    "ast_hash": "3b0a1f215cc0630b1e338fb302e25e41",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/Logo.tsx": {
+    "mtime": 1775074238.853164,
+    "ast_hash": "63b7cb672559c121c629b067fdca803e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/Feedback.tsx": {
+    "mtime": 1779039629.4865806,
+    "ast_hash": "4c2e82dff19e70730cc97924af43a1f9",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/Thanks.tsx": {
+    "mtime": 1773585475.1210577,
+    "ast_hash": "52307c4c1c6361d0558cda178e324740",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/About.tsx": {
+    "mtime": 1779039629.486082,
+    "ast_hash": "aed934d820347bce56614e6e9ea86706",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/razor/LayoutRazor.tsx": {
+    "mtime": 1779040162.4274511,
+    "ast_hash": "badb15abf2d4847d53bf8f7191563e72",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/razor/WebViewRazor.tsx": {
+    "mtime": 1779312920.8107808,
+    "ast_hash": "ac960778311e5e1acd6a2ecb5d434129",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/PdfToTextTool.tsx": {
+    "mtime": 1775728030.604257,
+    "ast_hash": "31bbe609b6ce46946f591dc7e9ed91a8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/SignatureTool.tsx": {
+    "mtime": 1779312920.8111393,
+    "ast_hash": "e33b439662f6ba0e0af00ea2fa3324f1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/RearrangeTool.tsx": {
+    "mtime": 1773679691.9574006,
+    "ast_hash": "101218820f3569f3bf12896fab595f0a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/UnlockTool.tsx": {
+    "mtime": 1779315734.9282978,
+    "ast_hash": "0358b832cdc905413248712b0c6416f3",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/ExtractImagesTool.tsx": {
+    "mtime": 1775728030.6037595,
+    "ast_hash": "2dc3a423d9e93db868ba7620054cb8c7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/MetadataTool.tsx": {
+    "mtime": 1773679691.960038,
+    "ast_hash": "18768db3de118d0d6a46f98b4262699c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/PdfToImageTool.tsx": {
+    "mtime": 1773679691.960854,
+    "ast_hash": "1fde490b92807a9f8f85d239977f8d0b",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/ProtectTool.tsx": {
+    "mtime": 1773679691.961603,
+    "ast_hash": "55ff06e0753bba8db4bc9c256429b34b",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/WatermarkTool.tsx": {
+    "mtime": 1773679691.962348,
+    "ast_hash": "1aa1980d8d1e6795f4fe7e94fc8acdac",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/CompareTool.tsx": {
+    "mtime": 1779039629.487895,
+    "ast_hash": "c3760c1a7428ed03c12fe2c824a80481",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/MergeTool.tsx": {
+    "mtime": 1773679691.9636056,
+    "ast_hash": "826557ae393694bd5cf961179837ef10",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/GrayscaleTool.tsx": {
+    "mtime": 1773679691.9645216,
+    "ast_hash": "4dbe4e5e6f8e45fbec52e9ed350a8303",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/CompressTool.tsx": {
+    "mtime": 1776872491.41123,
+    "ast_hash": "92ddafecd4fc6b5ca9d5ef84440106d1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/CropTool.tsx": {
+    "mtime": 1779039629.4881666,
+    "ast_hash": "7c760fee8724f1628e0d292bb210c577",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/PageNumberTool.tsx": {
+    "mtime": 1773679691.966678,
+    "ast_hash": "a800beb9fecbfcc2e0749de17b6cc47a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/ImageToPdfTool.tsx": {
+    "mtime": 1773679691.9673789,
+    "ast_hash": "2f554b22d24c0216e2f15ee3fd8994f1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/VerifySignatureTool.tsx": {
+    "mtime": 1779316647.2425525,
+    "ast_hash": "dbcd99b67b649f2fc25195ddf25ee73b",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/RotateTool.tsx": {
+    "mtime": 1773679691.9680748,
+    "ast_hash": "11dcbeb4984320d00f63eb374c63841f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/SplitTool.tsx": {
+    "mtime": 1773679691.969158,
+    "ast_hash": "97f7bee86d6c5ea7e121cd834658b17c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/RepairTool.tsx": {
+    "mtime": 1773679691.96983,
+    "ast_hash": "6257e71c7a25e69d4eafbcd02d74de8e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/shared/ToolSeoContent.tsx": {
+    "mtime": 1773679608.5306344,
+    "ast_hash": "ab170dec050729cd4ae7ad7d8ad84b44",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/shared/SuccessState.tsx": {
+    "mtime": 1773679608.5313401,
+    "ast_hash": "da90a98ca6a99f2e602e4d8f128c1e19",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/shared/NativeToolLayout.tsx": {
+    "mtime": 1775074834.2734268,
+    "ast_hash": "cca2f8e6228cb0066ee72da99a833bc7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/shared/PrivacyBadge.tsx": {
+    "mtime": 1779039629.4884892,
+    "ast_hash": "5173bd4edff2ec9626a800e7877a199c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/tools/shared/ToolHeader.tsx": {
+    "mtime": 1773679608.5333788,
+    "ast_hash": "3c570c5b29828be2cb57597f0b419cb9",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/midnight/LayoutMidnight.tsx": {
+    "mtime": 1779315225.216902,
+    "ast_hash": "b1bf260d2eeb24476b0243628ff7298c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/components/midnight/WebViewMidnight.tsx": {
+    "mtime": 1779315226.0377162,
+    "ast_hash": "d792384f7fc02f22fae6022d1ff6dab0",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/index.html": {
+    "mtime": 1775728030.5788245,
+    "ast_hash": "fd82400e9c357c20a2037c391c9c227f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/com.paperknife.app.yml": {
+    "mtime": 1773585474.7493658,
+    "ast_hash": "a0c4b133dc2b8424a91fc2c442de8646",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/README.md": {
+    "mtime": 1779312920.80516,
+    "ast_hash": "f766c2bb46d017cd6eb95321934600a1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/AGENTS.md": {
+    "mtime": 1779039629.4850595,
+    "ast_hash": "503ff28adae770cc207b753c80a70e7c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/CLAUDE.md": {
+    "mtime": 1776422915.0896618,
+    "ast_hash": "d196af1c6037313cd9773134c8c3192e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fdroid.yml": {
+    "mtime": 1773585474.770416,
+    "ast_hash": "038c3126fba9e81592f50b26986a89cf",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/ads.txt": {
+    "mtime": 1775728030.5792172,
+    "ast_hash": "381b1f9884ccf3fd021c3e13b7b74d02",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/robots.txt": {
+    "mtime": 1775074888.0032868,
+    "ast_hash": "22a148575aa46733b182ff120fd5465c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/full_description.txt": {
+    "mtime": 1771457126.7166138,
+    "ast_hash": "158b77725a75b69538ec43f4071a80f5",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/title.txt": {
+    "mtime": 1771457126.7204857,
+    "ast_hash": "8c518b57924d6cf8eee8a9e25a0f6426",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/short_description.txt": {
+    "mtime": 1771457126.7203648,
+    "ast_hash": "44ea88bbe1f7bc5ccff5bd4ca1e67296",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10009.txt": {
+    "mtime": 1771457126.7163732,
+    "ast_hash": "9431ec315f6233131b927226c0b032dd",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/100.txt": {
+    "mtime": 1771457126.7154322,
+    "ast_hash": "cf06bd84842bd368151ed906013d1fef",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/101.txt": {
+    "mtime": 1771457126.7164888,
+    "ast_hash": "ec766cf6546f90c2b9390157dd49d2ff",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10008.txt": {
+    "mtime": 1771457126.7162588,
+    "ast_hash": "dd0f72336c33a7a386ccbcd118ba5520",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10003.txt": {
+    "mtime": 1771457126.7156687,
+    "ast_hash": "5814954a89cccf30e60362ea10ef36b8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10002.txt": {
+    "mtime": 1771457126.7155468,
+    "ast_hash": "0faf4aa17f41580700bbe00d4090d8e8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10006.txt": {
+    "mtime": 1771457126.7161362,
+    "ast_hash": "a1142bca0a7047e521011acb26222cdd",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10005.txt": {
+    "mtime": 1771457126.7160168,
+    "ast_hash": "1281f91d07d191d10bbc86c08dca9665",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/changelogs/10004.txt": {
+    "mtime": 1771457126.7158973,
+    "ast_hash": "9a8d50cadf45af4122137c727c3ec427",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/.github/FUNDING.yml": {
+    "mtime": 1773585475.1245759,
+    "ast_hash": "08887fa6665bc8e30dcd83a879317d55",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/.github/workflows/deploy.yml": {
+    "mtime": 1771457126.6960473,
+    "ast_hash": "93d003f816be4f47e278e7151547c540",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/.github/workflows/android-release.yml": {
+    "mtime": 1771457126.6959045,
+    "ast_hash": "98ebb0f1b8a8665c4da961e08253f5f6",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/logos/icon.png": {
+    "mtime": 1775074238.8519874,
+    "ast_hash": "3f99af779255c9e118c7a31b57397887",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/logos/paperknife_logo_1771461208844.jpg": {
+    "mtime": 1773560254.329511,
+    "ast_hash": "702de9c5b175ef45ca23d2ca231633d5",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/logos/og-image.png": {
+    "mtime": 1773560254.3282042,
+    "ast_hash": "0e5d82f6f3907036020e182056fd4fa8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/logos/resumate-promo.png": {
+    "mtime": 1773560254.3315248,
+    "ast_hash": "0ae41b49a7ce2ea2f260d0920b9b81f1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/icons/logo-github.svg": {
+    "mtime": 1771457126.7574365,
+    "ast_hash": "ad416f688c230ed66ba50070ca7757c4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/public/icons/logo.svg": {
+    "mtime": 1771457126.7575636,
+    "ast_hash": "641b714c9f2ffc9941768b4e17ad4862",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png": {
+    "mtime": 1771457126.7050035,
+    "ast_hash": "5b77e8aec8b17eed320a97567c7cb8bf",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
+    "mtime": 1771457126.704859,
+    "ast_hash": "7ed1b3739b83215d0c4a0b4a7f2dcab4",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png": {
+    "mtime": 1771457126.7051368,
+    "ast_hash": "a49547a32c7d9b529af607b033811d81",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-port-xxxhdpi/splash.png": {
+    "mtime": 1771457126.7022893,
+    "ast_hash": "b5b1b22b59abe686c1df0d74a423d034",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png": {
+    "mtime": 1771457126.7042365,
+    "ast_hash": "73b1e06d769fa08a9c3b8328cc15fd75",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
+    "mtime": 1771457126.7040696,
+    "ast_hash": "1956941339dd5fe36d5c66601c89a08d",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png": {
+    "mtime": 1771457126.7046483,
+    "ast_hash": "f43e5674865a00186dd76183cf1f2f8e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-land-xhdpi/splash.png": {
+    "mtime": 1771457126.7000172,
+    "ast_hash": "b8c72969bc1f78aab71a76035360d4af",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable/splash.png": {
+    "mtime": 1771457126.7031217,
+    "ast_hash": "acc976d4a36479233371a53021525c0c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1771457126.7076283,
+    "ast_hash": "ed3696b7c52d9747411a475dbe3fa34a",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
+    "mtime": 1771457126.707301,
+    "ast_hash": "9e029293ab1ae8e3a6a7b7d0b7177e46",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": {
+    "mtime": 1771457126.7079537,
+    "ast_hash": "85addb4159ecd3f76f02fbacd5ec86de",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1771457126.706715,
+    "ast_hash": "4e9584ecc16d1fc75afb798688ce576f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
+    "mtime": 1771457126.706341,
+    "ast_hash": "a3285eeaedda8201f04e7737b9df8421",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": {
+    "mtime": 1771457126.7069523,
+    "ast_hash": "14cde87848553e24d7106f56eb8ceb6f",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-port-hdpi/splash.png": {
+    "mtime": 1771457126.701043,
+    "ast_hash": "5eb10d16c81338abe8bbc033d49638a8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-port-mdpi/splash.png": {
+    "mtime": 1771457126.701273,
+    "ast_hash": "d855a76a5070c8e6fcfd83a27549bdce",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-land-mdpi/splash.png": {
+    "mtime": 1771457126.6996975,
+    "ast_hash": "acc976d4a36479233371a53021525c0c",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-land-hdpi/splash.png": {
+    "mtime": 1771457126.699447,
+    "ast_hash": "f7a80786dd355bd39014e58027aa6e19",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-land-xxhdpi/splash.png": {
+    "mtime": 1771457126.7003925,
+    "ast_hash": "f87e988387b07d843905f38b084929fb",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png": {
+    "mtime": 1771457126.7056212,
+    "ast_hash": "15cdded29b9877ac98c5931024c5da5d",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
+    "mtime": 1771457126.7053347,
+    "ast_hash": "5689511ee4e41a367d0342f37ac48bdf",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png": {
+    "mtime": 1771457126.7059677,
+    "ast_hash": "c890fa4af62a63486d5dea62441ce7ab",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-port-xxhdpi/splash.png": {
+    "mtime": 1771457126.7020533,
+    "ast_hash": "2c1b668364e815256f67b71dcdfa4d6e",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-port-xhdpi/splash.png": {
+    "mtime": 1771457126.701678,
+    "ast_hash": "df100b2a36bdb98b711cca58941728de",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/android/app/src/main/res/drawable-land-xxxhdpi/splash.png": {
+    "mtime": 1771457126.7006562,
+    "ast_hash": "055a69553b16b0bf5f72094a2e459fc7",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/images/icon.png": {
+    "mtime": 1771457126.7169716,
+    "ast_hash": "1d340dc811a8dca5cffdf90d77ad6174",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg": {
+    "mtime": 1771457126.7201982,
+    "ast_hash": "7c7d7e077b90b482bbaff642535372de",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg": {
+    "mtime": 1771457126.7187393,
+    "ast_hash": "71eb51a7765c7ef6251aef0200414259",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/icon-foreground.svg": {
+    "mtime": 1771457126.7111905,
+    "ast_hash": "7882048c515cd2736e7cd5c033eb6fe1",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/icon-only.svg": {
+    "mtime": 1771457126.7113101,
+    "ast_hash": "a11a5648797173671c4b3cff902f8029",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/splash-only.svg": {
+    "mtime": 1771457126.714728,
+    "ast_hash": "a11a5648797173671c4b3cff902f8029",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/icon-background.svg": {
+    "mtime": 1771457126.7110722,
+    "ast_hash": "a54f27965acb67d21fe0aeb6b9ce5790",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/Midnight-Land.png": {
+    "mtime": 1779282668.7652009,
+    "ast_hash": "2be333cbec1d7f237f789081704d5ec8",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/Midnight-Tool.png": {
+    "mtime": 1779282626.3162677,
+    "ast_hash": "b745b676116e336501d46c6773cd68ca",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/SCR-20260412-fmcj.png": {
+    "mtime": 1775951840.833181,
+    "ast_hash": "392d62ed344790fd9473f0b28a74619b",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/screenshot1.jpg": {
+    "mtime": 1771457126.7131333,
+    "ast_hash": "71eb51a7765c7ef6251aef0200414259",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/screenshot2.jpg": {
+    "mtime": 1771457126.7145932,
+    "ast_hash": "7c7d7e077b90b482bbaff642535372de",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/assets/preview/SCR-20260412-fmhe.png": {
+    "mtime": 1775951867.5878239,
+    "ast_hash": "296a4acdc14831507ebde6d69f3828ee",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/decryptPdfBytes.ts": {
+    "mtime": 1779346049.8109787,
+    "ast_hash": "10481f76ed0f3b0d29065559caf7e5e3",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/decryptPdfBytes.test.ts": {
+    "mtime": 1779346056.1983778,
+    "ast_hash": "3604ba7cbbbfcbb37040da9a8d09efb6",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pdfEncryption.ts": {
+    "mtime": 1779316660.950612,
+    "ast_hash": "8764ae3ba4e4815c5690522957960b0b",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/pdfPasswordProbe.ts": {
+    "mtime": 1779346049.8239603,
+    "ast_hash": "4dddd143576b07f8ff0385ff30d29df6",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/pdfEncryptionKey.ts": {
+    "mtime": 1779346605.9816673,
+    "ast_hash": "d76fcf7869eadab4242656f09b09ecee",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/tests/signature/x509RsaSha1.test.ts": {
+    "mtime": 1779347314.8009045,
+    "ast_hash": "f75d09f73f4137b55ae7998554f882fd",
+    "semantic_hash": ""
+  },
+  "/Users/onepiece/Developer/PaperKnife/src/utils/signature/x509RsaSha1.ts": {
+    "mtime": 1779347301.3618214,
+    "ast_hash": "b521ef484998cfd542b281bf5756c4c2",
+    "semantic_hash": ""
+  }
+}

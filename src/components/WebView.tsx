@@ -71,6 +71,11 @@ const categoryColors: Record<ToolCategory, { bg: string, text: string, iconBg: s
     bg: 'bg-amber-50 dark:bg-amber-900/20',
     text: 'text-amber-500',
     iconBg: 'bg-amber-100/50'
+  },
+  Signatures: {
+    bg: 'bg-teal-50 dark:bg-teal-900/20',
+    text: 'text-teal-600',
+    iconBg: 'bg-teal-100/50'
   }
 }
 
@@ -93,7 +98,8 @@ const toolAliases: Record<string, string> = {
   'Extract Images': 'pull pictures assets embedded photos',
   'PDF to Text': 'ocr scan read extract copy selectable words',
   'Repair PDF': 'fix corrupt broken damaged unreadable recover',
-  'Compare PDFs': 'diff differences changes side by side review'
+  'Compare PDFs': 'diff differences changes side by side review',
+  'Verify Signature': 'uidai aadhaar eaadhaar validate pkcs7 cms digital signature offline trust cca india'
 }
 
 const normalizeSearchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
@@ -205,7 +211,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 
-  const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Convert', 'Optimize']
+  const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Convert', 'Optimize', 'Signatures']
   const normalizedSearchQuery = normalizeSearchText(searchQuery)
 
   const categoryTools = useMemo(() => {
