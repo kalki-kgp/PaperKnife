@@ -77,6 +77,7 @@ export default defineConfig({
         manualChunks: {
           'pdf-lib-core': ['pdf-lib'],
           'pdfjs-viewer': ['pdfjs-dist'],
+          'qpdf-wasm': ['@neslinesli93/qpdf-wasm'],
           'tesseract-core': ['tesseract.js'],
           'vendor-ui': ['react', 'react-dom', 'react-router-dom', 'lucide-react', 'sonner'],
           'vendor-utils': ['jszip', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities']
