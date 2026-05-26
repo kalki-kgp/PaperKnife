@@ -47,6 +47,7 @@ const CATEGORY_LABEL: Record<ToolCategory, string> = {
   Secure: 'SECURE',
   Convert: 'CONVERT',
   Optimize: 'OPTIMIZE',
+  Signatures: 'SIGNATURES',
 }
 
 export default function LayoutRazor({
@@ -164,7 +165,7 @@ export default function LayoutRazor({
           acc[t.category].push(t)
           return acc
         },
-        { Edit: [], Secure: [], Convert: [], Optimize: [] },
+        { Edit: [], Secure: [], Convert: [], Optimize: [], Signatures: [] },
       )
   }, [tools])
 

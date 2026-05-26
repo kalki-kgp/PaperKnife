@@ -56,7 +56,8 @@ const categoryAccent: Record<ToolCategory, string> = {
   Edit: 'var(--mid-coral)',
   Secure: 'var(--mid-violet)',
   Convert: 'var(--mid-mint)',
-  Optimize: 'var(--mid-amber)'
+  Optimize: 'var(--mid-amber)',
+  Signatures: 'var(--mid-coral-soft)'
 }
 
 const toolAliases: Record<string, string> = {
@@ -78,7 +79,8 @@ const toolAliases: Record<string, string> = {
   'Extract Images': 'pull pictures assets embedded photos',
   'PDF to Text': 'ocr scan read extract copy selectable words',
   'Repair PDF': 'fix corrupt broken damaged unreadable recover',
-  'Compare PDFs': 'diff differences changes side by side review'
+  'Compare PDFs': 'diff differences changes side by side review',
+  'Verify Signature': 'verify validate digital signature uidai aadhaar cca pkcs7 cms certificate trust acrobat trusted print copy passport'
 }
 
 const normalizeSearchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
@@ -193,7 +195,7 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 
-  const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Convert', 'Optimize']
+  const categories: (ToolCategory | 'All')[] = ['All', 'Edit', 'Secure', 'Signatures', 'Convert', 'Optimize']
   const normalizedSearchQuery = normalizeSearchText(searchQuery)
 
   const categoryTools = useMemo(() => {

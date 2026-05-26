@@ -291,8 +291,54 @@ export const pdfHasEncryptionMarker = (data: ArrayBuffer | Uint8Array): boolean 
   return ENCRYPT_MARKER_RE.test(decoder.decode(bytes.subarray(tailStart)))
 }
 
-/** Render each page via pdfjs (which decrypts content) and rebuild a clean PDF with pdf-lib. */
+const runQpdfDecrypt = async (inputBytes: Uint8Array, password?: string): Promise<Uint8Array> => {
+  const [{ default: initQpdf }, { default: qpdfWasmUrl }] = await Promise.all([
+    import('@jspawn/qpdf-wasm'),
+    import('@jspawn/qpdf-wasm/qpdf.wasm?url'),
+  ])
+  const stderr: string[] = []
+  const stdout: string[] = []
+  const module = await initQpdf({
+    locateFile: (path) => (path.endsWith('qpdf.wasm') ? qpdfWasmUrl : path),
+    print: (text) => stdout.push(text),
+    printErr: (text) => stderr.push(text),
+  })
+  const inputPath = '/paperknife-input.pdf'
+  const outputPath = '/paperknife-output.pdf'
+
+  module.FS.writeFile(inputPath, inputBytes)
+  try {
+    const args = [
+      ...(password ? [`--password=${password}`] : []),
+      '--decrypt',
+      inputPath,
+      outputPath,
+    ]
+    const exitCode = module.callMain(args)
+    if (exitCode !== 0) {
+      throw new Error(stderr.join('\n') || stdout.join('\n') || `qpdf exited with code ${exitCode}`)
+    }
+    return module.FS.readFile(outputPath)
+  } catch (error: any) {
+    const details = [error?.message, ...stderr, ...stdout].filter(Boolean).join('\n')
+    if (/invalid password|password.*incorrect|requires a password|not supplied/i.test(details)) {
+      throw new Error('Incorrect password.')
+    }
+    throw new Error(details || 'Unable to unlock this PDF without quality loss.')
+  } finally {
+    try { module.FS.unlink(inputPath) } catch {}
+    try { module.FS.unlink(outputPath) } catch {}
+  }
+}
+
+/** Remove PDF encryption while preserving the original page objects, fonts, images, and vectors. */
 export const stripPdfEncryption = async (file: File, password?: string): Promise<Uint8Array> => {
+  const arrayBuffer = await file.arrayBuffer()
+  return runQpdfDecrypt(new Uint8Array(arrayBuffer), password)
+}
+
+/** Render each page via pdfjs and rebuild a PDF. Kept only for explicit recovery flows because it rasterizes pages. */
+export const rasterizePdfWithoutEncryption = async (file: File, password?: string): Promise<Uint8Array> => {
   const arrayBuffer = await file.arrayBuffer()
   const loadingTask = pdfjsLib.getDocument({
     data: new Uint8Array(arrayBuffer),

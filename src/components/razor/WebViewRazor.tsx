@@ -56,6 +56,7 @@ const CATEGORY_TINT: Record<ToolCategory, { dot: string; label: string }> = {
   Secure: { dot: '#7CC4FF', label: 'SECURE' },
   Convert: { dot: '#FF6B47', label: 'CONVERT' },
   Optimize: { dot: '#F4D35E', label: 'OPTIMIZE' },
+  Signatures: { dot: '#F47174', label: 'SIGNATURES' },
 }
 
 const toolAliases: Record<string, string> = {

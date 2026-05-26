@@ -49,7 +49,8 @@ const categoryAccent: Record<ToolCategory, string> = {
   Edit: 'var(--mid-coral)',
   Secure: 'var(--mid-violet)',
   Convert: 'var(--mid-mint)',
-  Optimize: 'var(--mid-amber)'
+  Optimize: 'var(--mid-amber)',
+  Signatures: 'var(--mid-coral-soft)'
 }
 
 export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, variant, onChangeVariant }: LayoutProps) {
