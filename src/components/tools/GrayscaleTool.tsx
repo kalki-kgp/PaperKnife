@@ -2,13 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Palette, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -23,7 +21,6 @@ export default function GrayscaleTool() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState('paperknife-grayscale')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -119,7 +116,7 @@ export default function GrayscaleTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={convertToGrayscale} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={convertToGrayscale} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <><Palette size={18} /> Convert to Grayscale <ArrowRight size={18} /></>}
     </button>
   )
@@ -198,7 +195,6 @@ export default function GrayscaleTool() {
           { q: "Is this useful for printing?", a: "Yes. Converting to grayscale before printing ensures your document looks as intended on black-and-white printers and reduces ink costs." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

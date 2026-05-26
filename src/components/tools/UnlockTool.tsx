@@ -7,7 +7,6 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -147,7 +146,6 @@ export default function UnlockTool() {
           { q: "What if the password doesn't work?", a: "Make sure you're entering the correct password including any uppercase letters, numbers, or special characters. PDF passwords are case-sensitive." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

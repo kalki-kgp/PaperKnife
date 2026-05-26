@@ -10,7 +10,6 @@ import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from 
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -207,7 +206,6 @@ export default function RearrangeTool() {
           { q: "Can I rearrange a large PDF?", a: "Yes. The tool handles large documents efficiently since it only modifies page order metadata without re-processing page content." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

@@ -2,8 +2,6 @@ import { Download, Eye, CheckCircle2, Share2, RotateCcw, FileText, Sparkles, X }
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
-import { Capacitor } from '@capacitor/core'
-import { hapticSuccess } from '../../../utils/haptics'
 import PdfPreview from '../../PdfPreview'
 
 interface SuccessStateProps {
@@ -17,10 +15,8 @@ interface SuccessStateProps {
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
   const [promoVisible, setPromoVisible] = useState(true)
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
-    hapticSuccess()
     
     // Auto-Download Logic
     const shouldAutoDownload = localStorage.getItem('autoDownload') === 'true'
@@ -133,12 +129,12 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
           onClick={handleDownload}
           className="w-full bg-gray-900 dark:bg-white text-white dark:text-black p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl font-black text-lg md:text-xl tracking-tight transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
         >
-          <Download size={24} /> {isNative ? 'Save to Device' : 'Download'}
+          <Download size={24} /> Download
         </button>
       </div>
 
       {/* ResuMate Cross-Promo — shows every time after tool completion */}
-      {promoVisible && !isNative && (
+      {promoVisible && (
         <div className="relative mt-2 rounded-2xl bg-gradient-to-br from-[#faf7f2] to-[#fff1e8] dark:from-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 p-5 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#c96442] to-[#2d5a3d]" />
           <button

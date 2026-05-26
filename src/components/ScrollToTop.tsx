@@ -6,7 +6,7 @@ export default function ScrollToTop() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Also scroll all scrollable elements to top (important for the Android/Titan view)
+    // Also scroll nested overflow containers to top on route change
     setTimeout(() => {
       document.querySelectorAll('.overflow-y-auto').forEach(el => {
         el.scrollTo(0, 0);

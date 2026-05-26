@@ -8,7 +8,6 @@ import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -349,7 +348,6 @@ export default function SplitTool() {
           { q: "Are the split pages the same quality as the original?", a: "Yes. Splitting is lossless — each page retains its original quality, fonts, images, and formatting." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

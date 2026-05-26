@@ -17,7 +17,6 @@ import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from 
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -549,7 +548,6 @@ export default function CropTool() {
           { q: "Can I crop one page differently?", a: "You can crop only selected pages, but the same crop rectangle is used for every selected page in this version." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

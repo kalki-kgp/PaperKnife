@@ -7,7 +7,6 @@ import { getPdfMetaData, unlockPdf, loadPdfDocument } from '../../utils/pdfHelpe
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -199,7 +198,6 @@ export default function PageNumberTool() {
           { q: "Can I change the number format?", a: "Currently, PaperKnife uses simple numeric formatting (1, 2, 3...). Custom formats like Roman numerals are not yet supported." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

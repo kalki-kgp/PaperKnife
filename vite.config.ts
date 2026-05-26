@@ -1,6 +1,11 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
+const nodeBuiltinShim = path.resolve(rootDir, 'src/shims/node-empty.ts')
 
 const base = process.env.VITE_BASE || '/'
 const buildId = Date.now().toString(36)
@@ -66,6 +71,13 @@ export default defineConfig({
     })
   ],
   base,
+  resolve: {
+    alias: {
+      fs: nodeBuiltinShim,
+      path: nodeBuiltinShim,
+      crypto: nodeBuiltinShim,
+    },
+  },
   server: {
     host: true
   },

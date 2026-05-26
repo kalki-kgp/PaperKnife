@@ -2,13 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Loader2, Lock, Image as ImageIcon, ArrowRight } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -22,7 +20,6 @@ export default function SignatureTool() {
   const [customFileName, setCustomFileName] = useState('paperknife-signed')
   const [unlockPassword, setUnlockPassword] = useState(''); const [activePage] = useState(1); const [pos, setPos] = useState({ x: 50, y: 50 })
   const [size, setSize] = useState(150); const [thumbnail, setThumbnail] = useState<string | null>(null); const [isDraggingSig, setIsDraggingSig] = useState(false); const [isResizing, setIsResizing] = useState(false)
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -73,7 +70,7 @@ export default function SignatureTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={saveSignedPdf} disabled={isProcessing || !signatureImg} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={saveSignedPdf} disabled={isProcessing || !signatureImg} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <Loader2 className="animate-spin" /> : <>Sign & Save <ArrowRight size={18} /></>}
     </button>
   )
@@ -149,7 +146,6 @@ export default function SignatureTool() {
           { q: "Is my signature data stored?", a: "No. Your signature text is used only during the current session to stamp the PDF. It is never stored, transmitted, or logged." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

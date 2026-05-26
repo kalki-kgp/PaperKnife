@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Trash2, Clock,
-  ChevronRight, Info, Zap, User, DownloadCloud, ListFilter,
+  ChevronRight, Info, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
   FileText as FileTextIcon, Lightbulb
 } from 'lucide-react'
@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
 import { toast } from 'sonner'
 import { NativeToolLayout } from './tools/shared/NativeToolLayout'
-import { hapticImpact } from '../utils/haptics'
-
 // --- Custom UI Components ---
 
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: () => void }) => (
@@ -78,7 +76,6 @@ export default function Settings() {
   
   const [autoWipe, setAutoWipe] = useState(localStorage.getItem('autoWipe') === 'true')
   const [wipeTimer, setWipeTimer] = useState(localStorage.getItem('autoWipeTimer') || '15')
-  const [haptics, setHaptics] = useState(localStorage.getItem('hapticsEnabled') === 'true')
   const [autoDownload, setAutoDownload] = useState(localStorage.getItem('autoDownload') === 'true')
   const [historyLimit, setHistoryLimit] = useState(localStorage.getItem('historyLimit') || '10')
   const [defaultAuthor, setDefaultAuthor] = useState(localStorage.getItem('defaultAuthor') || '')
@@ -87,14 +84,12 @@ export default function Settings() {
     const newVal = !currentVal
     localStorage.setItem(key, String(newVal))
     setter(newVal)
-    hapticImpact()
     toast.success(`${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} updated`)
   }
 
   const handleSelect = (key: string, val: string, setter: (v: string) => void) => {
     localStorage.setItem(key, val)
     setter(val)
-    hapticImpact()
     toast.success('Configuration Saved')
   }
 
@@ -120,16 +115,6 @@ export default function Settings() {
               <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Protocol v1.0.9 • Local</p>
            </div>
         </div>
-
-        {/* Visual Interface */}
-        <SettingGroup title="Interface">
-          <SettingItem
-            icon={Zap} 
-            title="Haptic Feedback" 
-            subtitle="Tactile Response Engine"
-            action={<ToggleSwitch checked={haptics} onChange={() => handleToggle('hapticsEnabled', haptics, setHaptics)} />}
-          />
-        </SettingGroup>
 
         {/* Workflow Automation */}
         <SettingGroup title="Workflow">

@@ -7,7 +7,6 @@ import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -235,7 +234,6 @@ export default function MetadataTool() {
           { q: "Is metadata cleaning important for legal documents?", a: "Yes. Legal and compliance requirements often mandate metadata sanitization before sharing documents externally to prevent data leakage." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

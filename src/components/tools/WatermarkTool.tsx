@@ -7,7 +7,6 @@ import { getPdfMetaData, unlockPdf, loadPdfDocument } from '../../utils/pdfHelpe
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -241,7 +240,6 @@ export default function WatermarkTool() {
           { q: "Can I watermark a password-protected PDF?", a: "Yes. Enter the document password when prompted, and the watermark will be applied while maintaining the document's structure." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

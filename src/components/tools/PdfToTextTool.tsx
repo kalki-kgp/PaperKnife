@@ -2,11 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { Loader2, Copy, FileText, Lock, Check, Download, Zap, ScanSearch, ArrowRight, X } from 'lucide-react'
 import { toast } from 'sonner'
 import Tesseract from 'tesseract.js'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf, downloadFile } from '../../utils/pdfHelpers'
 import { usePipeline } from '../../utils/pipelineContext'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -24,7 +22,6 @@ export default function PdfToTextTool() {
   const [unlockPassword, setUnlockPassword] = useState('')
   const [customFileName, setCustomFileName] = useState('paperknife-extracted')
   const [copied, setCopied] = useState(false)
-  const isNative = Capacitor.isNativePlatform()
 
   // F-Droid compliance check
   const isOcrDisabled = import.meta.env.VITE_DISABLE_OCR === 'true'
@@ -103,7 +100,7 @@ export default function PdfToTextTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={handleStartExtraction} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={handleStartExtraction} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <>Extract Text <ArrowRight size={18} /></>}
     </button>
   )
@@ -186,7 +183,7 @@ export default function PdfToTextTool() {
                 <textarea readOnly value={extractedText} className="w-full h-80 bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 rounded-2xl p-4 font-mono text-[10px] resize-none outline-none focus:border-terracotta-500 dark:text-gray-300 shadow-inner" />
                 <div className="flex gap-3">
                   <button onClick={() => { navigator.clipboard.writeText(extractedText); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="flex-1 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-100 dark:border-white/5 p-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all active:scale-95">{copied ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />} Copy</button>
-                  <button onClick={handleDownload} className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all"><Download size={18} /> {isNative ? 'Save .txt' : 'Download'}</button>
+                  <button onClick={handleDownload} className="flex-[2] bg-gray-900 dark:bg-white text-white dark:text-black p-4 rounded-2xl font-black flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all"><Download size={18} /> Download</button>
                 </div>
                 <button onClick={() => { setExtractedText(''); setProgress(0); setPdfData(null); }} className="w-full py-2 text-gray-400 uppercase font-black text-[10px] hover:text-terracotta-500 transition-colors">Close File</button>
               </div>
@@ -217,7 +214,6 @@ export default function PdfToTextTool() {
           { q: "What about tables and columns?", a: "Complex layouts like tables and multi-column text may not extract perfectly. Text is extracted in reading order as best determined by the PDF structure." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

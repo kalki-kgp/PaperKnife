@@ -2,13 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Image as ImageIcon, Lock, Loader2, X, Sparkles } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -24,7 +22,6 @@ export default function ExtractImagesTool() {
   const [extractedCount, setExtractedCount] = useState(0)
   const [customFileName, setCustomFileName] = useState('extracted-images')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -139,7 +136,7 @@ export default function ExtractImagesTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={extractImages} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={extractImages} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <><Sparkles size={18} /> Extract Raw Images</>}
     </button>
   )
@@ -224,7 +221,6 @@ export default function ExtractImagesTool() {
           { q: "What if my PDF has no images?", a: "If the PDF contains only text and vector graphics (no raster images), the extraction may return few or no results." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

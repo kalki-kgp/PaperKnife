@@ -60,7 +60,7 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 
 ### How to use it
 
-Visit [paperknife.app](https://paperknife.app) — no sign-up, no downloads. You can also install it as a PWA for offline access, or download the Android app.
+Visit [paperknife.app](https://paperknife.app) — no sign-up, no downloads. You can also install it as a PWA for offline access.
 
 ---
 

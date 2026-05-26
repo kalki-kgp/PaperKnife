@@ -7,7 +7,6 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Plus, Loader2, Lock, Share2, Unlock } from 'lucide-react'
 import { toast } from 'sonner'
-import { App } from '@capacitor/app'
 import { loadPdfDocument, renderPageThumbnail, shareFile, unlockPdf } from '../utils/pdfHelpers'
 import { PaperKnifeLogo } from './Logo'
 
@@ -91,16 +90,7 @@ export default function PdfPreview({ file, onClose, onProcess }: PdfPreviewProps
       }
     }
     load()
-
-    // Handle Hardware Back Button
-    const backListener = App.addListener('backButton', () => {
-      onClose()
-    })
-
-    return () => {
-      backListener.then(l => l.remove())
-    }
-  }, [file, onClose])
+  }, [file])
 
   const handleUnlock = async () => {
     if (!password) return

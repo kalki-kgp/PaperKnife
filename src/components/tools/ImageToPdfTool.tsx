@@ -5,11 +5,9 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { addActivity } from '../../utils/recentActivity'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -34,7 +32,6 @@ export default function ImageToPdfTool() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState('paperknife-images-to-pdf')
-  const isNative = Capacitor.isNativePlatform()
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
 
@@ -66,7 +63,7 @@ export default function ImageToPdfTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={convertToPDF} disabled={isProcessing || images.length === 0} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={convertToPDF} disabled={isProcessing || images.length === 0} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> Working...</> : <>Generate PDF <ArrowRight size={18} /></>}
     </button>
   )
@@ -86,7 +83,7 @@ export default function ImageToPdfTool() {
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}><SortableContext items={images.map(img => img.id)} strategy={verticalListSortingStrategy}><div className="space-y-2">{images.map(img => <SortableImageItem key={img.id} id={img.id} img={img} onRemove={(id) => setImages(prev => prev.filter(i => i.id !== id))} />)}</div></SortableContext></DndContext>
           <button onClick={() => fileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-2xl text-gray-400 font-bold text-sm flex items-center justify-center gap-2 hover:border-terracotta-500 hover:text-terracotta-500 transition-all"><Plus size={16} /> Add More</button>
           <div><label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Filename</label><input type="text" value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} className="w-full bg-gray-50 dark:bg-black rounded-xl px-4 py-3 border border-transparent focus:border-terracotta-500 outline-none font-bold text-sm" /></div>
-          {!isNative && <ActionButton />}
+          <ActionButton />
         </div>
       ) : (
         <SuccessState message="PDF Ready!" downloadUrl={downloadUrl} fileName={`${customFileName}.pdf`} onStartOver={() => { setImages([]); setDownloadUrl(null); }} />
@@ -114,7 +111,6 @@ export default function ImageToPdfTool() {
           { q: "Can I reorder images before converting?", a: "Images are arranged in the order they're added. Add them in your preferred sequence for the desired page order." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

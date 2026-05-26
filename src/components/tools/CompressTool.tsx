@@ -3,14 +3,12 @@ import { Zap, Loader2, Plus, X, FileIcon, Download, ChevronLeft, ChevronRight, M
 import { toast } from 'sonner'
 import JSZip from 'jszip'
 import { PDFDocument } from 'pdf-lib'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf, downloadFile } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -281,7 +279,6 @@ export default function CompressTool() {
   // toward smaller files since that's what most users want.
   const [quality, setQuality] = useState<number>(35)
   const [showSuccess, setShowSuccess] = useState(false)
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -797,7 +794,7 @@ export default function CompressTool() {
               <div className="w-16 h-16 bg-terracotta-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Download className="text-white" size={32} />
               </div>
-              <h3 className="text-2xl font-black tracking-tight mb-1">{isNative ? 'Save ZIP Archive' : 'Download ZIP Archive'}</h3>
+              <h3 className="text-2xl font-black tracking-tight mb-1">Download ZIP Archive</h3>
               <p className="text-xs font-bold opacity-60 uppercase tracking-widest">{files.length} Optimized PDFs</p>
             </button>
           )}
@@ -863,7 +860,6 @@ export default function CompressTool() {
           { q: "Is this better than online compression tools?", a: "For privacy, absolutely. Unlike online tools that upload your files to their servers, PaperKnife compresses everything locally. Your sensitive documents never leave your device." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

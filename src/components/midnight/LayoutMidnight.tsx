@@ -13,24 +13,17 @@ import {
   Upload as UploadIcon,
   ChevronRight as ChevronRightIcon,
   ChevronDown as ChevronDownIcon,
-  Plus as PlusIcon,
   Trash2 as Trash2Icon,
   CheckCircle2 as CheckCircleIcon,
-  Home as HomeIcon,
   Info as InfoIcon,
   ArrowLeft as ArrowLeftIcon,
-  LayoutGrid as LayoutGridIcon,
-  Settings as SettingsIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Download,
   Sun as SunIcon
 } from 'lucide-react'
-import { Capacitor } from '@capacitor/core'
-import { Theme, Tool, ToolCategory, ViewMode } from '../../types'
+import { Theme, Tool, ToolCategory } from '../../types'
 import { PaperKnifeLogo } from '../Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../../utils/recentActivity'
-import { hapticImpact } from '../../utils/haptics'
 import { getInitialOfflineProgress, subscribeOfflineStatus, type OfflineProgress } from '../../utils/offlineStatus'
 import type { DesignVariant } from '../../utils/designVariant'
 
@@ -40,7 +33,6 @@ interface LayoutProps {
   toggleTheme?: () => void
   tools: Tool[]
   onFileDrop?: (files: FileList) => void
-  viewMode: ViewMode
   variant?: DesignVariant
   onChangeVariant?: (v: DesignVariant) => void
 }
@@ -52,7 +44,7 @@ const categoryAccent: Record<ToolCategory, string> = {
   Optimize: 'var(--mid-amber)'
 }
 
-export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, variant, onChangeVariant }: LayoutProps) {
+export default function LayoutMidnight({ children, tools, onFileDrop, variant, onChangeVariant }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isDragging, setIsDragging] = useState(false)
@@ -61,10 +53,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
   const [activity, setActivity] = useState<ActivityEntry[]>([])
   const [offlineProgress, setOfflineProgress] = useState<OfflineProgress>(() => getInitialOfflineProgress())
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const isNative = Capacitor.isNativePlatform()
-  const showMobileNav = isNative || viewMode === 'android'
 
-  const isMobileBrowser = !isNative && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
   useEffect(() => {
     if (showHistory) {
@@ -87,7 +76,6 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
   }, [])
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) return
     const hasDraggedFiles = (dataTransfer: DataTransfer | null) => {
       return !!dataTransfer && Array.from(dataTransfer.types).includes('Files')
     }
@@ -130,13 +118,6 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
 
   const isHome = location.pathname === '/'
 
-  const isMainView = isHome ||
-    location.pathname.endsWith('/android-tools') ||
-    location.pathname.endsWith('/android-history') ||
-    location.pathname.endsWith('/settings')
-
-  const shouldShowNav = showMobileNav && isMainView && !activeTool
-
   const isFreshSync = offlineProgress.status === 'preparing'
   const isUpdating = offlineProgress.status === 'updating'
   const isReady = offlineProgress.status === 'ready'
@@ -163,7 +144,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
 
-  const offlineBadge = !showMobileNav && offlineProgress.status !== 'unsupported' && (
+  const offlineBadge = offlineProgress.status !== 'unsupported' && (
     <div className="group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
       style={{
         background: 'rgba(91, 255, 176, 0.06)',
@@ -215,9 +196,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
         </div>
       )}
 
-      {/* Web Header */}
-      {!showMobileNav && (
-        <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 sticky top-0 z-[100]"
+      <header className="flex items-center justify-between px-4 md:px-8 h-16 md:h-20 sticky top-0 z-[100]"
           style={{
             background: 'rgba(11, 11, 18, 0.72)',
             backdropFilter: 'blur(18px) saturate(160%)',
@@ -234,7 +213,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
               ><ArrowLeftIcon size={20} /></button>
             )}
             <Link to="/" aria-label="PaperKnife home" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity shrink-0 no-underline" style={{ color: 'var(--mid-bone)' }}>
-              <PaperKnifeLogo size={Capacitor.isNativePlatform() ? 24 : 28} iconColor="var(--mid-coral)" partColor="currentColor" />
+              <PaperKnifeLogo size={28} iconColor="var(--mid-coral)" partColor="currentColor" />
               <span className="mid-display-tight tracking-tight text-lg md:text-xl hidden xs:block" style={{ color: 'var(--mid-bone)' }}>
                 paper<span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>knife</span>
               </span>
@@ -295,17 +274,6 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
             {offlineBadge}
-            {isMobileBrowser && (
-              <a
-                href="https://github.com/kalki-kgp/PaperKnife/releases/latest"
-                target="_blank"
-                className="hidden xs:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.16em] active:scale-95 transition-all no-underline"
-                style={{ background: 'var(--mid-bone)', color: 'var(--mid-bg)' }}
-              >
-                <Download size={14} strokeWidth={2.5} />
-                Get APK
-              </a>
-            )}
             <Link to="/about" aria-label="About PaperKnife"
               className="p-2 md:px-4 md:py-2 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] transition-all flex items-center gap-2 no-underline"
               style={location.pathname.includes('about')
@@ -334,15 +302,12 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
             </button>
           </div>
         </header>
-      )}
 
-      <main className={`flex-1 min-w-0 ${shouldShowNav ? 'pb-32' : ''}`}>
+      <main className="flex-1 min-w-0">
         {children}
       </main>
 
-      {/* Web Footer */}
-      {!showMobileNav && (
-        <footer className="mt-20 relative z-10" style={{ borderTop: '1px solid var(--mid-hairline-mid)', background: 'rgba(6, 6, 9, 0.6)' }}>
+      <footer className="mt-20 relative z-10" style={{ borderTop: '1px solid var(--mid-hairline-mid)', background: 'rgba(6, 6, 9, 0.6)' }}>
           <div className="max-w-7xl mx-auto px-6 md:px-8 py-10 md:py-12">
 
             <div className="grid grid-cols-2 md:grid-cols-12 gap-8 mb-12">
@@ -408,80 +373,6 @@ export default function LayoutMidnight({ children, tools, onFileDrop, viewMode, 
             </div>
           </div>
         </footer>
-      )}
-
-      {/* Mobile Bottom Navigation */}
-      {shouldShowNav && (
-        <nav className="fixed bottom-0 left-0 right-0 flex items-end justify-between px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3 z-[100]"
-          style={{
-            background: 'rgba(11, 11, 18, 0.9)',
-            backdropFilter: 'blur(20px) saturate(160%)',
-            borderTop: '1px solid var(--mid-hairline-mid)',
-            boxShadow: '0 -8px 32px rgba(0,0,0,0.4)'
-          }}
-        >
-          <button
-            onClick={() => navigate('/')}
-            className="flex flex-col items-center gap-1.5 flex-1 transition-all"
-            style={{ color: location.pathname === '/' ? 'var(--mid-coral)' : 'var(--mid-stone-dim)' }}
-          >
-            <HomeIcon size={24} strokeWidth={location.pathname === '/' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Home</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/android-tools')}
-            className="flex flex-col items-center gap-1.5 flex-1 transition-all"
-            style={{ color: location.pathname === '/android-tools' ? 'var(--mid-coral)' : 'var(--mid-stone-dim)' }}
-          >
-            <LayoutGridIcon size={24} strokeWidth={location.pathname === '/android-tools' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Tools</span>
-          </button>
-
-          <div className="relative -top-8">
-            <button
-              onClick={() => {
-                hapticImpact()
-                const input = document.createElement('input')
-                input.type = 'file'
-                input.accept = '.pdf'
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0]
-                  if (file) onFileDrop?.([file] as any)
-                }
-                input.click()
-              }}
-              aria-label="Upload PDF"
-              className="w-14 h-14 rounded-2xl flex items-center justify-center active:scale-90 transition-transform"
-              style={{
-                background: 'linear-gradient(135deg, var(--mid-coral) 0%, #FF7A5C 100%)',
-                color: '#1A0A12',
-                boxShadow: '0 14px 30px -8px var(--mid-coral-glow), 0 0 0 4px var(--mid-bg)'
-              }}
-            >
-              <PlusIcon size={32} strokeWidth={3} />
-            </button>
-          </div>
-
-          <button
-            onClick={() => navigate('/android-history')}
-            className="flex flex-col items-center gap-1.5 flex-1 transition-all"
-            style={{ color: location.pathname === '/android-history' ? 'var(--mid-coral)' : 'var(--mid-stone-dim)' }}
-          >
-            <HistoryIcon size={24} strokeWidth={location.pathname === '/android-history' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">History</span>
-          </button>
-
-          <Link
-            to="/settings"
-            className="flex flex-col items-center gap-1.5 flex-1 transition-all no-underline"
-            style={{ color: location.pathname.includes('settings') ? 'var(--mid-coral)' : 'var(--mid-stone-dim)' }}
-          >
-            <SettingsIcon size={24} strokeWidth={location.pathname.includes('settings') ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Settings</span>
-          </Link>
-        </nav>
-      )}
 
       {/* Sidebar History Drawer */}
       <aside className={`fixed top-0 right-0 h-screen w-full sm:w-80 z-[150] transition-transform duration-500 ease-out transform ${showHistory ? 'translate-x-0' : 'translate-x-full'}`}

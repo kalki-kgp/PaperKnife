@@ -7,7 +7,6 @@ import { getPdfMetaData, loadPdfDocument, renderPageThumbnail, unlockPdf } from 
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -200,7 +199,6 @@ export default function RotateTool() {
           { q: "Will rotating affect text or image quality?", a: "No. Rotation is a lossless operation that changes the page orientation metadata without re-encoding any content." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

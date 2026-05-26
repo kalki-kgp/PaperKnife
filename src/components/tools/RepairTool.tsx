@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -134,7 +133,6 @@ export default function RepairTool() {
           { q: "Should I keep a backup of the original?", a: "Always recommended. Keep your original file in case you need to try different recovery methods." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

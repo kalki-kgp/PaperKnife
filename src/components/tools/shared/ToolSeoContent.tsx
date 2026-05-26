@@ -1,10 +1,8 @@
 /**
  * SEO content section for tool pages.
  * Renders crawlable text (what it does, how it works, FAQ) below the tool UI.
- * Hidden on native to save screen space.
  */
 
-import { Capacitor } from '@capacitor/core'
 
 interface FaqItem {
   q: string
@@ -21,7 +19,6 @@ interface ToolSeoContentProps {
 }
 
 export default function ToolSeoContent({ title, headline, description, benefits, howItWorks, faqs }: ToolSeoContentProps) {
-  if (Capacitor.isNativePlatform()) return null
 
   return (
     <section className="mt-16 border-t border-gray-100 dark:border-white/5 pt-10 space-y-10 max-w-3xl mx-auto">

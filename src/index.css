@@ -1,12 +1,10 @@
+/* Variant fonts — bunny.net mirror (no Google tracking) */
+@import url('https://fonts.bunny.net/css?family=fraunces:900i,400i|jetbrains-mono:400,500,700');
+@import url('https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|instrument-sans:400,500,600,700|instrument-serif:400i');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* RAZOR variant fonts — served from bunny.net (privacy-friendly Google Fonts mirror, no tracking) */
-@import url('https://fonts.bunny.net/css?family=fraunces:900i,400i|jetbrains-mono:400,500,700');
-
-/* MIDNIGHT variant fonts — same privacy-friendly mirror */
-@import url('https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|instrument-sans:400,500,600,700|instrument-serif:400i');
 
 @font-face {
   font-family: 'Plus Jakarta Sans';

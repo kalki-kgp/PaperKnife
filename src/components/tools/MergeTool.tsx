@@ -4,7 +4,6 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
@@ -12,7 +11,6 @@ import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import { saveWorkspace, getWorkspace, clearWorkspace } from '../../utils/workspacePersistence'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -142,7 +140,6 @@ export default function MergeTool() {
   const [progress, setProgress] = useState(0)
   const [isDraggingGlobal, setIsDraggingGlobal] = useState(false)
   const [hasRestorableWorkspace, setHasRestorableWorkspace] = useState(false)
-  const isNative = Capacitor.isNativePlatform()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -483,13 +480,13 @@ export default function MergeTool() {
             </button>
           )}
 
-          {files.length > 0 && !objectUrl && !isNative && (
+          {files.length > 0 && !objectUrl && (
              <div className="mt-8">
                 <ActionButton />
              </div>
           )}
 
-          {isProcessing && !isNative && (
+          {isProcessing && (
              <div className="mt-8 space-y-4">
                 <div className="w-full bg-gray-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
                    <div className="bg-terracotta-500 h-full transition-all" style={{ width: `${progress}%` }} />
@@ -534,7 +531,6 @@ export default function MergeTool() {
             { q: "Is it safe to merge sensitive documents?", a: "Absolutely. All processing happens locally in your browser using JavaScript. No file data is ever sent to a server. You can even disconnect from the internet before merging." },
           ]}
         />
-        <PrivacyBadge />
       </div>
     </NativeToolLayout>
   )

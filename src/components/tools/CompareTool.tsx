@@ -26,7 +26,6 @@ import {
   type VisualDiffResult,
 } from '../../utils/pdfDiff'
 import { usePipeline } from '../../utils/pipelineContext'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -483,7 +482,6 @@ export default function CompareTool() {
           { q: 'Will the comparison catch font or layout changes?', a: 'Text mode focuses on word changes, so it ignores cosmetic re-layouts. Switch to Visual mode to see any visible difference, including font, layout, color, and image edits.' },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

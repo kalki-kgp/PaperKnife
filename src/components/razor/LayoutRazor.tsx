@@ -16,16 +16,10 @@ import {
   CheckCircle2 as CheckCircleIcon,
   Upload as UploadIcon,
   Github as GHIcon,
-  Plus as PlusIcon,
-  Home as HomeIcon,
-  LayoutGrid as LayoutGridIcon,
-  Settings as SettingsIcon,
   X as XIcon,
 } from 'lucide-react'
-import { Capacitor } from '@capacitor/core'
-import { Tool, ToolCategory, ViewMode } from '../../types'
+import { Tool, ToolCategory } from '../../types'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../../utils/recentActivity'
-import { hapticImpact } from '../../utils/haptics'
 import {
   getInitialOfflineProgress,
   subscribeOfflineStatus,
@@ -37,7 +31,6 @@ interface Props {
   children: React.ReactNode
   tools: Tool[]
   onFileDrop?: (files: FileList) => void
-  viewMode: ViewMode
   variant: DesignVariant
   onChangeVariant: (v: DesignVariant) => void
 }
@@ -53,7 +46,6 @@ export default function LayoutRazor({
   children,
   tools,
   onFileDrop,
-  viewMode,
   onChangeVariant,
 }: Props) {
   const navigate = useNavigate()
@@ -68,19 +60,11 @@ export default function LayoutRazor({
   const [clock, setClock] = useState(() => new Date())
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const isNative = Capacitor.isNativePlatform()
-  const showMobileNav = isNative || viewMode === 'android'
   const isHome = location.pathname === '/'
-  const isMainView =
-    isHome ||
-    location.pathname.endsWith('/android-tools') ||
-    location.pathname.endsWith('/android-history') ||
-    location.pathname.endsWith('/settings')
   const activeTool = useMemo(() => {
     return tools.find((t) => t.path && location.pathname === t.path)
   }, [tools, location.pathname])
 
-  const shouldShowMobileNav = showMobileNav && isMainView && !activeTool
 
   /* History */
   useEffect(() => {
@@ -109,7 +93,6 @@ export default function LayoutRazor({
 
   /* Global drag-and-drop */
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) return
     const hasFiles = (dt: DataTransfer | null) =>
       !!dt && Array.from(dt.types).includes('Files')
 
@@ -195,7 +178,7 @@ export default function LayoutRazor({
       )}
 
       {/* ─── Status rail (desktop only) ───────────────────────────── */}
-      {!showMobileNav && (
+      {(
         <div className="border-b border-[color:var(--pk-hairline)] bg-[color:var(--pk-bg-deep)]/60">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-7 flex items-center justify-between text-[10px] razor-mono text-[color:var(--pk-stone)] uppercase tracking-[0.18em]">
             <div className="flex items-center gap-6">
@@ -219,7 +202,7 @@ export default function LayoutRazor({
       )}
 
       {/* ─── Primary header ───────────────────────────────────────── */}
-      {!showMobileNav && (
+      {(
         <header className="sticky top-0 z-[100] border-b border-[color:var(--pk-hairline)] bg-[color:var(--pk-bg)]/85 backdrop-blur-xl">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4 md:gap-6 min-w-0 flex-1">
@@ -338,12 +321,12 @@ export default function LayoutRazor({
       )}
 
       {/* ─── Main content ─────────────────────────────────────────── */}
-      <main className={`relative z-[2] flex-1 min-w-0 ${shouldShowMobileNav ? 'pb-32' : ''}`}>
+      <main className="relative z-[2] flex-1 min-w-0">
         {children}
       </main>
 
       {/* ─── Footer (desktop) ─────────────────────────────────────── */}
-      {!showMobileNav && (
+      {(
         <footer className="border-t border-[color:var(--pk-hairline)] mt-24 bg-[color:var(--pk-bg-deep)] relative z-[2]">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-14">
             <div className="grid grid-cols-12 gap-8">
@@ -487,79 +470,7 @@ export default function LayoutRazor({
         />
       )}
 
-      {/* ─── Mobile bottom nav ────────────────────────────────────── */}
-      {shouldShowMobileNav && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-[color:var(--pk-bg-deep)] border-t border-[color:var(--pk-hairline-hi)] flex items-end justify-between px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3 z-[100]">
-          <RazorNavBtn
-            active={location.pathname === '/'}
-            label="HOME"
-            onClick={() => navigate('/')}
-            icon={<HomeIcon size={20} />}
-          />
-          <RazorNavBtn
-            active={location.pathname === '/android-tools'}
-            label="TOOLS"
-            onClick={() => navigate('/android-tools')}
-            icon={<LayoutGridIcon size={20} />}
-          />
-          <div className="relative -top-7">
-            <button
-              onClick={() => {
-                hapticImpact()
-                const input = document.createElement('input')
-                input.type = 'file'
-                input.accept = '.pdf'
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0]
-                  if (file) onFileDrop?.([file] as any)
-                }
-                input.click()
-              }}
-              aria-label="Upload PDF"
-              className="w-14 h-14 bg-[color:var(--pk-razor)] text-[color:var(--pk-bg)] flex items-center justify-center active:scale-90 transition-transform shadow-2xl shadow-[color:var(--pk-razor-glow)]"
-            >
-              <PlusIcon size={28} strokeWidth={3} />
-            </button>
-          </div>
-          <RazorNavBtn
-            active={location.pathname === '/android-history'}
-            label="LOG"
-            onClick={() => navigate('/android-history')}
-            icon={<HistoryIcon size={20} />}
-          />
-          <RazorNavBtn
-            active={location.pathname.includes('settings')}
-            label="SET"
-            onClick={() => navigate('/settings')}
-            icon={<SettingsIcon size={20} />}
-          />
-        </nav>
-      )}
     </div>
-  )
-}
-
-function RazorNavBtn({
-  active,
-  label,
-  onClick,
-  icon,
-}: {
-  active: boolean
-  label: string
-  onClick: () => void
-  icon: React.ReactNode
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex flex-col items-center gap-1.5 flex-1 transition-colors ${
-        active ? 'text-[color:var(--pk-razor)]' : 'text-[color:var(--pk-stone-dim)]'
-      }`}
-    >
-      {icon}
-      <span className="razor-label text-[9px]">{label}</span>
-    </button>
   )
 }
 

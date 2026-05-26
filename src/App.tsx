@@ -1,7 +1,7 @@
 /**
  * PaperKnife - The Swiss Army Knife for PDFs
  * Copyright (C) 2026 kalki-kgp
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -9,30 +9,23 @@
  */
 
 import { useState, useEffect, Suspense, lazy } from 'react'
-import { 
+import {
   Layers, Scissors, Zap, Lock, Unlock,
-  RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool, 
+  RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool,
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon
 } from 'lucide-react'
-import { BrowserRouter, HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
-import { Filesystem } from '@capacitor/filesystem'
-import { ViewMode, Tool } from './types'
+import { Tool } from './types'
 import Layout from './components/Layout'
 import LayoutMidnight from './components/midnight/LayoutMidnight'
 import WebViewMidnight from './components/midnight/WebViewMidnight'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
-import { ViewModeProvider } from './utils/viewModeContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
 import { useDesignVariant } from './utils/designVariant'
 import ScrollToTop from './components/ScrollToTop'
 
-// Critical Views - No lazy loading to prevent dynamic import errors on Android
 import WebView from './components/WebView'
-import AndroidView from './components/AndroidView'
-import AndroidToolsView from './components/AndroidToolsView'
-import AndroidHistoryView from './components/AndroidHistoryView'
 import About from './components/About'
 import Thanks from './components/Thanks'
 import PrivacyPolicy from './components/PrivacyPolicy'
@@ -40,7 +33,6 @@ import SettingsView from './components/Settings'
 import Feedback from './components/Feedback'
 const PdfPreview = lazy(() => import('./components/PdfPreview'))
 
-// Tools - lazy loaded so heavy deps (pdf-lib, pdfjs, tesseract) are fetched on-demand
 const MergeTool = lazy(() => import('./components/tools/MergeTool'))
 const SplitTool = lazy(() => import('./components/tools/SplitTool'))
 const ProtectTool = lazy(() => import('./components/tools/ProtectTool'))
@@ -84,21 +76,21 @@ const tools: Tool[] = [
 ]
 
 export const IS_OCR_DISABLED = import.meta.env.VITE_DISABLE_OCR === 'true'
-export const activeTools = IS_OCR_DISABLED 
-  ? tools.filter(t => t.path !== '/pdf-to-text') 
+export const activeTools = IS_OCR_DISABLED
+  ? tools.filter(t => t.path !== '/pdf-to-text')
   : tools
 
 function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => void, onBack?: () => void }) {
   const navigate = useNavigate()
   const { setPipelineFile } = usePipeline()
   const [showMore, setShowMore] = useState(false)
-  
+
   const essentials = activeTools.slice(0, 4)
   const otherTools = activeTools.slice(4)
 
   const handleAction = async (path: string, title: string) => {
     toast.loading(`Importing ${file.name}...`, { id: 'quick-load' })
-    
+
     try {
       const buffer = await file.arrayBuffer()
       setPipelineFile({
@@ -110,7 +102,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
       onClear()
       navigate(path)
       toast.success(`Opened in ${title}`, { id: 'quick-load' })
-    } catch (err) {
+    } catch {
       toast.error('Failed to process file', { id: 'quick-load' })
     }
   }
@@ -118,8 +110,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
   return (
     <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
       <div className="w-full max-w-md bg-[#FFF3F0] dark:bg-zinc-950 rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden border-t border-x border-white/10 sm:border animate-in slide-in-from-bottom-full duration-500 ease-out">
-        
-        {/* Header */}
+
         <div className="p-6 pb-2">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center gap-3">
@@ -139,7 +130,7 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
              <button onClick={onClear} aria-label="Close" className="p-2 bg-gray-100 dark:bg-zinc-900 rounded-full text-gray-400 hover:text-terracotta-500 transition-colors"><X size={18}/></button>
           </div>
         </div>
-        
+
         <div className="px-6 pb-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
            <div>
               <h4 className="text-[10px] font-black text-gray-400 dark:text-zinc-500 uppercase tracking-[0.2em] mb-3 ml-1">Essentials</h4>
@@ -160,14 +151,14 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
            </div>
 
            <div>
-              <button 
+              <button
                 onClick={() => setShowMore(!showMore)}
                 className="w-full flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-terracotta-500 transition-colors shadow-sm"
               >
                 <span>Full Tool Catalog</span>
                 <ChevronDown size={14} className={`transition-transform duration-300 ${showMore ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {showMore && (
                 <div className="grid grid-cols-2 gap-2.5 mt-3 animate-in slide-in-from-top-2 duration-300 pb-2">
                    {otherTools.map(tool => (
@@ -192,14 +183,10 @@ function QuickDropModal({ file, onClear, onBack }: { file: File, onClear: () => 
 }
 
 function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    return Capacitor.isNativePlatform() ? 'android' : 'web'
-  })
   const [droppedFile, setDroppedFile] = useState<File | null>(null)
   const [showQuickDrop, setShowQuickDrop] = useState(false)
   const [designVariant, setDesignVariant] = useDesignVariant()
 
-  // Improved Auto-Wipe Logic
   useEffect(() => {
     const isAutoWipeEnabled = localStorage.getItem('autoWipe') === 'true'
     const timerMinutes = parseInt(localStorage.getItem('autoWipeTimer') || '15')
@@ -226,43 +213,15 @@ function App() {
     root.style.colorScheme = 'light'
   }, [])
 
-  // Handle Intent Files (Android "Open With" / "Share to")
   useEffect(() => {
-    const handleIntentFile = async (uri: string) => {
-      try {
-        toast.loading('Importing file...', { id: 'intent-load' })
-        const fileContent = await Filesystem.readFile({ path: uri })
-        const blob = await (await fetch(`data:application/pdf;base64,${fileContent.data}`)).blob()
-        const fileName = uri.split('/').pop() || 'imported-file.pdf'
-        const file = new File([blob], fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`, { type: 'application/pdf' })
-        setDroppedFile(file)
-        toast.success('File imported successfully!', { id: 'intent-load' })
-      } catch (error) {
-        console.error('Intent load error:', error)
-        toast.error('Failed to import file.', { id: 'intent-load' })
-      }
-    }
-
-    const onFileIntent = (e: any) => {
-      if (e.detail?.uri) {
-        handleIntentFile(e.detail.uri)
-      }
-    }
-
-    window.addEventListener('fileIntent', onFileIntent)
-    return () => window.removeEventListener('fileIntent', onFileIntent)
-  }, [])
-
-  // Handle Global Quick Drop Trigger (from other components)
-  useEffect(() => {
-    const handleGlobalTrigger = (e: any) => {
+    const handleGlobalTrigger = (e: CustomEvent<{ file: File }>) => {
       if (e.detail?.file) {
         setDroppedFile(e.detail.file)
         setShowQuickDrop(true)
       }
     }
-    window.addEventListener('open-quick-drop' as any, handleGlobalTrigger)
-    return () => window.removeEventListener('open-quick-drop' as any, handleGlobalTrigger)
+    window.addEventListener('open-quick-drop', handleGlobalTrigger as EventListener)
+    return () => window.removeEventListener('open-quick-drop', handleGlobalTrigger as EventListener)
   }, [])
 
   const LoadingSpinner = () => (
@@ -278,13 +237,10 @@ function App() {
       return
     }
     setDroppedFile(file)
-    setShowQuickDrop(false) // Show preview first
+    setShowQuickDrop(false)
   }
 
-  // Use HashRouter for native apps (Android APK), BrowserRouter for web (SEO-friendly)
-  const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter
-
-  const ShellComponent: React.ComponentType<any> =
+  const ShellComponent: React.ComponentType<React.ComponentProps<typeof Layout>> =
     designVariant === 'midnight' ? LayoutMidnight : Layout
   const HomeView =
     designVariant === 'midnight'
@@ -292,99 +248,85 @@ function App() {
       : <WebView tools={activeTools} />
 
   return (
-    <Router>
+    <BrowserRouter>
       <ScrollToTop />
-      <ViewModeProvider viewMode={viewMode} setViewMode={setViewMode}>
-        <PipelineProvider>
-          <ShellComponent
-            theme="light"
-            toggleTheme={() => {}}
-            tools={activeTools}
-            onFileDrop={handleGlobalDrop}
-            viewMode={viewMode}
-            variant={designVariant}
-            onChangeVariant={setDesignVariant}
-          >
-            <Toaster
-              position="top-center" 
-              expand={true} 
-              richColors 
-              duration={2000}
-              toastOptions={{
-                className: 'dark:bg-zinc-900 dark:text-white dark:border-white/10 mt-12',
-                style: { zIndex: 1000 }
-              }}
-            />
-            
-            {droppedFile && (
-              <Suspense fallback={<LoadingSpinner />}>
-                <PdfPreview 
-                  file={droppedFile} 
-                  onClose={() => {
-                    setDroppedFile(null)
-                    setShowQuickDrop(false)
-                  }} 
-                  onProcess={() => setShowQuickDrop(true)} 
-                />
-              </Suspense>
-            )}
+      <PipelineProvider>
+        <ShellComponent
+          theme="light"
+          toggleTheme={() => {}}
+          tools={activeTools}
+          onFileDrop={handleGlobalDrop}
+          variant={designVariant}
+          onChangeVariant={setDesignVariant}
+        >
+          <Toaster
+            position="top-center"
+            expand={true}
+            richColors
+            duration={2000}
+            toastOptions={{
+              className: 'dark:bg-zinc-900 dark:text-white dark:border-white/10 mt-12',
+              style: { zIndex: 1000 }
+            }}
+          />
 
-            {droppedFile && showQuickDrop && (
-              <QuickDropModal 
-                file={droppedFile} 
-                onClear={() => {
+          {droppedFile && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <PdfPreview
+                file={droppedFile}
+                onClose={() => {
                   setDroppedFile(null)
                   setShowQuickDrop(false)
-                }} 
-                onBack={() => setShowQuickDrop(false)}
+                }}
+                onProcess={() => setShowQuickDrop(true)}
               />
-            )}
-
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={
-                  viewMode === 'web' ? (
-                    HomeView
-                  ) : (
-                    <AndroidView toggleTheme={() => {}} theme="light" onFileSelect={(file) => handleGlobalDrop([file] as any)} />
-                  )
-                } />
-                <Route path="/android-tools" element={<AndroidToolsView tools={activeTools} />} />
-                <Route path="/android-history" element={<AndroidHistoryView />} />
-                <Route path="/merge" element={<MergeTool />} />
-                <Route path="/split" element={<SplitTool />} />
-                <Route path="/protect" element={<ProtectTool />} />
-                <Route path="/unlock" element={<UnlockTool />} />
-                <Route path="/compress" element={<CompressTool />} />
-                <Route path="/pdf-to-image" element={<PdfToImageTool />} />
-                <Route path="/rotate-pdf" element={<RotateTool />} />
-                <Route path="/crop-pdf" element={<CropTool />} />
-                {!IS_OCR_DISABLED && <Route path="/pdf-to-text" element={<PdfToTextTool />} />}
-                <Route path="/rearrange-pdf" element={<RearrangeTool />} />
-                <Route path="/watermark" element={<WatermarkTool />} />
-                <Route path="/page-numbers" element={<PageNumberTool />} />
-                <Route path="/metadata" element={<MetadataTool />} />
-                <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
-                <Route path="/signature" element={<SignatureTool />} />
-                <Route path="/repair" element={<RepairTool />} />
-                <Route path="/extract-images" element={<ExtractImagesTool />} />
-                <Route path="/grayscale" element={<GrayscaleTool />} />
-                <Route path="/compare" element={<CompareTool />} />
-                <Route path="/about" element={<About viewMode={viewMode} />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/feedback" element={<Feedback tools={activeTools} />} />
-                <Route path="/settings" element={<SettingsView />} />
-                <Route path="/thanks" element={<Thanks />} />
-                {/* Catch-all: redirect unknown routes (e.g. old /home) to homepage */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
             </Suspense>
+          )}
 
-            {/* Chameleon Toggle — hidden, viewMode auto-detects via Capacitor */}
-          </ShellComponent>
-        </PipelineProvider>
-      </ViewModeProvider>
-    </Router>
+          {droppedFile && showQuickDrop && (
+            <QuickDropModal
+              file={droppedFile}
+              onClear={() => {
+                setDroppedFile(null)
+                setShowQuickDrop(false)
+              }}
+              onBack={() => setShowQuickDrop(false)}
+            />
+          )}
+
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={HomeView} />
+              <Route path="/merge" element={<MergeTool />} />
+              <Route path="/split" element={<SplitTool />} />
+              <Route path="/protect" element={<ProtectTool />} />
+              <Route path="/unlock" element={<UnlockTool />} />
+              <Route path="/compress" element={<CompressTool />} />
+              <Route path="/pdf-to-image" element={<PdfToImageTool />} />
+              <Route path="/rotate-pdf" element={<RotateTool />} />
+              <Route path="/crop-pdf" element={<CropTool />} />
+              {!IS_OCR_DISABLED && <Route path="/pdf-to-text" element={<PdfToTextTool />} />}
+              <Route path="/rearrange-pdf" element={<RearrangeTool />} />
+              <Route path="/watermark" element={<WatermarkTool />} />
+              <Route path="/page-numbers" element={<PageNumberTool />} />
+              <Route path="/metadata" element={<MetadataTool />} />
+              <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
+              <Route path="/signature" element={<SignatureTool />} />
+              <Route path="/repair" element={<RepairTool />} />
+              <Route path="/extract-images" element={<ExtractImagesTool />} />
+              <Route path="/grayscale" element={<GrayscaleTool />} />
+              <Route path="/compare" element={<CompareTool />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/feedback" element={<Feedback tools={activeTools} />} />
+              <Route path="/settings" element={<SettingsView />} />
+              <Route path="/thanks" element={<Thanks />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </ShellComponent>
+      </PipelineProvider>
+    </BrowserRouter>
   )
 }
 

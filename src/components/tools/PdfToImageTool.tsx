@@ -2,13 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Image as ImageIcon, Lock, Loader2, ArrowRight, X } from 'lucide-react'
 import JSZip from 'jszip'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -25,7 +23,6 @@ export default function PdfToImageTool() {
   const [format, setFormat] = useState<ImageFormat>('jpg')
   const [customFileName, setCustomFileName] = useState('paperknife-images')
   const [unlockPassword, setUnlockPassword] = useState('')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -97,7 +94,7 @@ export default function PdfToImageTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={convertToImages} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={convertToImages} disabled={isProcessing} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> {progress}%</> : <>Convert to Images <ArrowRight size={18} /></>}
     </button>
   )
@@ -166,7 +163,6 @@ export default function PdfToImageTool() {
           { q: "Will text remain sharp in the images?", a: "Yes. PaperKnife renders pages at high resolution, maintaining crisp text and clear graphics." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }

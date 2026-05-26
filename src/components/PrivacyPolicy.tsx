@@ -3,9 +3,7 @@
  * Absolute data sovereignty and zero-telemetry specification.
  */
 
-import { Shield, EyeOff, ServerOff, Database as DatabaseIcon, History as HistoryIcon, ExternalLink, Lock, Trash2, Cpu } from 'lucide-react'
-import { Capacitor } from '@capacitor/core'
-import { NativeToolLayout } from './tools/shared/NativeToolLayout'
+import { Shield, EyeOff, ServerOff, History as HistoryIcon, Lock, Trash2, Cpu } from 'lucide-react'
 import { PaperKnifeLogo } from './Logo'
 
 // --- WEB VERSION (TITAN HIGH-DENSITY) ---
@@ -107,91 +105,4 @@ const PrivacyWeb = () => {
   )
 }
 
-// --- APK VERSION (TITAN MOBILE NATIVE) ---
-const PrivacyAPK = () => {
-  return (
-    <NativeToolLayout title="Privacy" description="Data Security Spec" actions={null}>
-      <div className="px-4 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-4">
-        
-        {/* Status Card */}
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-6 border border-gray-100 dark:border-white/5 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-[1.25rem] flex items-center justify-center shrink-0 shadow-inner">
-            <Shield size={28} />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-xl font-black tracking-tighter dark:text-white leading-none mb-1">Local Secure</h2>
-            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Zero-Server Enabled</p>
-          </div>
-        </div>
-
-        {/* Protocol List */}
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden divide-y divide-gray-50 dark:divide-white/5">
-           <PrivacyItem 
-             icon={ServerOff} 
-             title="No Cloud Compute" 
-             desc="All PDF logic runs on your phone's CPU. No document data is ever uploaded to any server." 
-             color="text-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20"
-           />
-           <PrivacyItem 
-             icon={EyeOff} 
-             title="No Telemetry" 
-             desc="We use zero tracking, analytics, or user identifiers. Your usage is completely invisible to us." 
-             color="text-blue-500 bg-blue-50 dark:bg-blue-900/20"
-           />
-           <PrivacyItem 
-             icon={DatabaseIcon} 
-             title="RAM Isolation" 
-             desc="Documents stay in volatile memory. They vanish immediately when the application is closed." 
-             color="text-amber-500 bg-amber-50 dark:bg-amber-900/20"
-           />
-           <PrivacyItem 
-             icon={HistoryIcon} 
-             title="Local-Only Logs" 
-             desc="History is stored in your device storage (IndexedDB) and can be cleared instantly in settings." 
-             color="text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-           />
-        </div>
-
-        {/* Pledge Card */}
-        <div className="bg-zinc-900 text-white rounded-[2rem] p-8 relative overflow-hidden">
-           <div className="absolute top-0 right-0 p-6 opacity-10">
-              <Lock size={80} />
-           </div>
-           <h3 className="text-lg font-black uppercase tracking-tight mb-3">Integrity Pledge</h3>
-           <p className="text-xs text-zinc-400 leading-relaxed font-medium mb-6">
-              PaperKnife is a transparent document workspace. We believe your data belongs to you, and we build tools that make that technically enforceable.
-           </p>
-           <a 
-             href="https://github.com/kalki-kgp/PaperKnife" 
-             target="_blank" 
-             className="flex items-center justify-center gap-2 py-3.5 bg-white text-black rounded-xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-transform"
-           >
-              Audit Source Code <ExternalLink size={14} />
-           </a>
-        </div>
-
-        <p className="text-[8px] font-black uppercase text-center text-gray-400 tracking-[0.5em] pt-8">Handcrafted for Security</p>
-      </div>
-    </NativeToolLayout>
-  )
-}
-
-const PrivacyItem = ({ icon: Icon, title, desc, color }: { icon: any, title: string, desc: string, color: string }) => (
-  <div className="p-6 flex gap-5">
-    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-      <Icon size={20} strokeWidth={2.5} />
-    </div>
-    <div className="min-w-0">
-      <h4 className="text-[13px] font-black dark:text-white uppercase tracking-tight mb-1">{title}</h4>
-      <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">{desc}</p>
-    </div>
-  </div>
-)
-
-// --- MAIN ROUTER ---
-export default function PrivacyPolicy() {
-  const isNative = Capacitor.isNativePlatform()
-  const isAndroidView = isNative || document.body.classList.contains('android-mode') || window.location.pathname.includes('android')
-
-  return isAndroidView ? <PrivacyAPK /> : <PrivacyWeb />
-}
+export default PrivacyWeb

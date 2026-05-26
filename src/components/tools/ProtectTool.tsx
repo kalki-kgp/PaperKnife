@@ -3,14 +3,12 @@ import { Lock, ShieldCheck, Loader2, ArrowRight, X } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite'
 import { toast } from 'sonner'
-import { Capacitor } from '@capacitor/core'
 
 import { getPdfMetaData, unlockPdf } from '../../utils/pdfHelpers'
 import { addActivity } from '../../utils/recentActivity'
 import { usePipeline } from '../../utils/pipelineContext'
 import { useObjectURL } from '../../utils/useObjectURL'
 import SuccessState from './shared/SuccessState'
-import PrivacyBadge from './shared/PrivacyBadge'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
 
@@ -32,7 +30,6 @@ export default function ProtectTool() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [unlockPassword, setUnlockPassword] = useState('')
   const [customFileName, setCustomFileName] = useState('paperknife-protected')
-  const isNative = Capacitor.isNativePlatform()
 
   useEffect(() => {
     const pipelined = consumePipelineFile()
@@ -95,7 +92,7 @@ export default function ProtectTool() {
   }
 
   const ActionButton = () => (
-    <button onClick={protectPDF} disabled={isProcessing || !password || password !== confirmPassword} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 ${isNative ? 'py-4 rounded-2xl text-sm' : 'p-6 rounded-3xl text-xl'}`}>
+    <button onClick={protectPDF} disabled={isProcessing || !password || password !== confirmPassword} className={`w-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-terracotta-500/20 p-6 rounded-3xl text-xl`}>
       {isProcessing ? <><Loader2 className="animate-spin" /> Securing...</> : <>Encrypt & Save <ArrowRight size={18} /></>}
     </button>
   )
@@ -168,7 +165,6 @@ export default function ProtectTool() {
           { q: "Is my password stored anywhere?", a: "No. Your password is used locally to encrypt the file and is never stored, transmitted, or logged anywhere." },
         ]}
       />
-      <PrivacyBadge />
     </NativeToolLayout>
   )
 }
