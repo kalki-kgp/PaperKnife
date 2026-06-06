@@ -20,12 +20,21 @@
 /icons/*
   Cache-Control: public, max-age=604800
 
-# HTML pages - short cache with revalidation
+# App shell and service worker - always revalidate
 /*.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/sw.js
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/share-target-sw.js
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/manifest.webmanifest
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 # Sitemap and robots
 /sitemap.xml

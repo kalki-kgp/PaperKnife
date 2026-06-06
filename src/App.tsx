@@ -8,7 +8,7 @@
  * (at your option) any later version.
  */
 
-import { useState, useEffect, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import {
   Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool,
@@ -23,6 +23,12 @@ import WebViewMidnight from './components/midnight/WebViewMidnight'
 import { PipelineProvider, usePipeline } from './utils/pipelineContext'
 import { clearActivity, updateLastSeen, getLastSeen } from './utils/recentActivity'
 import { useDesignVariant } from './utils/designVariant'
+import {
+  consumePendingSharedPdfFile,
+  isPdfFile,
+  subscribeToLaunchedFiles,
+  subscribeToSharedFileReady
+} from './utils/externalFileIntake'
 import ScrollToTop from './components/ScrollToTop'
 
 import WebView from './components/WebView'
@@ -187,6 +193,16 @@ function App() {
   const [showQuickDrop, setShowQuickDrop] = useState(false)
   const [designVariant, setDesignVariant] = useDesignVariant()
 
+  const openExternalFile = useCallback((file: File) => {
+    if (!isPdfFile(file)) {
+      toast.error('Please open a valid PDF file.')
+      return
+    }
+
+    setDroppedFile(file)
+    setShowQuickDrop(false)
+  }, [])
+
   useEffect(() => {
     const isAutoWipeEnabled = localStorage.getItem('autoWipe') === 'true'
     const timerMinutes = parseInt(localStorage.getItem('autoWipeTimer') || '15')
@@ -224,6 +240,51 @@ function App() {
     return () => window.removeEventListener('open-quick-drop', handleGlobalTrigger as EventListener)
   }, [])
 
+  useEffect(() => {
+    let isCancelled = false
+    let isDraining = false
+
+    const drainPendingSharedFile = async () => {
+      if (isCancelled || isDraining) return
+      isDraining = true
+
+      try {
+        const file = await consumePendingSharedPdfFile()
+        if (!isCancelled && file) openExternalFile(file)
+      } catch (error) {
+        console.error('Shared PDF intake failed:', error)
+        if (!isCancelled) toast.error('Could not open the shared PDF.')
+      } finally {
+        isDraining = false
+      }
+    }
+
+    const drainOnFocus = () => {
+      void drainPendingSharedFile()
+    }
+
+    const drainOnVisibility = () => {
+      if (document.visibilityState === 'visible') void drainPendingSharedFile()
+    }
+
+    const unsubscribeLaunchQueue = subscribeToLaunchedFiles(openExternalFile)
+    const unsubscribeSharedReady = subscribeToSharedFileReady(drainOnFocus)
+
+    void drainPendingSharedFile()
+    window.addEventListener('focus', drainOnFocus)
+    window.addEventListener('pageshow', drainOnFocus)
+    document.addEventListener('visibilitychange', drainOnVisibility)
+
+    return () => {
+      isCancelled = true
+      unsubscribeLaunchQueue()
+      unsubscribeSharedReady()
+      window.removeEventListener('focus', drainOnFocus)
+      window.removeEventListener('pageshow', drainOnFocus)
+      document.removeEventListener('visibilitychange', drainOnVisibility)
+    }
+  }, [openExternalFile])
+
   const LoadingSpinner = () => (
     <div className="h-full w-full flex items-center justify-center bg-[#FFF3F0] dark:bg-black min-h-[60vh]">
       <div className="w-8 h-8 border-4 border-terracotta-500 border-t-transparent rounded-full animate-spin"></div>
@@ -232,7 +293,7 @@ function App() {
 
   const handleGlobalDrop = (files: FileList) => {
     const file = files[0]
-    if (!file || file.type !== 'application/pdf') {
+    if (!file || !isPdfFile(file)) {
       toast.error('Please drop a valid PDF file.')
       return
     }

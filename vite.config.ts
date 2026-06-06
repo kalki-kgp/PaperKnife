@@ -34,6 +34,30 @@ export default defineConfig({
         display: 'standalone',
         scope: base,
         start_url: base,
+        launch_handler: {
+          client_mode: ['navigate-existing', 'auto']
+        },
+        file_handlers: [
+          {
+            action: base,
+            accept: {
+              'application/pdf': ['.pdf']
+            }
+          }
+        ],
+        share_target: {
+          action: `${base}share-target`,
+          method: 'POST',
+          enctype: 'multipart/form-data',
+          params: {
+            files: [
+              {
+                name: 'pdf',
+                accept: ['application/pdf', '.pdf']
+              }
+            ]
+          }
+        },
         icons: [
           {
             src: 'logos/icon.png',
@@ -48,6 +72,7 @@ export default defineConfig({
         ]
       },
       workbox: {
+        importScripts: ['share-target-sw.js'],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
