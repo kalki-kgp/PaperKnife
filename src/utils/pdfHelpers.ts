@@ -86,12 +86,11 @@ export const loadPdfDocument = async (file: File) => {
   }
 };
 
-export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0): Promise<string> => {
+export const renderPageThumbnail = async (pdf: any, pageNum: number, scale = 1.0, maxDimension = 1200): Promise<string> => {
   try {
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale: scale });
 
-    const maxDimension = 1200;
     const thumbnailScale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
     const dpr = window.devicePixelRatio || 1;
     const renderScale = scale * thumbnailScale * Math.min(dpr, 2);
