@@ -428,6 +428,9 @@ export default function WebView({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
+      {/* Ad Unit */}
+      <AdUnit className="max-w-4xl mx-auto px-6 py-8" />
+
       {/* CTA Section */}
       <section className="bg-white dark:bg-zinc-950 py-24 rounded-[0_0_80px_80px] shadow-[0_40px_60px_-15px_rgba(230,138,115,0.1)]">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -445,6 +448,153 @@ export default function WebView({ tools }: { tools: Tool[] }) {
             >
               Start Using Tools
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Feedback */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="rounded-[32px] bg-white dark:bg-zinc-900/60 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800 p-8 md:p-10">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-terracotta-500/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-600 dark:text-terracotta-400 mb-4">
+                <MailIcon size={12} />
+                Feedback
+              </div>
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight text-text-main dark:text-white mb-3">Need a tool or found a problem?</h3>
+              <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-xl">
+                Tell me what is missing, what broke, or what would make PaperKnife faster for your workflow. The app prepares the message locally and hands it off to email or GitHub.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <button onClick={() => navigate('/feedback?type=tool')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/25 hover:-translate-y-0.5 transition-all">
+                Request Tool
+              </button>
+              <button onClick={() => navigate('/feedback?type=bug')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-accent-yellow dark:bg-black text-text-main dark:text-white border border-orange-100 dark:border-zinc-800 font-black text-[10px] uppercase tracking-widest rounded-xl shadow-sm hover:-translate-y-0.5 transition-all">
+                Report Problem
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Support / Ko-fi */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#FFF3F0] to-[#FFE8E0] dark:from-zinc-900 dark:to-zinc-800 border border-terracotta-200/50 dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
+          <div className="absolute top-0 right-0 p-8 opacity-10">
+            <HeartIcon className="w-32 h-32 text-terracotta-500" fill="currentColor" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-terracotta-500/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-600 dark:text-terracotta-400 mb-4">
+                <CoffeeIcon size={12} /> Support the Project
+              </div>
+              <h3 className="text-2xl md:text-3xl font-black text-text-main dark:text-white tracking-tight mb-3 leading-tight">
+                Keep PaperKnife <span className="text-terracotta-500">Free & Open.</span>
+              </h3>
+              <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed mb-6 max-w-xl">
+                PaperKnife is built and maintained by one person. If it saves you time or keeps your documents private,
+                consider buying a coffee to keep the project going.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="https://ko-fi.com/kalkikgp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#FF5E5B] text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-[#FF5E5B]/25 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
+                >
+                  <CoffeeIcon size={14} /> Buy me a Coffee
+                </a>
+                <a
+                  href="https://github.com/sponsors/kalki-kgp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-white dark:bg-zinc-800 text-text-main dark:text-white border border-gray-200 dark:border-zinc-700 font-black text-[10px] uppercase tracking-widest rounded-xl shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 no-underline"
+                >
+                  <HeartIcon size={14} className="text-pink-500" /> GitHub Sponsors
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enterprise Self-Hosted */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 dark:from-zinc-900 dark:to-black text-white shadow-clay dark:shadow-none border border-white/10 p-10 md:p-14">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-terracotta-500 via-indigo-500 to-emerald-500" />
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <ServerIcon className="w-40 h-40" />
+          </div>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-400 mb-6">
+              <BuildingIcon size={12} />
+              Enterprise
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 leading-tight">
+              Self-Hosted for <span className="text-terracotta-400">Your Organization.</span>
+            </h3>
+            <p className="text-zinc-400 text-base leading-relaxed mb-8 max-w-xl">
+              Deploy PaperKnife on your own infrastructure. Complete data sovereignty, custom branding,
+              priority support, and compliance-ready documentation for your team.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex items-center gap-2 text-sm text-zinc-300">
+                <Shield size={14} className="text-emerald-400" /> Air-gapped deployment
+              </div>
+              <div className="flex items-center gap-2 text-sm text-zinc-300">
+                <ServerIcon size={14} className="text-indigo-400" /> On-premise hosting
+              </div>
+              <div className="flex items-center gap-2 text-sm text-zinc-300">
+                <BuildingIcon size={14} className="text-amber-400" /> Custom branding
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/feedback?type=enterprise')}
+              className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/30 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
+            >
+              <MailIcon size={14} /> Contact for Licensing
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ResuMate Cross-Promo */}
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#faf7f2] via-[#f0ebe4] to-[#fff1e8] dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
+            {/* Gradient top bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c96442] to-[#2d5a3d]" />
+
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-1 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2d5a3d]/10 dark:bg-emerald-900/20 text-[#2d5a3d] dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest">
+                  <Sparkles size={12} />
+                  Also by PaperKnife
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-[#2c1810] dark:text-white leading-tight">
+                  Working with resumes?<br />
+                  <span className="text-[#c96442]">Build one that lands interviews.</span>
+                </h3>
+                <p className="text-[#8b7355] dark:text-zinc-400 text-base leading-relaxed max-w-lg">
+                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
+                </p>
+                <a
+                  href="https://resumate.paperknife.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-[#c96442]/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#c96442]/30 transition-all duration-300 no-underline"
+                >
+                  <FileTextIcon size={16} />
+                  Try ResuMate — It's Free
+                </a>
+              </div>
+
+              {/* Visual */}
+              <div className="hidden md:flex w-36 h-36 rounded-[28px] bg-gradient-to-br from-[#c96442] to-[#2d5a3d] items-center justify-center shadow-xl shadow-[#c96442]/20 shrink-0 overflow-hidden">
+                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -509,156 +659,6 @@ export default function WebView({ tools }: { tools: Tool[] }) {
               <p className="px-8 pb-5 text-sm text-text-muted dark:text-zinc-400 leading-relaxed">{item.a}</p>
             </details>
           ))}
-        </div>
-      </section>
-
-      {/* Ad Unit */}
-      <AdUnit className="max-w-4xl mx-auto px-6 mb-8" />
-
-      {/* Feedback */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="rounded-[32px] bg-white dark:bg-zinc-900/60 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800 p-8 md:p-10">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-terracotta-500/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-600 dark:text-terracotta-400 mb-4">
-                <MailIcon size={12} />
-                Feedback
-              </div>
-              <h3 className="text-2xl md:text-3xl font-black tracking-tight text-text-main dark:text-white mb-3">Need a tool or found a problem?</h3>
-              <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-xl">
-                Tell me what is missing, what broke, or what would make PaperKnife faster for your workflow. The app prepares the message locally and hands it off to email or GitHub.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-              <button onClick={() => navigate('/feedback?type=tool')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/25 hover:-translate-y-0.5 transition-all">
-                Request Tool
-              </button>
-              <button onClick={() => navigate('/feedback?type=bug')} className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-accent-yellow dark:bg-black text-text-main dark:text-white border border-orange-100 dark:border-zinc-800 font-black text-[10px] uppercase tracking-widest rounded-xl shadow-sm hover:-translate-y-0.5 transition-all">
-                Report Problem
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enterprise Self-Hosted */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 dark:from-zinc-900 dark:to-black text-white shadow-clay dark:shadow-none border border-white/10 p-10 md:p-14">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-terracotta-500 via-indigo-500 to-emerald-500" />
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-            <ServerIcon className="w-40 h-40" />
-          </div>
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-400 mb-6">
-              <BuildingIcon size={12} />
-              Enterprise
-            </div>
-            <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 leading-tight">
-              Self-Hosted for <span className="text-terracotta-400">Your Organization.</span>
-            </h3>
-            <p className="text-zinc-400 text-base leading-relaxed mb-8 max-w-xl">
-              Deploy PaperKnife on your own infrastructure. Complete data sovereignty, custom branding,
-              priority support, and compliance-ready documentation for your team.
-            </p>
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2 text-sm text-zinc-300">
-                <Shield size={14} className="text-emerald-400" /> Air-gapped deployment
-              </div>
-              <div className="flex items-center gap-2 text-sm text-zinc-300">
-                <ServerIcon size={14} className="text-indigo-400" /> On-premise hosting
-              </div>
-              <div className="flex items-center gap-2 text-sm text-zinc-300">
-                <BuildingIcon size={14} className="text-amber-400" /> Custom branding
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/feedback?type=enterprise')}
-              className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-terracotta-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-terracotta-500/30 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
-            >
-              <MailIcon size={14} /> Contact for Licensing
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Support / Ko-fi */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#FFF3F0] to-[#FFE8E0] dark:from-zinc-900 dark:to-zinc-800 border border-terracotta-200/50 dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <HeartIcon className="w-32 h-32 text-terracotta-500" fill="currentColor" />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-terracotta-500/10 rounded-full text-xs font-bold uppercase tracking-widest text-terracotta-600 dark:text-terracotta-400 mb-4">
-                <CoffeeIcon size={12} /> Support the Project
-              </div>
-              <h3 className="text-2xl md:text-3xl font-black text-text-main dark:text-white tracking-tight mb-3 leading-tight">
-                Keep PaperKnife <span className="text-terracotta-500">Free & Open.</span>
-              </h3>
-              <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed mb-6 max-w-xl">
-                PaperKnife is built and maintained by one person. If it saves you time or keeps your documents private,
-                consider buying a coffee to keep the project going.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://ko-fi.com/kalkikgp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#FF5E5B] text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-[#FF5E5B]/25 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
-                >
-                  <CoffeeIcon size={14} /> Buy me a Coffee
-                </a>
-                <a
-                  href="https://github.com/sponsors/kalki-kgp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-white dark:bg-zinc-800 text-text-main dark:text-white border border-gray-200 dark:border-zinc-700 font-black text-[10px] uppercase tracking-widest rounded-xl shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 no-underline"
-                >
-                  <HeartIcon size={14} className="text-pink-500" /> GitHub Sponsors
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ResuMate Cross-Promo */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#faf7f2] via-[#f0ebe4] to-[#fff1e8] dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
-            {/* Gradient top bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c96442] to-[#2d5a3d]" />
-
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <div className="flex-1 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2d5a3d]/10 dark:bg-emerald-900/20 text-[#2d5a3d] dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest">
-                  <Sparkles size={12} />
-                  Also by PaperKnife
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-[#2c1810] dark:text-white leading-tight">
-                  Working with resumes?<br />
-                  <span className="text-[#c96442]">Build one that lands interviews.</span>
-                </h3>
-                <p className="text-[#8b7355] dark:text-zinc-400 text-base leading-relaxed max-w-lg">
-                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
-                </p>
-                <a
-                  href="https://resumate.paperknife.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-[#c96442]/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#c96442]/30 transition-all duration-300 no-underline"
-                >
-                  <FileTextIcon size={16} />
-                  Try ResuMate — It's Free
-                </a>
-              </div>
-
-              {/* Visual */}
-              <div className="hidden md:flex w-36 h-36 rounded-[28px] bg-gradient-to-br from-[#c96442] to-[#2d5a3d] items-center justify-center shadow-xl shadow-[#c96442]/20 shrink-0 overflow-hidden">
-                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>
