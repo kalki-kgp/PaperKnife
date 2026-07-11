@@ -12,7 +12,7 @@ import { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import {
   Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool,
-  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon
+  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon, FileType2
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
@@ -58,6 +58,7 @@ const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesToo
 const GrayscaleTool = lazy(() => import('./components/tools/GrayscaleTool'))
 const CompareTool = lazy(() => import('./components/tools/CompareTool'))
 const CropTool = lazy(() => import('./components/tools/CropTool'))
+const WordToPdfTool = lazy(() => import('./components/tools/WordToPdfTool'))
 
 const tools: Tool[] = [
   { title: 'Merge PDF', desc: 'Combine multiple PDF files into one document.', icon: Layers, implemented: true, path: '/merge', category: 'Edit', color: 'text-terracotta-500', bg: 'bg-terracotta-50 dark:bg-terracotta-900/20' },
@@ -77,6 +78,7 @@ const tools: Tool[] = [
   { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert', color: 'text-teal-500', bg: 'bg-teal-50 dark:bg-teal-900/20' },
   { title: 'Extract Images', desc: 'Pull out all original images embedded in a PDF.', icon: FileImage, implemented: true, path: '/extract-images', category: 'Convert', color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
   { title: 'PDF to Text', desc: 'Extract plain text from your PDF documents.', icon: FileText, implemented: true, path: '/pdf-to-text', category: 'Convert', color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/20' },
+  { title: 'Word to PDF', desc: 'Convert Word (.docx) documents into a shareable PDF.', icon: FileType2, implemented: true, path: '/word-to-pdf', category: 'Convert', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
   { title: 'Repair PDF', desc: 'Attempt to fix corrupted or unreadable documents.', icon: Wrench, implemented: true, path: '/repair', category: 'Optimize', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
   { title: 'Compare PDFs', desc: 'Spot differences between two documents, side by side.', icon: GitCompare, implemented: true, path: '/compare', category: 'Edit', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' },
 ]
@@ -377,6 +379,7 @@ function App() {
               <Route path="/extract-images" element={<ExtractImagesTool />} />
               <Route path="/grayscale" element={<GrayscaleTool />} />
               <Route path="/compare" element={<CompareTool />} />
+              <Route path="/word-to-pdf" element={<WordToPdfTool />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/feedback" element={<Feedback tools={activeTools} />} />
