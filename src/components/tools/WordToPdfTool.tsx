@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Loader2, Upload, ArrowRight, AlertTriangle } from 'lucide-react'
+import { Loader2, Upload, ArrowRight, AlertTriangle, Image as ImageIcon, Type } from 'lucide-react'
 import { PDFDocument } from 'pdf-lib'
 import { renderAsync } from 'docx-preview'
 import html2canvas from 'html2canvas'
 import { toast } from 'sonner'
 
 import { addActivity } from '../../utils/recentActivity'
+import { convertDocxToVectorPdf } from '../../utils/docxToPdfVector'
 import SuccessState from './shared/SuccessState'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
+
+type OutputMode = 'raster' | 'vector'
 
 const DOCX_EXT = /\.docx$/i
 const CSS_PX_TO_PT = 72 / 96
@@ -31,6 +34,7 @@ export default function WordToPdfTool() {
   const previewRef = useRef<HTMLDivElement>(null)
 
   const [file, setFile] = useState<File | null>(null)
+  const [mode, setMode] = useState<OutputMode>('raster')
   const [isRendering, setIsRendering] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
@@ -88,13 +92,37 @@ export default function WordToPdfTool() {
     }
   }, [file])
 
-  const convertToPdf = useCallback(async () => {
+  // Rasterize the rendered preview (faithful look, no text layer).
+  const rasterizePreview = useCallback(async () => {
     const container = previewRef.current
-    if (!container) return
+    if (!container) throw new Error('Preview not ready')
 
     const pages = Array.from(container.querySelectorAll<HTMLElement>('section.docx'))
     const targets = pages.length > 0 ? pages : Array.from(container.querySelectorAll<HTMLElement>('.docx-wrapper'))
-    if (targets.length === 0) {
+    if (targets.length === 0) throw new Error('Document is still loading')
+
+    const pdfDoc = await PDFDocument.create()
+    for (const target of targets) {
+      const canvas = await html2canvas(target, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false,
+      })
+      const pngBytes = await canvasToPngBytes(canvas)
+      const pngImage = await pdfDoc.embedPng(pngBytes)
+
+      const widthPt = target.offsetWidth * CSS_PX_TO_PT
+      const heightPt = target.offsetHeight * CSS_PX_TO_PT
+      const page = pdfDoc.addPage([widthPt, heightPt])
+      page.drawImage(pngImage, { x: 0, y: 0, width: widthPt, height: heightPt })
+    }
+    return pdfDoc.save()
+  }, [])
+
+  const convertToPdf = useCallback(async () => {
+    if (!file) return
+    if (mode === 'raster' && !previewRef.current?.querySelector('.docx-wrapper')) {
       toast.error('Nothing to convert yet — the document is still loading.')
       return
     }
@@ -103,25 +131,10 @@ export default function WordToPdfTool() {
     await new Promise(resolve => setTimeout(resolve, 50))
 
     try {
-      const pdfDoc = await PDFDocument.create()
+      const pdfBytes = mode === 'vector'
+        ? await convertDocxToVectorPdf(await file.arrayBuffer())
+        : await rasterizePreview()
 
-      for (const target of targets) {
-        const canvas = await html2canvas(target, {
-          scale: 2,
-          backgroundColor: '#ffffff',
-          useCORS: true,
-          logging: false,
-        })
-        const pngBytes = await canvasToPngBytes(canvas)
-        const pngImage = await pdfDoc.embedPng(pngBytes)
-
-        const widthPt = target.offsetWidth * CSS_PX_TO_PT
-        const heightPt = target.offsetHeight * CSS_PX_TO_PT
-        const page = pdfDoc.addPage([widthPt, heightPt])
-        page.drawImage(pngImage, { x: 0, y: 0, width: widthPt, height: heightPt })
-      }
-
-      const pdfBytes = await pdfDoc.save()
       const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       setDownloadUrl(url)
@@ -132,7 +145,7 @@ export default function WordToPdfTool() {
     } finally {
       setIsProcessing(false)
     }
-  }, [customFileName])
+  }, [customFileName, file, mode, rasterizePreview])
 
   const reset = () => {
     setFile(null)
@@ -197,11 +210,38 @@ export default function WordToPdfTool() {
             )}
           </div>
 
+          <div>
+            <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Output style</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setMode('raster')}
+                className={`flex items-start gap-2.5 p-3 rounded-2xl border text-left transition-all ${mode === 'raster' ? 'border-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20' : 'border-gray-100 dark:border-white/5 bg-white dark:bg-zinc-900'}`}
+              >
+                <ImageIcon size={16} className={`shrink-0 mt-0.5 ${mode === 'raster' ? 'text-terracotta-500' : 'text-gray-400'}`} />
+                <span className="min-w-0">
+                  <span className="block text-xs font-black text-gray-900 dark:text-white">Faithful</span>
+                  <span className="block text-[10px] text-gray-400 leading-tight">Exact look, text as image</span>
+                </span>
+              </button>
+              <button
+                onClick={() => setMode('vector')}
+                className={`flex items-start gap-2.5 p-3 rounded-2xl border text-left transition-all ${mode === 'vector' ? 'border-terracotta-500 bg-terracotta-50 dark:bg-terracotta-900/20' : 'border-gray-100 dark:border-white/5 bg-white dark:bg-zinc-900'}`}
+              >
+                <Type size={16} className={`shrink-0 mt-0.5 ${mode === 'vector' ? 'text-terracotta-500' : 'text-gray-400'}`} />
+                <span className="min-w-0">
+                  <span className="block text-xs font-black text-gray-900 dark:text-white">Selectable text</span>
+                  <span className="block text-[10px] text-gray-400 leading-tight">Searchable, lighter file</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
           <div className="flex gap-2 items-start p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
             <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
             <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-              Best-effort conversion. The PDF keeps the document's look but text is rendered as an image (not selectable).
-              Complex tables, multi-column layouts, and embedded fonts may differ from Word.
+              {mode === 'raster'
+                ? "Best-effort conversion. The PDF mirrors the document's look, but text is rendered as an image (not selectable). Complex tables, multi-column layouts, and embedded fonts may differ from Word."
+                : 'Best-effort conversion. Text stays real and selectable, and the file is smaller — but exact spacing, columns, and complex tables are simplified. Choose Faithful if layout must match Word precisely.'}
             </p>
           </div>
 
@@ -244,7 +284,7 @@ export default function WordToPdfTool() {
         ]}
         faqs={[
           { q: 'Which Word formats are supported?', a: 'PaperKnife supports the modern .docx format. Legacy .doc files should be re-saved as .docx in Word or Google Docs first.' },
-          { q: 'Is the PDF text selectable?', a: 'This tool renders each page as a high-resolution image for faithful layout, so text is not selectable. It is ideal for sharing and printing.' },
+          { q: 'Is the PDF text selectable?', a: "Your choice. 'Faithful' mode renders each page as a high-resolution image that matches Word's layout exactly (text is not selectable). 'Selectable text' mode rebuilds the document with real, searchable, copy-pasteable text and a smaller file size, at the cost of some layout precision." },
           { q: 'Will my formatting be preserved?', a: 'Typical documents — headings, paragraphs, lists, and images — render closely to the original. Complex tables, multi-column layouts, and embedded fonts may differ slightly.' },
           { q: 'Are my files uploaded anywhere?', a: 'No. Parsing and conversion happen entirely in your browser. No file bytes are ever sent to a server.' },
         ]}
