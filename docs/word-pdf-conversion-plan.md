@@ -1,8 +1,18 @@
 # Plan: Word ⇄ PDF Conversion
 
-> Status: **Proposal / not implemented.** This document is the plan only.
+> Status: **Phase 1 & 2 shipped** (live at `paperknife.app/word-to-pdf`).
+> Phase 3 (PDF → Word) deliberately **deferred** — see rationale below.
 > Origin: user feature request (`paperknife.app/feedback`) for "word to pdf and
 > vice-versa (not just extracting text)".
+>
+> - **Phase 1 ✅** Word → PDF, rasterized (faithful look). `WordToPdfTool.tsx`
+>   via `docx-preview` + `html2canvas` + `pdf-lib`.
+> - **Phase 2 ✅** Selectable-text (vector) mode toggle. `docxToPdfVector.ts`
+>   via `mammoth` → pdf-lib text layout: headings, bold/italic, underline,
+>   strikethrough, links, ordered/nested lists, images, basic tables (bold +
+>   shaded headers), word wrapping, pagination.
+> - **Phase 3 ⏸ deferred** PDF → Word stays "not yet" over "bad": a client-side
+>   converter is inherently low-fidelity and the biggest reputational risk.
 
 ## Goal
 
@@ -69,10 +79,12 @@ as the safe default.
 
 ## Phases
 
-- **Phase 1:** Word → PDF, rasterized, single output. Smallest useful slice.
-- **Phase 2:** Vector/selectable-text mode where layout permits; quality tuning.
-- **Phase 3:** PDF → Word (`.docx`) as explicit best-effort/low-fidelity, or drop
-  if quality can't clear a usefulness bar client-side. Re-evaluate after Phase 1.
+- **Phase 1 ✅ (shipped):** Word → PDF, rasterized, single output.
+- **Phase 2 ✅ (shipped):** Vector/selectable-text mode via a `mammoth` →
+  pdf-lib layout engine, offered as a toggle alongside the raster path.
+- **Phase 3 ⏸ (deferred):** PDF → Word (`.docx`). Re-evaluated after Phase 1 and
+  held: client-side output can't clear a usefulness bar without a server, so we
+  keep it "not yet" rather than ship a broken-looking feature.
 
 ## Risks / open questions
 
@@ -84,8 +96,8 @@ as the safe default.
 
 ## Acceptance criteria (Phase 1)
 
-- [ ] Upload a `.docx`, preview/convert, download a PDF — all on-device.
-- [ ] Typical text document (headings, paragraphs, lists, basic images) renders
+- [x] Upload a `.docx`, preview/convert, download a PDF — all on-device.
+- [x] Typical text document (headings, paragraphs, lists, basic images) renders
       legibly and close to source.
-- [ ] Zero network requests carrying user file content.
-- [ ] Lazy-loaded; `bun run lint` clean; `bun run build` passes.
+- [x] Zero network requests carrying user file content.
+- [x] Lazy-loaded; `bun run lint` clean; `bun run build` passes.
