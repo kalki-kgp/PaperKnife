@@ -35,6 +35,7 @@ const HEADING_SIZES: Record<string, number> = { h1: 24, h2: 19, h3: 16, h4: 14, 
 const LINK_COLOR = rgb(0.12, 0.33, 0.74)
 const TEXT_COLOR = rgb(0.1, 0.1, 0.1)
 const TABLE_BORDER = rgb(0.8, 0.8, 0.8)
+const TABLE_HEADER_FILL = rgb(0.94, 0.94, 0.94)
 
 interface Fonts {
   regular: PDFFont
@@ -46,6 +47,8 @@ interface Fonts {
 interface InlineCtx {
   bold: boolean
   italic: boolean
+  underline: boolean
+  strike: boolean
   link?: string
   sup: boolean
   sub: boolean
@@ -56,15 +59,22 @@ interface Token {
   br?: boolean
   bold: boolean
   italic: boolean
+  underline: boolean
+  strike: boolean
   link?: string
   sup: boolean
   sub: boolean
 }
 
+interface TableCell {
+  tokens: Token[]
+  header: boolean
+}
+
 type Block =
   | { kind: 'para'; tokens: Token[]; size: number; bold: boolean; indent: number; marker?: string; align: 'left' | 'center' | 'right'; gapAfter: number }
   | { kind: 'image'; data: Uint8Array; isPng: boolean }
-  | { kind: 'table'; rows: Token[][][] }
+  | { kind: 'table'; rows: TableCell[][] }
   | { kind: 'rule' }
   | { kind: 'space'; height: number }
 
@@ -95,7 +105,7 @@ function extractInline(node: Node, ctx: InlineCtx, out: Token[]) {
     const raw = node.textContent ?? ''
     const words = raw.split(/\s+/).filter(Boolean)
     for (const word of words) {
-      out.push({ text: word, bold: ctx.bold, italic: ctx.italic, link: ctx.link, sup: ctx.sup, sub: ctx.sub })
+      out.push({ text: word, bold: ctx.bold, italic: ctx.italic, underline: ctx.underline, strike: ctx.strike, link: ctx.link, sup: ctx.sup, sub: ctx.sub })
     }
     return
   }
@@ -104,7 +114,7 @@ function extractInline(node: Node, ctx: InlineCtx, out: Token[]) {
   const el = node as HTMLElement
   const tag = el.tagName.toLowerCase()
   if (tag === 'br') {
-    out.push({ br: true, bold: ctx.bold, italic: ctx.italic, sup: ctx.sup, sub: ctx.sub })
+    out.push({ br: true, bold: ctx.bold, italic: ctx.italic, underline: ctx.underline, strike: ctx.strike, sup: ctx.sup, sub: ctx.sub })
     return
   }
   if (BLOCK_TAGS.has(tag)) return
@@ -112,6 +122,8 @@ function extractInline(node: Node, ctx: InlineCtx, out: Token[]) {
   const next: InlineCtx = { ...ctx }
   if (tag === 'strong' || tag === 'b') next.bold = true
   if (tag === 'em' || tag === 'i') next.italic = true
+  if (tag === 'u' || tag === 'ins') next.underline = true
+  if (tag === 's' || tag === 'strike' || tag === 'del') next.strike = true
   if (tag === 'sup') next.sup = true
   if (tag === 'sub') next.sub = true
   if (tag === 'a') next.link = el.getAttribute('href') || ctx.link
@@ -121,7 +133,7 @@ function extractInline(node: Node, ctx: InlineCtx, out: Token[]) {
 
 function inlineTokens(el: Element): Token[] {
   const out: Token[] = []
-  const base: InlineCtx = { bold: false, italic: false, sup: false, sub: false }
+  const base: InlineCtx = { bold: false, italic: false, underline: false, strike: false, sup: false, sub: false }
   el.childNodes.forEach(child => extractInline(child, base, out))
   return out
 }
@@ -130,7 +142,7 @@ function plainTokens(el: Element): Token[] {
   return (el.textContent ?? '')
     .split(/\s+/)
     .filter(Boolean)
-    .map(text => ({ text, bold: false, italic: false, sup: false, sub: false }))
+    .map(text => ({ text, bold: false, italic: false, underline: false, strike: false, sup: false, sub: false }))
 }
 
 function dataUriToImage(src: string): { data: Uint8Array; isPng: boolean } | null {
@@ -221,10 +233,10 @@ function processElement(el: HTMLElement, blocks: Block[], level: number) {
   }
 
   if (tag === 'table') {
-    const rows: Token[][][] = []
+    const rows: TableCell[][] = []
     el.querySelectorAll('tr').forEach(tr => {
-      const cells: Token[][] = []
-      tr.querySelectorAll('td, th').forEach(cell => cells.push(plainTokens(cell)))
+      const cells: TableCell[] = []
+      tr.querySelectorAll('td, th').forEach(cell => cells.push({ tokens: plainTokens(cell), header: cell.tagName.toLowerCase() === 'th' }))
       if (cells.length > 0) rows.push(cells)
     })
     if (rows.length > 0) blocks.push({ kind: 'table', rows })
@@ -261,7 +273,7 @@ class Layout {
     const lineHeight = size * LINE_FACTOR
 
     // Group tokens into lines of words with per-word measurements.
-    type Placed = { text: string; font: PDFFont; size: number; width: number; link?: string; sub: boolean; sup: boolean }
+    type Placed = { text: string; font: PDFFont; size: number; width: number; link?: string; sub: boolean; sup: boolean; underline: boolean; strike: boolean }
     const lines: Placed[][] = []
     let line: Placed[] = []
     let lineWidth = 0
@@ -284,7 +296,7 @@ class Layout {
       const wordWidth = font.widthOfTextAtSize(tok.text, tokSize)
       const addWidth = (line.length > 0 ? spaceWidth : 0) + wordWidth
       if (line.length > 0 && lineWidth + addWidth > maxWidth) flush()
-      line.push({ text: tok.text, font, size: tokSize, width: wordWidth, link: tok.link, sub: tok.sub, sup: tok.sup })
+      line.push({ text: tok.text, font, size: tokSize, width: wordWidth, link: tok.link, sub: tok.sub, sup: tok.sup, underline: tok.underline, strike: tok.strike })
       lineWidth += (line.length > 1 ? spaceWidth : 0) + wordWidth
     }
     if (line.length > 0) flush()
@@ -307,9 +319,14 @@ class Layout {
       placed.forEach((w, i) => {
         if (i > 0) x += spaceWidth
         const yOffset = w.sup ? size * 0.32 : w.sub ? -size * 0.14 : 0
-        this.page.drawText(w.text, { x, y: baseline + yOffset, size: w.size, font: w.font, color: w.link ? LINK_COLOR : TEXT_COLOR })
-        if (w.link) {
-          this.page.drawLine({ start: { x, y: baseline - 1.5 }, end: { x: x + w.width, y: baseline - 1.5 }, thickness: 0.5, color: LINK_COLOR })
+        const color = w.link ? LINK_COLOR : TEXT_COLOR
+        const yBase = baseline + yOffset
+        this.page.drawText(w.text, { x, y: yBase, size: w.size, font: w.font, color })
+        if (w.link || w.underline) {
+          this.page.drawLine({ start: { x, y: yBase - 1.5 }, end: { x: x + w.width, y: yBase - 1.5 }, thickness: 0.5, color })
+        }
+        if (w.strike) {
+          this.page.drawLine({ start: { x, y: yBase + w.size * 0.3 }, end: { x: x + w.width, y: yBase + w.size * 0.3 }, thickness: 0.5, color })
         }
         x += w.width
       })
@@ -340,7 +357,7 @@ class Layout {
     this.y -= PARAGRAPH_GAP
   }
 
-  drawTable(rows: Token[][][]) {
+  drawTable(rows: TableCell[][]) {
     const cols = rows.reduce((max, r) => Math.max(max, r.length), 0)
     if (cols === 0) return
     const colWidth = CONTENT_WIDTH / cols
@@ -349,14 +366,14 @@ class Layout {
     const lineHeight = size * 1.2
     const spaceWidth = this.fonts.regular.widthOfTextAtSize(' ', size)
 
-    const wrapCell = (tokens: Token[]): string[] => {
+    const wrapCell = (cell: TableCell | undefined, font: PDFFont): string[] => {
       const lines: string[] = []
       let current = ''
       let width = 0
       const avail = colWidth - pad * 2
-      for (const tok of tokens) {
+      for (const tok of cell?.tokens ?? []) {
         if (!tok.text) continue
-        const wWidth = this.fonts.regular.widthOfTextAtSize(tok.text, size)
+        const wWidth = font.widthOfTextAtSize(tok.text, size)
         const add = (current ? spaceWidth : 0) + wWidth
         if (current && width + add > avail) {
           lines.push(current)
@@ -372,15 +389,25 @@ class Layout {
     }
 
     for (const row of rows) {
-      const cellLines = Array.from({ length: cols }, (_, c) => wrapCell(row[c] ?? []))
+      const fonts = Array.from({ length: cols }, (_, c) => (row[c]?.header ? this.fonts.bold : this.fonts.regular))
+      const cellLines = Array.from({ length: cols }, (_, c) => wrapCell(row[c], fonts[c]))
       const rowHeight = Math.max(...cellLines.map(l => l.length)) * lineHeight + pad * 2
       this.ensure(rowHeight)
       const top = this.y
       for (let c = 0; c < cols; c++) {
         const x = MARGIN + c * colWidth
-        this.page.drawRectangle({ x, y: top - rowHeight, width: colWidth, height: rowHeight, borderColor: TABLE_BORDER, borderWidth: 0.5 })
+        const isHeader = row[c]?.header ?? false
+        this.page.drawRectangle({
+          x,
+          y: top - rowHeight,
+          width: colWidth,
+          height: rowHeight,
+          borderColor: TABLE_BORDER,
+          borderWidth: 0.5,
+          ...(isHeader ? { color: TABLE_HEADER_FILL } : {}),
+        })
         cellLines[c].forEach((text, li) => {
-          this.page.drawText(text, { x: x + pad, y: top - pad - size - li * lineHeight, size, font: this.fonts.regular, color: TEXT_COLOR })
+          this.page.drawText(text, { x: x + pad, y: top - pad - size - li * lineHeight, size, font: fonts[c], color: TEXT_COLOR })
         })
       }
       this.y -= rowHeight
@@ -390,7 +417,9 @@ class Layout {
 }
 
 export async function convertDocxToVectorPdf(arrayBuffer: ArrayBuffer): Promise<Uint8Array> {
-  const { value: html } = await mammoth.convertToHtml({ arrayBuffer })
+  // Preserve explicit underline (mammoth ignores it by default); strikethrough,
+  // bold, and italic are already emitted by the default style map.
+  const { value: html } = await mammoth.convertToHtml({ arrayBuffer }, { styleMap: ['u => u'] })
   return htmlToVectorPdf(html)
 }
 
