@@ -437,6 +437,9 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
+      {/* Ad Unit */}
+      <AdUnit className="max-w-4xl mx-auto px-6 py-8" />
+
       {/* CTA Section */}
       <section className="py-24">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -456,6 +459,158 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
             >
               Start Using Tools
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Feedback */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="mid-card p-8 md:p-10">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex-1">
+              <div className="mid-chip mb-4">
+                <MailIcon size={12} />
+                Feedback
+              </div>
+              <h3 className="mid-display-tight text-2xl md:text-3xl mb-3" style={{ color: 'var(--mid-bone)' }}>Need a tool or found a problem?</h3>
+              <p className="text-base leading-relaxed max-w-xl" style={{ color: 'var(--mid-stone)' }}>
+                Tell me what is missing, what broke, or what would make PaperKnife faster for your workflow. The app prepares the message locally and hands it off to email or GitHub.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <button onClick={() => navigate('/feedback?type=tool')} className="mid-btn-primary">
+                Request Tool
+              </button>
+              <button onClick={() => navigate('/feedback?type=bug')} className="mid-btn-ghost">
+                Report Problem
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Support / Ko-fi */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="mid-card relative overflow-hidden p-10 md:p-14">
+          <div className="absolute top-0 right-0 p-8" style={{ opacity: 0.08 }}>
+            <HeartIcon className="w-32 h-32" style={{ color: 'var(--mid-coral)' }} fill="currentColor" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1">
+              <div className="mid-chip mb-4">
+                <CoffeeIcon size={12} /> Support the Project
+              </div>
+              <h3 className="mid-display text-2xl md:text-3xl mb-3 leading-tight" style={{ color: 'var(--mid-bone)' }}>
+                Keep PaperKnife <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Free & Open.</span>
+              </h3>
+              <p className="text-base leading-relaxed mb-6 max-w-xl" style={{ color: 'var(--mid-stone)' }}>
+                PaperKnife is built and maintained by one person. If it saves you time or keeps your documents private,
+                consider buying a coffee to keep the project going.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="https://ko-fi.com/kalkikgp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mid-btn-primary no-underline"
+                  style={{ background: 'linear-gradient(135deg, #FF5E5B 0%, #FF7A5C 100%)' }}
+                >
+                  <CoffeeIcon size={14} /> Buy me a Coffee
+                </a>
+                <a
+                  href="https://github.com/sponsors/kalki-kgp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mid-btn-ghost no-underline"
+                >
+                  <HeartIcon size={14} style={{ color: 'var(--mid-coral)' }} /> GitHub Sponsors
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enterprise Self-Hosted */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
+          style={{ background: 'linear-gradient(135deg, #0E0E18 0%, #181828 100%)' }}
+        >
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, var(--mid-coral), var(--mid-violet), var(--mid-mint), transparent)' }} />
+          <div className="absolute top-0 right-0 p-8" style={{ opacity: 0.05 }}>
+            <ServerIcon className="w-40 h-40" style={{ color: 'var(--mid-bone)' }} />
+          </div>
+          <div className="relative z-10">
+            <div className="mid-chip mb-6">
+              <BuildingIcon size={12} />
+              Enterprise
+            </div>
+            <h3 className="mid-display text-2xl md:text-3xl mb-3 leading-tight" style={{ color: 'var(--mid-bone)' }}>
+              Self-Hosted for <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Your Organization.</span>
+            </h3>
+            <p className="text-base leading-relaxed mb-8 max-w-xl" style={{ color: 'var(--mid-stone)' }}>
+              Deploy PaperKnife on your own infrastructure. Complete data sovereignty, custom branding,
+              priority support, and compliance-ready documentation for your team.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
+                <Shield size={14} style={{ color: 'var(--mid-mint)' }} /> Air-gapped deployment
+              </div>
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
+                <ServerIcon size={14} style={{ color: 'var(--mid-violet)' }} /> On-premise hosting
+              </div>
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
+                <BuildingIcon size={14} style={{ color: 'var(--mid-amber)' }} /> Custom branding
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/feedback?type=enterprise')}
+              className="mid-btn-primary"
+            >
+              <MailIcon size={14} /> Contact for Licensing
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ResuMate Cross-Promo */}
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
+            style={{ background: 'linear-gradient(135deg, #0F0F18 0%, #1A1426 100%)' }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, var(--mid-coral), var(--mid-mint), transparent)' }} />
+
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-1 space-y-4">
+                <div className="mid-chip" style={{ background: 'rgba(91, 255, 176, 0.10)', borderColor: 'rgba(91, 255, 176, 0.25)', color: 'var(--mid-mint)' }}>
+                  <Sparkles size={12} />
+                  Also by PaperKnife
+                </div>
+                <h3 className="mid-display-tight text-2xl md:text-3xl leading-tight" style={{ color: 'var(--mid-bone)' }}>
+                  Working with resumes?<br />
+                  <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Build one that lands interviews.</span>
+                </h3>
+                <p className="text-base leading-relaxed max-w-lg" style={{ color: 'var(--mid-stone)' }}>
+                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
+                </p>
+                <a
+                  href="https://resumate.paperknife.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mid-btn-primary no-underline"
+                >
+                  <FileTextIcon size={16} />
+                  Try ResuMate — It's Free
+                </a>
+              </div>
+
+              <div className="hidden md:flex w-36 h-36 rounded-[28px] items-center justify-center shrink-0 overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, var(--mid-coral) 0%, var(--mid-violet) 100%)', boxShadow: '0 30px 60px -20px var(--mid-coral-glow)' }}
+              >
+                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -527,161 +682,6 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
               <p className="px-8 pb-5 text-sm leading-relaxed" style={{ color: 'var(--mid-stone)' }}>{item.a}</p>
             </details>
           ))}
-        </div>
-      </section>
-
-      {/* Ad Unit */}
-      <AdUnit className="max-w-4xl mx-auto px-6 mb-8" />
-
-      {/* Feedback */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="mid-card p-8 md:p-10">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="flex-1">
-              <div className="mid-chip mb-4">
-                <MailIcon size={12} />
-                Feedback
-              </div>
-              <h3 className="mid-display-tight text-2xl md:text-3xl mb-3" style={{ color: 'var(--mid-bone)' }}>Need a tool or found a problem?</h3>
-              <p className="text-base leading-relaxed max-w-xl" style={{ color: 'var(--mid-stone)' }}>
-                Tell me what is missing, what broke, or what would make PaperKnife faster for your workflow. The app prepares the message locally and hands it off to email or GitHub.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-              <button onClick={() => navigate('/feedback?type=tool')} className="mid-btn-primary">
-                Request Tool
-              </button>
-              <button onClick={() => navigate('/feedback?type=bug')} className="mid-btn-ghost">
-                Report Problem
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enterprise Self-Hosted */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
-          style={{ background: 'linear-gradient(135deg, #0E0E18 0%, #181828 100%)' }}
-        >
-          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, var(--mid-coral), var(--mid-violet), var(--mid-mint), transparent)' }} />
-          <div className="absolute top-0 right-0 p-8" style={{ opacity: 0.05 }}>
-            <ServerIcon className="w-40 h-40" style={{ color: 'var(--mid-bone)' }} />
-          </div>
-          <div className="relative z-10">
-            <div className="mid-chip mb-6">
-              <BuildingIcon size={12} />
-              Enterprise
-            </div>
-            <h3 className="mid-display text-2xl md:text-3xl mb-3 leading-tight" style={{ color: 'var(--mid-bone)' }}>
-              Self-Hosted for <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Your Organization.</span>
-            </h3>
-            <p className="text-base leading-relaxed mb-8 max-w-xl" style={{ color: 'var(--mid-stone)' }}>
-              Deploy PaperKnife on your own infrastructure. Complete data sovereignty, custom branding,
-              priority support, and compliance-ready documentation for your team.
-            </p>
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
-                <Shield size={14} style={{ color: 'var(--mid-mint)' }} /> Air-gapped deployment
-              </div>
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
-                <ServerIcon size={14} style={{ color: 'var(--mid-violet)' }} /> On-premise hosting
-              </div>
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--mid-bone)' }}>
-                <BuildingIcon size={14} style={{ color: 'var(--mid-amber)' }} /> Custom branding
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/feedback?type=enterprise')}
-              className="mid-btn-primary"
-            >
-              <MailIcon size={14} /> Contact for Licensing
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Support / Ko-fi */}
-      <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="mid-card relative overflow-hidden p-10 md:p-14">
-          <div className="absolute top-0 right-0 p-8" style={{ opacity: 0.08 }}>
-            <HeartIcon className="w-32 h-32" style={{ color: 'var(--mid-coral)' }} fill="currentColor" />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-1">
-              <div className="mid-chip mb-4">
-                <CoffeeIcon size={12} /> Support the Project
-              </div>
-              <h3 className="mid-display text-2xl md:text-3xl mb-3 leading-tight" style={{ color: 'var(--mid-bone)' }}>
-                Keep PaperKnife <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Free & Open.</span>
-              </h3>
-              <p className="text-base leading-relaxed mb-6 max-w-xl" style={{ color: 'var(--mid-stone)' }}>
-                PaperKnife is built and maintained by one person. If it saves you time or keeps your documents private,
-                consider buying a coffee to keep the project going.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://ko-fi.com/kalkikgp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mid-btn-primary no-underline"
-                  style={{ background: 'linear-gradient(135deg, #FF5E5B 0%, #FF7A5C 100%)' }}
-                >
-                  <CoffeeIcon size={14} /> Buy me a Coffee
-                </a>
-                <a
-                  href="https://github.com/sponsors/kalki-kgp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mid-btn-ghost no-underline"
-                >
-                  <HeartIcon size={14} style={{ color: 'var(--mid-coral)' }} /> GitHub Sponsors
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ResuMate Cross-Promo */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
-            style={{ background: 'linear-gradient(135deg, #0F0F18 0%, #1A1426 100%)' }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, var(--mid-coral), var(--mid-mint), transparent)' }} />
-
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <div className="flex-1 space-y-4">
-                <div className="mid-chip" style={{ background: 'rgba(91, 255, 176, 0.10)', borderColor: 'rgba(91, 255, 176, 0.25)', color: 'var(--mid-mint)' }}>
-                  <Sparkles size={12} />
-                  Also by PaperKnife
-                </div>
-                <h3 className="mid-display-tight text-2xl md:text-3xl leading-tight" style={{ color: 'var(--mid-bone)' }}>
-                  Working with resumes?<br />
-                  <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Build one that lands interviews.</span>
-                </h3>
-                <p className="text-base leading-relaxed max-w-lg" style={{ color: 'var(--mid-stone)' }}>
-                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
-                </p>
-                <a
-                  href="https://resumate.paperknife.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mid-btn-primary no-underline"
-                >
-                  <FileTextIcon size={16} />
-                  Try ResuMate — It's Free
-                </a>
-              </div>
-
-              <div className="hidden md:flex w-36 h-36 rounded-[28px] items-center justify-center shrink-0 overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, var(--mid-coral) 0%, var(--mid-violet) 100%)', boxShadow: '0 30px 60px -20px var(--mid-coral-glow)' }}
-              >
-                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>

@@ -15,6 +15,7 @@ import {
   ExternalLink as ExternalLinkIcon,
   ChevronRight as ChevronRightIcon,
   Sparkles as SparklesIcon,
+  FileText as FileTextIcon,
   HardDrive as DiskIcon,
   EyeOff as PrivacyIcon,
   Coffee as CoffeeIcon,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PaperKnifeLogo } from './Logo'
+import { usePageSeo } from '../utils/pageSeo'
 
 // --- UI COMPONENTS ---
 const SpecItem = ({ title, icon: Icon, children, defaultOpen = false }: { title: string, icon: any, children: React.ReactNode, defaultOpen?: boolean }) => {
@@ -56,6 +58,12 @@ const SpecItem = ({ title, icon: Icon, children, defaultOpen = false }: { title:
 // --- WEB VERSION (TITAN v1.2 EXPLANATORY) ---
 const AboutWeb = () => {
   const navigate = useNavigate()
+  usePageSeo({
+    title: 'About PaperKnife — Private, Local PDF Tools',
+    description: 'Learn how PaperKnife keeps PDF merge, split, compress, protect, unlock, convert, OCR, and cleanup workflows private by running every operation locally in your browser.',
+    canonicalPath: '/about'
+  })
+
   return (
     <div className="min-h-screen bg-[#FFF3F0] dark:bg-black text-gray-900 dark:text-zinc-100 selection:bg-terracotta-500 selection:text-white pb-24">
       
@@ -181,24 +189,36 @@ const AboutWeb = () => {
 
       {/* ResuMate Cross-Promo */}
       <section className="max-w-4xl mx-auto px-6 mb-16">
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#faf7f2] to-[#fff1e8] dark:from-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 p-8 md:p-10">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#c96442] to-[#2d5a3d]" />
-          <div className="flex items-center gap-1.5 mb-3">
-            <SparklesIcon size={12} className="text-[#2d5a3d] dark:text-emerald-400" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#2d5a3d] dark:text-emerald-400">Also by PaperKnife</span>
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0F0F18] to-[#1A1426] border border-white/10 p-10 md:p-14 shadow-xl shadow-black/20">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF5C7C] to-[#5BFFB0]" />
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 space-y-4 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#5BFFB0]/25 bg-[#5BFFB0]/10 text-[#5BFFB0] text-xs font-bold uppercase tracking-widest">
+                <SparklesIcon size={12} />
+                Also by PaperKnife
+              </div>
+              <h3 className="text-2xl md:text-3xl font-black text-white leading-tight">
+                Working with resumes?<br />
+                <span className="text-[#FF9AB0]">Build one that lands interviews.</span>
+              </h3>
+              <p className="text-zinc-400 text-base leading-relaxed max-w-lg">
+                ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
+              </p>
+              <a
+                href="https://resumate.paperknife.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[#FF5C7C] to-[#8B6FFF] text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-[#FF5C7C]/25 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
+              >
+                <FileTextIcon size={16} />
+                Try ResuMate — It's Free
+              </a>
+            </div>
+
+            <div className="hidden md:flex w-36 h-36 rounded-[28px] items-center justify-center shrink-0 overflow-hidden bg-gradient-to-br from-[#FF5C7C] to-[#8B6FFF] shadow-xl shadow-[#FF5C7C]/20">
+              <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
+            </div>
           </div>
-          <h3 className="text-xl md:text-2xl font-black text-[#2c1810] dark:text-white mb-2 tracking-tight">Build resumes with the same privacy-first mindset.</h3>
-          <p className="text-sm text-[#8b7355] dark:text-zinc-400 leading-relaxed mb-5 max-w-xl">
-            ResuMate uses AI to analyze, score, and build ATS-friendly resumes. Upload your old resume, get instant feedback, and create the one that gets you hired.
-          </p>
-          <a
-            href="https://resumate.paperknife.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-[#c96442]/20 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
-          >
-            Try ResuMate — Free
-          </a>
         </div>
       </section>
 
