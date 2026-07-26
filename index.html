@@ -133,9 +133,21 @@
       }
     </script>
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050145985658577"
-     crossorigin="anonymous"></script>
+    <!-- Google AdSense. Skipped for automated browsers, which would otherwise
+         generate impressions that count as invalid traffic. Google's own
+         crawlers are exempt so ad targeting and review still see the page. -->
+    <script>
+      (function() {
+        var ua = navigator.userAgent || '';
+        var isGoogleCrawler = /Googlebot|AdsBot-Google|Mediapartners-Google|Google-InspectionTool|GoogleOther|Storebot-Google/i.test(ua);
+        if (navigator.webdriver && !isGoogleCrawler) return;
+        var script = document.createElement('script');
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050145985658577';
+        document.head.appendChild(script);
+      })();
+    </script>
 
     <script>
       (function() {
