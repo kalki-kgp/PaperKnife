@@ -1,4 +1,32 @@
 {
+  "rewrites": [
+    { "source": "/merge", "destination": "/index.html" },
+    { "source": "/split", "destination": "/index.html" },
+    { "source": "/protect", "destination": "/index.html" },
+    { "source": "/unlock", "destination": "/index.html" },
+    { "source": "/compress", "destination": "/index.html" },
+    { "source": "/pdf-to-image", "destination": "/index.html" },
+    { "source": "/rotate-pdf", "destination": "/index.html" },
+    { "source": "/crop-pdf", "destination": "/index.html" },
+    { "source": "/pdf-to-text", "destination": "/index.html" },
+    { "source": "/rearrange-pdf", "destination": "/index.html" },
+    { "source": "/watermark", "destination": "/index.html" },
+    { "source": "/page-numbers", "destination": "/index.html" },
+    { "source": "/metadata", "destination": "/index.html" },
+    { "source": "/image-to-pdf", "destination": "/index.html" },
+    { "source": "/signature", "destination": "/index.html" },
+    { "source": "/repair", "destination": "/index.html" },
+    { "source": "/extract-images", "destination": "/index.html" },
+    { "source": "/grayscale", "destination": "/index.html" },
+    { "source": "/compare", "destination": "/index.html" },
+    { "source": "/word-to-pdf", "destination": "/index.html" },
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/feedback", "destination": "/index.html" },
+    { "source": "/settings", "destination": "/index.html" },
+    { "source": "/thanks", "destination": "/index.html" },
+    { "source": "/__paperknife_pending_share__", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "index.html",

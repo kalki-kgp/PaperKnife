@@ -22,35 +22,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { Tool, ToolCategory } from '../types'
 
-declare global {
-  interface Window { adsbygoogle: any[] }
-}
-
-const AdUnit = ({ className = '' }: { className?: string }) => {
-  const adRef = useRef<HTMLDivElement>(null)
-  const pushed = useRef(false)
-
-  useEffect(() => {
-    if (pushed.current) return
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      pushed.current = true
-    } catch {}
-  }, [])
-
-  return (
-    <div className={`w-full flex justify-center ${className}`} ref={adRef}>
-      <ins className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client="ca-pub-4050145985658577"
-        data-ad-slot="auto"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
-    </div>
-  )
-}
-
 const categoryColors: Record<ToolCategory, { bg: string, text: string, iconBg: string }> = {
   Edit: {
     bg: 'bg-terracotta-100/50 dark:bg-terracotta-900/20',
@@ -367,9 +338,6 @@ export default function WebView({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
-      {/* Ad Unit */}
-      <AdUnit className="max-w-6xl mx-auto px-6 mb-8" />
-
       {/* Toolkit Section */}
       <section className="bg-accent-yellow dark:bg-zinc-950 py-20 rounded-[80px_80px_0_0]">
         <div className="max-w-7xl mx-auto px-6">
@@ -511,9 +479,6 @@ export default function WebView({ tools }: { tools: Tool[] }) {
           ))}
         </div>
       </section>
-
-      {/* Ad Unit */}
-      <AdUnit className="max-w-4xl mx-auto px-6 mb-8" />
 
       {/* Feedback */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
