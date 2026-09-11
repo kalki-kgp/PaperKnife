@@ -1,12 +1,22 @@
 {
   "name": "paperknife",
   "compatibility_date": "2026-09-11",
+
+  // Keeps paperknife.<subdomain>.workers.dev alive as a staging URL to verify
+  // a deploy against before it reaches the custom domain.
+  "workers_dev": true,
+
   "assets": {
     "directory": "./dist",
+
     // Unmatched paths serve 404.html with a real 404 status. Deliberately NOT
-    // "single-page-application", which would return index.html at 200 for every
+    // "single-page-application", which returns index.html at 200 for every
     // scanner probe — the AdSense invalid-traffic problem fixed in e03579b.
-    // The 27 real SPA routes are rewritten to index.html at 200 by _redirects.
+    // The 27 real SPA routes are rewritten to "/" at 200 by _redirects.
     "not_found_handling": "404-page"
   }
+
+  // The paperknife.app custom domain is attached here once the stale
+  // cloudflared tunnel DNS record is removed from the zone:
+  //   "routes": [{ "pattern": "paperknife.app", "custom_domain": true }]
 }
