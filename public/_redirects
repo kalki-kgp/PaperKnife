@@ -1,0 +1,30 @@
+# SPA routes served as index.html with a 200. Everything not listed here
+# falls through to Cloudflare Pages' default 404.html, so scanner probes
+# (/wp-admin, /.env, ~240 PHP shell paths) never get an ad-bearing 200.
+/merge                          /index.html   200
+/split                          /index.html   200
+/protect                        /index.html   200
+/unlock                         /index.html   200
+/compress                       /index.html   200
+/pdf-to-image                   /index.html   200
+/rotate-pdf                     /index.html   200
+/crop-pdf                       /index.html   200
+/pdf-to-text                    /index.html   200
+/rearrange-pdf                  /index.html   200
+/watermark                      /index.html   200
+/page-numbers                   /index.html   200
+/metadata                       /index.html   200
+/image-to-pdf                   /index.html   200
+/signature                      /index.html   200
+/repair                         /index.html   200
+/extract-images                 /index.html   200
+/grayscale                      /index.html   200
+/compare                        /index.html   200
+/word-to-pdf                    /index.html   200
+/about                          /index.html   200
+/privacy                        /index.html   200
+/feedback                       /index.html   200
+/settings                       /index.html   200
+/thanks                         /index.html   200
+/share-target                   /index.html   200
+/__paperknife_pending_share__   /index.html   200
