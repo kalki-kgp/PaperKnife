@@ -11,6 +11,8 @@
 [![Web App](https://img.shields.io/badge/web-live-emerald.svg)](https://paperknife.app)
 [![Twitter](https://img.shields.io/badge/twitter-@kalki--kgp-black?logo=x)](https://x.com/kalki-kgp)
 
+> A downstream fork of **[PaperKnife](https://github.com/potatameister/PaperKnife)** by [potatameister](https://github.com/potatameister), licensed AGPL-3.0. This fork adds a vector (selectable-text) Word→PDF converter, a visual page-compare tool, cropping, and PWA share-target support, and is hosted at [paperknife.app](https://paperknife.app).
+
 ---
 
 ## Preview

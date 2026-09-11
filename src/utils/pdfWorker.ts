@@ -1,6 +1,10 @@
 /**
  * PaperKnife - The Swiss Army Knife for PDFs
  * Copyright (C) 2026 kalki-kgp
+ *
+ * Derived from PaperKnife by potatameister, licensed AGPL-3.0:
+ * https://github.com/potatameister/PaperKnife
+ * Copyright (C) 2026 potatameister
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
