@@ -6,9 +6,10 @@
   Permissions-Policy: interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  # connect-src stays locked to same-origin + AdSense telemetry: no host here
-  # can receive a user's PDF. Widening it is what would break the privacy promise.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://www.googletagservices.com https://adservice.google.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google https://www.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://ep2.adtrafficquality.google; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  # Nothing off-origin: no third-party script, style, font, image, frame or
+  # connection is permitted. There is no host this policy could send a
+  # user's PDF to.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Cache hashed assets aggressively (1 year)
 /assets/*
