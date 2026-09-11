@@ -1,0 +1,12 @@
+{
+  "name": "paperknife",
+  "compatibility_date": "2026-09-11",
+  "assets": {
+    "directory": "./dist",
+    // Unmatched paths serve 404.html with a real 404 status. Deliberately NOT
+    // "single-page-application", which would return index.html at 200 for every
+    // scanner probe — the AdSense invalid-traffic problem fixed in e03579b.
+    // The 27 real SPA routes are rewritten to index.html at 200 by _redirects.
+    "not_found_handling": "404-page"
+  }
+}
