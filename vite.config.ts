@@ -155,8 +155,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: [
         'icons/logo.svg',
-        'logos/icon.png',
-        'logos/og-image.png'
+        'logos/icon-192.png',
+        'logos/icon-512.png'
       ],
       manifest: {
         name: 'PaperKnife',
@@ -193,14 +193,16 @@ export default defineConfig({
         },
         icons: [
           {
-            src: 'logos/icon.png',
+            src: 'logos/icon-192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            src: 'logos/icon.png',
+            src: 'logos/icon-512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           }
         ]
       },

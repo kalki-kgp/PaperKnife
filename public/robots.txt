@@ -1,4 +1,10 @@
-User-agent: *
-Disallow:
+# Cloudflare's managed robots.txt is prepended to this file at the edge and
+# already supplies the "User-agent: *" group (search allowed, AI-training
+# crawlers blocked). A second "User-agent: *" group here made the served file
+# contain two of them, which is malformed — crawlers pick one group per agent
+# and the rest is ignored.
+#
+# Nothing is disallowed. With no group of our own, crawlers fall back to
+# allow-all, which is what the removed group said anyway.
 
 Sitemap: https://paperknife.app/sitemap.xml
