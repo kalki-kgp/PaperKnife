@@ -19,6 +19,7 @@ import {
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon, FileType2
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { RouteSeo } from './components/RouteSeo'
 import { Toaster, toast } from 'sonner'
 import { Tool } from './types'
 import Layout from './components/Layout'
@@ -316,6 +317,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <RouteSeo />
       <ScrollToTop />
       <PipelineProvider>
         <ShellComponent
