@@ -1,30 +1,36 @@
-# SPA routes served as index.html with a 200. Everything not listed here
-# falls through to Cloudflare Pages' default 404.html, so scanner probes
-# (/wp-admin, /.env, ~240 PHP shell paths) never get an ad-bearing 200.
-/merge                          /index.html   200
-/split                          /index.html   200
-/protect                        /index.html   200
-/unlock                         /index.html   200
-/compress                       /index.html   200
-/pdf-to-image                   /index.html   200
-/rotate-pdf                     /index.html   200
-/crop-pdf                       /index.html   200
-/pdf-to-text                    /index.html   200
-/rearrange-pdf                  /index.html   200
-/watermark                      /index.html   200
-/page-numbers                   /index.html   200
-/metadata                       /index.html   200
-/image-to-pdf                   /index.html   200
-/signature                      /index.html   200
-/repair                         /index.html   200
-/extract-images                 /index.html   200
-/grayscale                      /index.html   200
-/compare                        /index.html   200
-/word-to-pdf                    /index.html   200
-/about                          /index.html   200
-/privacy                        /index.html   200
-/feedback                       /index.html   200
-/settings                       /index.html   200
-/thanks                         /index.html   200
-/share-target                   /index.html   200
-/__paperknife_pending_share__   /index.html   200
+# SPA routes serve the app shell at 200.
+#
+# Destination is "/" and not "/index.html": Workers static assets applies
+# auto-trailing-slash handling after the rewrite, turning /index.html into a
+# 307 to /, which would bounce every indexed deep link to the homepage.
+#
+# Anything not listed here falls through to not_found_handling ("404-page" in
+# wrangler.jsonc), so scanner probes for /wp-admin, /.env and ~240 PHP shell
+# paths get the ad-free 404 rather than an ad-bearing 200. See e03579b.
+/merge                          /   200
+/split                          /   200
+/protect                        /   200
+/unlock                         /   200
+/compress                       /   200
+/pdf-to-image                   /   200
+/rotate-pdf                     /   200
+/crop-pdf                       /   200
+/pdf-to-text                    /   200
+/rearrange-pdf                  /   200
+/watermark                      /   200
+/page-numbers                   /   200
+/metadata                       /   200
+/image-to-pdf                   /   200
+/signature                      /   200
+/repair                         /   200
+/extract-images                 /   200
+/grayscale                      /   200
+/compare                        /   200
+/word-to-pdf                    /   200
+/about                          /   200
+/privacy                        /   200
+/feedback                       /   200
+/settings                       /   200
+/thanks                         /   200
+/share-target                   /   200
+/__paperknife_pending_share__   /   200
