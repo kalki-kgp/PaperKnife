@@ -14,9 +14,11 @@
     // scanner probe — the AdSense invalid-traffic problem fixed in e03579b.
     // The 27 real SPA routes are rewritten to "/" at 200 by _redirects.
     "not_found_handling": "404-page"
-  }
+  },
 
-  // The paperknife.app custom domain is attached here once the stale
-  // cloudflared tunnel DNS record is removed from the zone:
-  //   "routes": [{ "pattern": "paperknife.app", "custom_domain": true }]
+  // Cloudflare manages the apex DNS record for this route. The previous
+  // record was a proxied CNAME to the cloudflared tunnel on the droplet.
+  "routes": [
+    { "pattern": "paperknife.app", "custom_domain": true }
+  ]
 }
