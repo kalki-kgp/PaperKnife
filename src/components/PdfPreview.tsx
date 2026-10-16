@@ -1,6 +1,10 @@
 /**
  * PaperKnife - The Swiss Army Knife for PDFs
  * Copyright (C) 2026 kalki-kgp
+ *
+ * Derived from PaperKnife by potatameister, licensed AGPL-3.0:
+ * https://github.com/potatameister/PaperKnife
+ * Copyright (C) 2026 potatameister
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'

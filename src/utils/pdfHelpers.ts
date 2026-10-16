@@ -2,6 +2,10 @@
  * PaperKnife - The Swiss Army Knife for PDFs
  * Copyright (C) 2026 kalki-kgp
  *
+ * Derived from PaperKnife by potatameister, licensed AGPL-3.0:
+ * https://github.com/potatameister/PaperKnife
+ * Copyright (C) 2026 potatameister
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -148,12 +152,17 @@ export const renderGridThumbnail = async (pdf: any, pageNum: number): Promise<st
 };
 
 export const generateThumbnail = async (file: File, pageNum: number = 1): Promise<string> => {
+  let pdf: any = null;
   try {
-    const pdf = await loadPdfDocument(file);
+    pdf = await loadPdfDocument(file);
     return await renderPageThumbnail(pdf, pageNum, 0.8);
   } catch (error) {
     console.error('Thumbnail error:', error);
     return '';
+  } finally {
+    // This document exists only to draw the thumbnail. Without destroy() the
+    // worker keeps a full copy of every file the user has opened this session.
+    await pdf?.destroy().catch(() => {});
   }
 };
 
@@ -185,6 +194,7 @@ export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
   const arrayBuffer = await file.arrayBuffer()
   const hasEncryption = pdfHasEncryptionMarker(arrayBuffer)
 
+  let pdf: any = null;
   try {
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
@@ -194,7 +204,7 @@ export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
 
     loadingTask.onPassword = () => { throw new Error('PASSWORD_REQUIRED'); };
 
-    const pdf = await loadingTask.promise;
+    pdf = await loadingTask.promise;
     const firstPageThumb = await renderPageThumbnail(pdf, 1);
 
     return {
@@ -207,6 +217,10 @@ export const getPdfMetaData = async (file: File): Promise<PdfMetaData> => {
       return { thumbnail: '', pageCount: 0, isLocked: true };
     }
     return { thumbnail: '', pageCount: 0, isLocked: hasEncryption };
+  } finally {
+    // Callers only get the metadata back, so this document is ours to release.
+    // Tools that need a live document call loadPdfDocument separately.
+    await pdf?.destroy().catch(() => {});
   }
 };
 

@@ -2,6 +2,10 @@
  * PaperKnife - The Swiss Army Knife for PDFs
  * Copyright (C) 2026 kalki-kgp
  *
+ * Derived from PaperKnife by potatameister, licensed AGPL-3.0:
+ * https://github.com/potatameister/PaperKnife
+ * Copyright (C) 2026 potatameister
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,6 +19,7 @@ import {
   Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon, FileType2
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { RouteSeo } from './components/RouteSeo'
 import { Toaster, toast } from 'sonner'
 import { Tool } from './types'
 import Layout from './components/Layout'
@@ -312,6 +317,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <RouteSeo />
       <ScrollToTop />
       <PipelineProvider>
         <ShellComponent
