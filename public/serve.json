@@ -15,6 +15,7 @@
     { "source": "/metadata", "destination": "/index.html" },
     { "source": "/image-to-pdf", "destination": "/index.html" },
     { "source": "/signature", "destination": "/index.html" },
+    { "source": "/fill-pdf", "destination": "/index.html" },
     { "source": "/repair", "destination": "/index.html" },
     { "source": "/extract-images", "destination": "/index.html" },
     { "source": "/grayscale", "destination": "/index.html" },

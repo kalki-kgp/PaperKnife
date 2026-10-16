@@ -43,6 +43,7 @@ I built **PaperKnife** to solve this. It's a collection of tools that run entire
 - **Watermark** — Overlay custom text for branding or security.
 - **Page Numbers** — Add numbering to your documents automatically.
 - **Signature** — Add your electronic signature to any document.
+- **Fill PDF Form** — Type into form fields, tick checkboxes, then save or sign.
 
 **Optimize**
 - **Compress** — Reduce file size with different quality presets.

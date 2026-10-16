@@ -16,7 +16,7 @@ import { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import {
   Layers, Scissors, Zap, Lock, Unlock,
   RotateCw, Type, Hash, Tags, FileText, ArrowUpDown, PenTool,
-  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon, FileType2
+  Wrench, ImagePlus, FileImage, Palette, X, ChevronDown, GitCompare, Crop as CropIcon, FileType2, FormInput
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { RouteSeo } from './components/RouteSeo'
@@ -58,6 +58,7 @@ const PageNumberTool = lazy(() => import('./components/tools/PageNumberTool'))
 const MetadataTool = lazy(() => import('./components/tools/MetadataTool'))
 const ImageToPdfTool = lazy(() => import('./components/tools/ImageToPdfTool'))
 const SignatureTool = lazy(() => import('./components/tools/SignatureTool'))
+const FillFormTool = lazy(() => import('./components/tools/FillFormTool'))
 const RepairTool = lazy(() => import('./components/tools/RepairTool'))
 const ExtractImagesTool = lazy(() => import('./components/tools/ExtractImagesTool'))
 const GrayscaleTool = lazy(() => import('./components/tools/GrayscaleTool'))
@@ -78,6 +79,7 @@ const tools: Tool[] = [
   { title: 'Watermark', desc: 'Overlay custom text for branding or security.', icon: Type, implemented: true, path: '/watermark', category: 'Edit', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
   { title: 'Metadata', desc: 'Edit document properties for better privacy.', icon: Tags, implemented: true, path: '/metadata', category: 'Secure', color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
   { title: 'Signature', desc: 'Add your electronic signature to any document.', icon: PenTool, implemented: true, path: '/signature', category: 'Edit', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20' },
+  { title: 'Fill PDF Form', desc: 'Type into form fields, then save or sign.', icon: FormInput, implemented: true, path: '/fill-pdf', category: 'Edit', color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-900/20' },
   { title: 'Grayscale', desc: 'Convert all document pages to black and white.', icon: Palette, implemented: true, path: '/grayscale', category: 'Optimize', color: 'text-zinc-500', bg: 'bg-zinc-50 dark:bg-zinc-900/20' },
   { title: 'PDF to Image', desc: 'Convert document pages into high-quality images.', icon: FileImage, implemented: true, path: '/pdf-to-image', category: 'Convert', color: 'text-lime-500', bg: 'bg-lime-50 dark:bg-lime-900/20' },
   { title: 'Image to PDF', desc: 'Convert JPG, PNG, and WebP into a professional PDF.', icon: ImagePlus, implemented: true, path: '/image-to-pdf', category: 'Convert', color: 'text-teal-500', bg: 'bg-teal-50 dark:bg-teal-900/20' },
@@ -381,6 +383,7 @@ function App() {
               <Route path="/metadata" element={<MetadataTool />} />
               <Route path="/image-to-pdf" element={<ImageToPdfTool />} />
               <Route path="/signature" element={<SignatureTool />} />
+              <Route path="/fill-pdf" element={<FillFormTool />} />
               <Route path="/repair" element={<RepairTool />} />
               <Route path="/extract-images" element={<ExtractImagesTool />} />
               <Route path="/grayscale" element={<GrayscaleTool />} />

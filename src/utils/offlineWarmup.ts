@@ -14,6 +14,7 @@ const warmupImports: Array<() => Promise<unknown>> = [
   () => import('../components/tools/WatermarkTool'),
   () => import('../components/tools/MetadataTool'),
   () => import('../components/tools/SignatureTool'),
+  () => import('../components/tools/FillFormTool'),
   () => import('../components/tools/PdfToImageTool'),
   () => import('../components/tools/ImageToPdfTool'),
   () => import('../components/tools/ExtractImagesTool'),
