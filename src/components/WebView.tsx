@@ -58,6 +58,7 @@ const toolAliases: Record<string, string> = {
   Watermark: 'stamp overlay brand confidential text mark',
   Metadata: 'properties author title privacy cleanup document info',
   Signature: 'sign e-sign autograph draw signature',
+  'Fill PDF Form': 'fill form fillable fields fill in complete type checkbox application tax',
   Grayscale: 'black white monochrome bw grey scale print',
   'PDF to Image': 'jpg jpeg png export pages pictures convert',
   'Image to PDF': 'jpg png webp photos pictures convert',
@@ -423,7 +424,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
           <h2 className="text-2xl font-bold text-text-main dark:text-white mb-4">All-in-one private PDF tools</h2>
           <p className="text-text-muted dark:text-zinc-400 text-base leading-relaxed max-w-3xl mb-6">
             PaperKnife handles everything from merge PDF, split PDF, compress PDF, protect PDF, unlock PDF,
-            rotate, crop, watermark, metadata cleanup, signature, grayscale, PDF to image, image to PDF, extract images,
+            rotate, crop, watermark, metadata cleanup, signature, fill PDF forms, grayscale, PDF to image, image to PDF, extract images,
             PDF to text, and repair. Every operation runs locally — no server, no cloud, no data collected.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -457,7 +458,7 @@ export default function WebView({ tools }: { tools: Tool[] }) {
             },
             {
               q: 'Which PDF operations are available?',
-              a: 'Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, crop, rearrange pages, add page numbers, watermark, metadata sanitization, signature, grayscale, PDF-to-image, image-to-PDF, extract embedded images, PDF-to-text, and structural repair.'
+              a: 'Merge, split, compress, protect (encrypt), unlock (decrypt), rotate, crop, rearrange pages, add page numbers, watermark, metadata sanitization, signature, form filling, grayscale, PDF-to-image, image-to-PDF, extract embedded images, PDF-to-text, and structural repair.'
             },
             {
               q: 'Where do processed files go?',

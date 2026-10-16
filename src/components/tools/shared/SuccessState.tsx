@@ -1,4 +1,4 @@
-import { Download, Eye, CheckCircle2, Share2, RotateCcw, FileText, Sparkles, X } from 'lucide-react'
+import { Download, Eye, CheckCircle2, Share2, RotateCcw, FileText, Sparkles, X, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
@@ -10,9 +10,11 @@ interface SuccessStateProps {
   fileName: string
   onStartOver: () => void
   showPreview?: boolean
+  /** Hands the result to the natural next tool, e.g. Fill Form -> Signature. */
+  nextAction?: { label: string, icon: LucideIcon, onClick: () => void }
 }
 
-export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true }: SuccessStateProps) {
+export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true, nextAction }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
   const [promoVisible, setPromoVisible] = useState(true)
 
@@ -131,6 +133,15 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
         >
           <Download size={24} /> Download
         </button>
+
+        {nextAction && (
+          <button
+            onClick={nextAction.onClick}
+            className="w-full bg-terracotta-500 hover:bg-terracotta-600 text-white p-4 md:p-5 rounded-2xl md:rounded-3xl shadow-lg shadow-terracotta-500/20 font-black text-sm md:text-lg tracking-tight transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <nextAction.icon size={20} /> {nextAction.label}
+          </button>
+        )}
       </div>
 
       {/* ResuMate Cross-Promo — shows every time after tool completion */}

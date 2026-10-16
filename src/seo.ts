@@ -88,6 +88,11 @@ export const routeSeo: Record<string, RouteSeo> = {
     description:
       'Add an electronic signature to a PDF by drawing it or placing an image. Your signature and your document stay in your browser.'
   },
+  '/fill-pdf': {
+    title: 'Fill PDF Forms Online — Free, No Upload | PaperKnife',
+    description:
+      'Type into PDF form fields, tick checkboxes and pick options, then download or sign the completed form. Runs in your browser; nothing is uploaded.'
+  },
   '/grayscale': {
     title: 'Convert PDF to Grayscale — Free & Private | PaperKnife',
     description:
