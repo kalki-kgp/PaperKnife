@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Image as ImageIcon, Lock, Loader2, X, Sparkles } from 'lucide-react'
 import JSZip from 'jszip'
+import { OPS } from 'pdfjs-dist'
 import { toast } from 'sonner'
 
 import { getPdfMetaData, loadPdfDocument, unlockPdf } from '../../utils/pdfHelpers'
@@ -9,6 +10,42 @@ import { usePipeline } from '../../utils/pipelineContext'
 import SuccessState from './shared/SuccessState'
 import ToolSeoContent from './shared/ToolSeoContent'
 import { NativeToolLayout } from './shared/NativeToolLayout'
+
+// pdf.js ImageKind: 1 = 1-bit grayscale, 2 = RGB, 3 = RGBA.
+const toRgba = (data: Uint8ClampedArray, width: number, height: number, kind: number) => {
+  if (kind === 3) return data
+  const rgba = new Uint8ClampedArray(width * height * 4)
+  const rowBytes = Math.ceil(width / 8)
+  for (let i = 0; i < width * height; i++) {
+    if (kind === 2) {
+      rgba.set([data[i * 3], data[i * 3 + 1], data[i * 3 + 2]], i * 4)
+    } else {
+      const x = i % width, y = Math.floor(i / width)
+      const value = (data[y * rowBytes + (x >> 3)] >> (7 - (x & 7))) & 1 ? 255 : 0
+      rgba.set([value, value, value], i * 4)
+    }
+    rgba[i * 4 + 3] = 255
+  }
+  return rgba
+}
+
+// pdf.js 5 decodes most images straight to an ImageBitmap and only keeps raw
+// pixel data for some formats, so both shapes have to be handled.
+const imageObjectToCanvas = (img: { width: number, height: number, bitmap?: ImageBitmap, data?: Uint8ClampedArray, kind?: number }) => {
+  if (!img.width || !img.height || (!img.bitmap && !img.data)) return null
+  const canvas = document.createElement('canvas')
+  canvas.width = img.width
+  canvas.height = img.height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  if (img.bitmap) ctx.drawImage(img.bitmap, 0, 0)
+  else {
+    const imageData = ctx.createImageData(img.width, img.height)
+    imageData.data.set(toRgba(img.data!, img.width, img.height, img.kind ?? 3))
+    ctx.putImageData(imageData, 0, 0)
+  }
+  return canvas
+}
 
 type PdfData = { file: File, thumbnail?: string, pageCount: number, isLocked: boolean, pdfDoc?: any, password?: string }
 
@@ -80,29 +117,21 @@ export default function ExtractImagesTool() {
         const operatorList = await page.getOperatorList()
 
         for (let j = 0; j < operatorList.fnArray.length; j++) {
+          if (operatorList.fnArray[j] !== OPS.paintImageXObject) continue
           const depName = operatorList.argsArray[j]?.[0]
-          if (typeof depName === 'string' && depName.startsWith('img_')) {
+          if (typeof depName === 'string') {
             try {
+              // Images reused across pages are cached document-wide under a g_ id.
+              const store = depName.startsWith('g_') ? page.commonObjs : page.objs
               const imgObj = await new Promise<any>((resolve, reject) => {
                 const timeout = setTimeout(() => reject(new Error('timeout')), 3000)
-                page.objs.get(depName, (data: any) => { clearTimeout(timeout); resolve(data) })
+                store.get(depName, (data: any) => { clearTimeout(timeout); resolve(data) })
               })
-              if (imgObj && imgObj.data) {
+              const imgCanvas = imgObj && imageObjectToCanvas(imgObj)
+              if (imgCanvas) {
                 imageCounter++
-
-                const imgCanvas = document.createElement('canvas')
-                imgCanvas.width = imgObj.width
-                imgCanvas.height = imgObj.height
-                const imgCtx = imgCanvas.getContext('2d')
-                if (imgCtx) {
-                  const imageData = imgCtx.createImageData(imgObj.width, imgObj.height)
-                  imageData.data.set(imgObj.data)
-                  imgCtx.putImageData(imageData, 0, 0)
-
-                  const dataUrl = imgCanvas.toDataURL('image/png')
-                  const base64Data = dataUrl.split(',')[1]
-                  zip.file(`image-${imageCounter.toString().padStart(3, '0')}.png`, base64Data, { base64: true })
-                }
+                const base64Data = imgCanvas.toDataURL('image/png').split(',')[1]
+                zip.file(`image-${imageCounter.toString().padStart(3, '0')}.png`, base64Data, { base64: true })
                 imgCanvas.width = 0; imgCanvas.height = 0
               }
             } catch (e) {

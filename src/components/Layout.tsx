@@ -102,10 +102,7 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
     }
   }, [onFileDrop])
 
-  const activeTool = tools.find(t => {
-    const pathPart = t.title.split(' ')[0].toLowerCase()
-    return location.pathname.includes(`/${pathPart}`)
-  })
+  const activeTool = tools.find(t => t.path === location.pathname)
 
   const isHome = location.pathname === '/'
 

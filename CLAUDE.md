@@ -18,7 +18,12 @@ bun run dev              # vite dev server
 bun run build            # type-check (tsc) then vite build -> dist/
 bun run lint             # eslint (max-warnings 0)
 bun run preview          # preview production build
+bun run test:e2e         # Playwright against dist/ served by wrangler (real _headers/CSP); build first
+bun run test:e2e:prod    # same suite against https://paperknife.app
+bun run deploy           # lint, build, e2e, wrangler deploy, then prod smoke test
 ```
+
+When adding a tool, add a case to `e2e/tools.spec.ts` so its Download/Preview path is covered.
 
 Env vars:
 - `VITE_BASE` — asset base path (default `/`; use `./` for GitHub Pages).
