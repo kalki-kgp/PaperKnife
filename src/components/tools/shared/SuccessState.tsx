@@ -81,7 +81,7 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
       setInternalPreviewFile(file)
       toast.dismiss('preview-load')
     } catch (e) {
-      toast.error('Failed to open preview')
+      toast.error('Failed to open preview', { id: 'preview-load' })
     }
   }
 
