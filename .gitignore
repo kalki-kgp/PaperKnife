@@ -32,3 +32,9 @@ package-lock.json
 
 # Local codegen / knowledge graph (graphify update)
 graphify-out/
+
+# Playwright
+e2e/.fixtures/
+playwright-report/
+test-results/
+.wrangler/

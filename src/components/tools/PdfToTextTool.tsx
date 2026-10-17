@@ -96,7 +96,7 @@ export default function PdfToTextTool() {
   }
 
   const handleDownload = async () => {
-    await downloadFile(extractedText, `${customFileName}.txt`, 'text/plain')
+    await downloadFile(new TextEncoder().encode(extractedText), `${customFileName}.txt`, 'text/plain')
   }
 
   const ActionButton = () => (
