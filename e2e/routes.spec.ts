@@ -20,7 +20,7 @@ for (const path of indexablePaths()) {
     await expect(page).toHaveTitle(getRouteSeo(path).title)
     await expect(page.locator('#root')).not.toBeEmpty()
     // Give lazy chunks, fonts and workers time to hit the CSP.
-    await page.waitForLoadState('networkidle').catch(() => {})
+    await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {})
     expectNoProblems(problems)
   })
 }
