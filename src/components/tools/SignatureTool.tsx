@@ -80,7 +80,9 @@ function DrawPad({ onDone, onCancel }: { onDone: (file: File) => void, onCancel:
       </div>
       <canvas
         ref={canvasRef}
-        className="w-full h-44 bg-gray-50 rounded-2xl border border-dashed border-gray-200 touch-none cursor-crosshair"
+        // Arbitrary colours on purpose: design variants restyle bg-gray-50 and friends
+        // to dark surfaces, which hides the dark ink. The pad stands in for paper.
+        className="w-full h-44 bg-[#fafaf9] rounded-2xl border border-dashed border-[#d6d3d1] touch-none cursor-crosshair"
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId)
           drawing.current = true
