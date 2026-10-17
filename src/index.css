@@ -599,12 +599,6 @@ body {
 [data-design="midnight"] .text-terracotta-100 { color: var(--mid-coral-soft) !important; }
 [data-design="midnight"] .text-terracotta-500\/60 { color: rgba(255, 92, 124, 0.6) !important; }
 
-/* Custom hex text colors used in cross-promo etc. */
-[data-design="midnight"] .text-\[\#2c1810\] { color: var(--mid-bone) !important; }
-[data-design="midnight"] .text-\[\#8b7355\] { color: var(--mid-stone) !important; }
-[data-design="midnight"] .text-\[\#2d5a3d\] { color: var(--mid-mint) !important; }
-[data-design="midnight"] .text-\[\#c96442\] { color: var(--mid-coral) !important; }
-
 /* Category text accents — keep semantic coloring but in midnight palette */
 [data-design="midnight"] .text-amber-500,
 [data-design="midnight"] .text-amber-600,

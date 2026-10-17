@@ -3,7 +3,7 @@ import {
   Trash2, Clock,
   ChevronRight, Info, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
-  FileText as FileTextIcon, Lightbulb
+  Lightbulb
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -192,13 +192,6 @@ export default function Settings() {
 
         {/* Ecosystem */}
         <SettingGroup title="Ecosystem">
-          <SettingItem
-            icon={FileTextIcon}
-            title="ResuMate — AI Resume Builder"
-            subtitle="Build ATS-friendly resumes with AI"
-            iconColor="text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20"
-            onClick={() => window.open('https://resumate.paperknife.app', '_blank')}
-          />
           <SettingItem
             icon={HeartIcon}
             title="Sponsor Project"

@@ -11,8 +11,6 @@ import {
   Zap,
   WifiOff,
   Shield,
-  FileText as FileTextIcon,
-  Sparkles,
   Heart as HeartIcon,
   Coffee as CoffeeIcon,
   Building2 as BuildingIcon,
@@ -588,45 +586,6 @@ export default function WebView({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
-      {/* ResuMate Cross-Promo */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#faf7f2] via-[#f0ebe4] to-[#fff1e8] dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 border border-[rgba(201,100,66,0.15)] dark:border-zinc-700 shadow-clay dark:shadow-none p-10 md:p-14">
-            {/* Gradient top bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c96442] to-[#2d5a3d]" />
-
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <div className="flex-1 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2d5a3d]/10 dark:bg-emerald-900/20 text-[#2d5a3d] dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest">
-                  <Sparkles size={12} />
-                  Also by PaperKnife
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-[#2c1810] dark:text-white leading-tight">
-                  Working with resumes?<br />
-                  <span className="text-[#c96442]">Build one that lands interviews.</span>
-                </h3>
-                <p className="text-[#8b7355] dark:text-zinc-400 text-base leading-relaxed max-w-lg">
-                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
-                </p>
-                <a
-                  href="https://resumate.paperknife.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[#c96442] to-[#2d5a3d] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-[#c96442]/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#c96442]/30 transition-all duration-300 no-underline"
-                >
-                  <FileTextIcon size={16} />
-                  Try ResuMate — It's Free
-                </a>
-              </div>
-
-              {/* Visual */}
-              <div className="hidden md:flex w-36 h-36 rounded-[28px] bg-gradient-to-br from-[#c96442] to-[#2d5a3d] items-center justify-center shadow-xl shadow-[#c96442]/20 shrink-0 overflow-hidden">
-                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

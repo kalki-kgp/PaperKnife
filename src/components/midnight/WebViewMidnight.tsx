@@ -12,8 +12,6 @@ import {
   Zap,
   WifiOff,
   Shield,
-  FileText as FileTextIcon,
-  Sparkles,
   Heart as HeartIcon,
   Coffee as CoffeeIcon,
   Building2 as BuildingIcon,
@@ -609,47 +607,6 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
-      {/* ResuMate Cross-Promo */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
-            style={{ background: 'linear-gradient(135deg, #0F0F18 0%, #1A1426 100%)' }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, var(--mid-coral), var(--mid-mint), transparent)' }} />
-
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <div className="flex-1 space-y-4">
-                <div className="mid-chip" style={{ background: 'rgba(91, 255, 176, 0.10)', borderColor: 'rgba(91, 255, 176, 0.25)', color: 'var(--mid-mint)' }}>
-                  <Sparkles size={12} />
-                  Also by PaperKnife
-                </div>
-                <h3 className="mid-display-tight text-2xl md:text-3xl leading-tight" style={{ color: 'var(--mid-bone)' }}>
-                  Working with resumes?<br />
-                  <span className="mid-italic" style={{ color: 'var(--mid-coral-soft)' }}>Build one that lands interviews.</span>
-                </h3>
-                <p className="text-base leading-relaxed max-w-lg" style={{ color: 'var(--mid-stone)' }}>
-                  ResuMate analyzes your resume with AI, scores it against ATS systems, and helps you build a polished, job-ready version — in minutes, not hours.
-                </p>
-                <a
-                  href="https://resumate.paperknife.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mid-btn-primary no-underline"
-                >
-                  <FileTextIcon size={16} />
-                  Try ResuMate — It's Free
-                </a>
-              </div>
-
-              <div className="hidden md:flex w-36 h-36 rounded-[28px] items-center justify-center shrink-0 overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, var(--mid-coral) 0%, var(--mid-violet) 100%)', boxShadow: '0 30px 60px -20px var(--mid-coral-glow)' }}
-              >
-                <img src="/logos/resumate-promo.png" alt="ResuMate AI Resume Builder" width={144} height={144} className="w-full h-full object-cover rounded-[28px]" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

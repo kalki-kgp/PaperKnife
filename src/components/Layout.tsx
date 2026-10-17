@@ -284,7 +284,6 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
               <div className="col-span-1 md:col-span-3">
                 <h4 className="font-bold text-[10px] uppercase tracking-widest text-gray-900 dark:text-white mb-4">Ecosystem</h4>
                 <ul className="space-y-2.5 text-xs text-gray-500 dark:text-zinc-500">
-                  <li><a href="https://resumate.paperknife.app" target="_blank" className="hover:text-terracotta-500 transition-colors">ResuMate — AI Resume Builder</a></li>
                   <li><a href="https://ko-fi.com/kalkikgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Buy me a Coffee ☕</a></li>
                   <li><a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Sponsor <HeartIcon size={10} className="text-terracotta-500" /></a></li>
                   <li><Link to="/feedback?type=enterprise" className="hover:text-terracotta-500 transition-colors">Enterprise Licensing</Link></li>
