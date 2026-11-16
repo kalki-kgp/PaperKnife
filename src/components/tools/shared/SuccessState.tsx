@@ -1,4 +1,4 @@
-import { Download, Eye, CheckCircle2, Share2, RotateCcw, type LucideIcon } from 'lucide-react'
+import { Download, Eye, CheckCircle2, Share2, RotateCcw, X, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
@@ -16,6 +16,7 @@ interface SuccessStateProps {
 
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true, nextAction }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
+  const [promoVisible, setPromoVisible] = useState(true)
 
   useEffect(() => {
     
@@ -143,6 +144,35 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
         )}
       </div>
 
+
+      {promoVisible && (
+        <div className="relative mt-2 rounded-2xl bg-[#0d0e14] border border-white/10 p-5 overflow-hidden">
+          <button
+            onClick={() => setPromoVisible(false)}
+            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+            aria-label="Dismiss"
+          >
+            <X size={12} />
+          </button>
+          <div className="flex items-center gap-4 pr-6">
+            <img src="/logos/stash-icon.png" alt="" width={48} height={48} className="w-12 h-12 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white mb-0.5">Stash: clipboard history for Mac</p>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Also by PaperKnife. If you use a Mac, everything you copy is one shortcut away. Free, 18 MB, nothing leaves your Mac.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://stash.paperknife.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-[#3b82f6] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-[#3b82f6]/25 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 no-underline"
+          >
+            Get Stash, free
+          </a>
+        </div>
+      )}
 
       <button
         onClick={onStartOver}

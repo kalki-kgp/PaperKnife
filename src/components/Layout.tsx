@@ -12,7 +12,8 @@ import {
   ArrowLeft as ArrowLeftIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Moon as MoonIcon
+  Moon as MoonIcon,
+  ClipboardList
 } from 'lucide-react'
 import { Theme, Tool, ToolCategory } from '../types'
 import type { DesignVariant } from '../utils/designVariant'
@@ -132,6 +133,20 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
 
+  const stashBadge = (
+    <a
+      href="https://stash.paperknife.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Stash: clipboard history for your Mac, free"
+      className="shrink-0 ml-1.5 md:ml-0 flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all bg-blue-50 text-blue-700 border-blue-100 shadow-[0_8px_24px_rgba(59,130,246,0.12)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(59,130,246,0.2)] dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/20 no-underline"
+    >
+      <ClipboardList size={12} />
+      <span className="hidden min-[400px]:inline md:hidden tracking-[0.1em]">Stash</span>
+      <span className="hidden md:inline">New · Stash for Mac</span>
+    </a>
+  )
+
   const offlineBadge = offlineProgress.status !== 'unsupported' && (
     <div
       className={`group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all ${
@@ -187,7 +202,7 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
               <span className="font-black tracking-tighter text-lg md:text-xl dark:text-white hidden xs:block">PaperKnife</span>
             </Link>
             <div className="h-6 w-[1px] bg-gray-200 dark:bg-zinc-800 mx-1 md:mx-2 shrink-0" />
-            <div className="relative min-w-0" ref={dropdownRef}>
+            <div className="relative min-w-0 flex" ref={dropdownRef}>
               <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-xl transition-all font-black text-[10px] md:text-sm uppercase tracking-widest min-w-0 ${isDropdownOpen ? 'bg-terracotta-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
                 <span className="truncate">{isHome ? 'All Tools' : activeTool?.title || 'Tool'}</span>
                 <ChevronDownIcon size={14} className={`transition-transform duration-300 shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -218,6 +233,7 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
             </div>
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            {stashBadge}
             {offlineBadge}
             <Link to="/about" aria-label="About PaperKnife" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
               <InfoIcon size={18} />
@@ -284,6 +300,7 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
               <div className="col-span-1 md:col-span-3">
                 <h4 className="font-bold text-[10px] uppercase tracking-widest text-gray-900 dark:text-white mb-4">Ecosystem</h4>
                 <ul className="space-y-2.5 text-xs text-gray-500 dark:text-zinc-500">
+                  <li><a href="https://stash.paperknife.app" target="_blank" className="hover:text-terracotta-500 transition-colors">Stash: Clipboard History for Mac</a></li>
                   <li><a href="https://ko-fi.com/kalkikgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Buy me a Coffee ☕</a></li>
                   <li><a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="flex items-center gap-2 hover:text-terracotta-500 transition-colors">Sponsor <HeartIcon size={10} className="text-terracotta-500" /></a></li>
                   <li><Link to="/feedback?type=enterprise" className="hover:text-terracotta-500 transition-colors">Enterprise Licensing</Link></li>

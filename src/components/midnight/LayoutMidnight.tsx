@@ -19,7 +19,8 @@ import {
   ArrowLeft as ArrowLeftIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Sun as SunIcon
+  Sun as SunIcon,
+  ClipboardList
 } from 'lucide-react'
 import { Theme, Tool, ToolCategory } from '../../types'
 import { PaperKnifeLogo } from '../Logo'
@@ -141,6 +142,25 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
 
+  const stashBadge = (
+    <a
+      href="https://stash.paperknife.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Stash: clipboard history for your Mac, free"
+      className="shrink-0 ml-1.5 md:ml-0 flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] no-underline transition-all hover:-translate-y-0.5"
+      style={{
+        background: 'rgba(110, 168, 255, 0.08)',
+        border: '1px solid rgba(110, 168, 255, 0.35)',
+        color: '#6ea8ff'
+      }}
+    >
+      <ClipboardList size={12} />
+      <span className="hidden min-[400px]:inline md:hidden tracking-[0.1em]">Stash</span>
+      <span className="hidden md:inline">New · Stash for Mac</span>
+    </a>
+  )
+
   const offlineBadge = offlineProgress.status !== 'unsupported' && (
     <div className="group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
       style={{
@@ -216,7 +236,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
               </span>
             </Link>
             <div className="h-6 w-[1px] mx-1 md:mx-2 shrink-0" style={{ background: 'var(--mid-hairline-mid)' }} />
-            <div className="relative min-w-0" ref={dropdownRef}>
+            <div className="relative min-w-0 flex" ref={dropdownRef}>
               <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full transition-all text-[10px] md:text-xs uppercase tracking-[0.16em] min-w-0 font-semibold"
                 style={isDropdownOpen
@@ -270,6 +290,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
             </div>
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            {stashBadge}
             {offlineBadge}
             <Link to="/about" aria-label="About PaperKnife"
               className="p-2 md:px-4 md:py-2 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] transition-all flex items-center gap-2 no-underline"
@@ -348,6 +369,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
               <div className="col-span-1 md:col-span-3">
                 <h4 className="mid-mono-label mb-4" style={{ color: 'var(--mid-bone)' }}>Ecosystem</h4>
                 <ul className="space-y-2.5 text-xs">
+                  <li><a href="https://stash.paperknife.app" target="_blank" className="mid-link no-underline">Stash: Clipboard History for Mac</a></li>
                   <li><a href="https://ko-fi.com/kalkikgp" target="_blank" className="mid-link no-underline">Buy me a Coffee</a></li>
                   <li><a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="mid-link no-underline flex items-center gap-2">Sponsor <HeartIcon size={10} style={{ color: 'var(--mid-coral)' }} /></a></li>
                   <li><Link to="/feedback?type=enterprise" className="mid-link no-underline">Enterprise Licensing</Link></li>

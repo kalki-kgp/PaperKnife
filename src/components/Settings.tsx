@@ -3,7 +3,7 @@ import {
   Trash2, Clock,
   ChevronRight, Info, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
-  Lightbulb
+  Lightbulb, ClipboardList
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -112,7 +112,7 @@ export default function Settings() {
            </div>
            <div>
               <h2 className="text-xl font-black dark:text-white tracking-tighter leading-none mb-1">Preferences</h2>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Protocol v1.0.9 • Local</p>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Protocol v{__APP_VERSION__} • Local</p>
            </div>
         </div>
 
@@ -193,6 +193,13 @@ export default function Settings() {
         {/* Ecosystem */}
         <SettingGroup title="Ecosystem">
           <SettingItem
+            icon={ClipboardList}
+            title="Stash: Clipboard History for Mac"
+            subtitle="Everything you copy, one shortcut away"
+            iconColor="text-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            onClick={() => window.open('https://stash.paperknife.app', '_blank')}
+          />
+          <SettingItem
             icon={HeartIcon}
             title="Sponsor Project"
             subtitle="Fuel development"
@@ -251,7 +258,7 @@ export default function Settings() {
                 }}
               />
            </div>
-           <p className="text-[8px] font-black uppercase text-center text-gray-300 dark:text-zinc-700 tracking-[0.5em] mt-10">Configuration Engine v1.0.9 Stable</p>
+           <p className="text-[8px] font-black uppercase text-center text-gray-300 dark:text-zinc-700 tracking-[0.5em] mt-10">Configuration Engine v{__APP_VERSION__} Stable</p>
         </div>
 
       </div>

@@ -146,7 +146,8 @@ function perRouteSeoHtml(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
-    __BUILD_ID__: JSON.stringify(buildId)
+    __BUILD_ID__: JSON.stringify(buildId),
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? JSON.parse(fs.readFileSync('./package.json', 'utf8')).version)
   },
   plugins: [
     react(),
