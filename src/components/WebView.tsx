@@ -416,6 +416,36 @@ export default function WebView({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
+      {/* Stash */}
+      <section className="max-w-4xl mx-auto px-6 pt-16">
+        <div className="relative overflow-hidden rounded-[32px] bg-[#0d0e14] border border-white/10 shadow-clay p-10 md:p-14">
+          <div className="absolute -top-24 -right-16 w-80 h-80 rounded-full bg-[#3b82f6]/25 blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-white/80 rounded-full text-xs font-bold uppercase tracking-widest">
+                Also by PaperKnife · for Mac
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                Clipboard history<br />
+                <span className="text-[#6ea8ff]">that stays small.</span>
+              </h3>
+              <p className="text-white/70 text-base leading-relaxed max-w-lg">
+                Stash keeps everything you copy one shortcut away. Press ⌘⇧C, type a few letters, paste. It runs in about 18 MB of memory and, like PaperKnife, never sends anything off your device.
+              </p>
+              <a
+                href="https://stash.paperknife.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#3b82f6] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-[#3b82f6]/30 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 no-underline"
+              >
+                Get Stash, free
+              </a>
+            </div>
+            <img src="/logos/stash-icon.png" alt="Stash app icon" width={144} height={144} className="hidden md:block w-36 h-36 shrink-0 drop-shadow-2xl" />
+          </div>
+        </div>
+      </section>
+
       {/* SEO Content Block */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="rounded-[32px] bg-accent-yellow dark:bg-zinc-900/50 p-10 md:p-14 shadow-clay dark:shadow-none border border-white/40 dark:border-zinc-800">

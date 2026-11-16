@@ -20,7 +20,8 @@ import {
   Coffee as CoffeeIcon,
   Building2 as BuildingIcon,
   Mail as MailIcon,
-  Server as ServerIcon
+  Server as ServerIcon,
+  ClipboardList as ClipboardIcon
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PaperKnifeLogo } from './Logo'
@@ -92,7 +93,10 @@ const AboutWeb = () => {
                  <a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="px-8 py-3.5 bg-white text-terracotta-500 border border-terracotta-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-terracotta-50 transition-colors flex items-center gap-2">
                     <HeartIcon size={14} fill="currentColor" /> Sponsor
                  </a>
-                 <button onClick={() => navigate('/thanks')} className="px-8 py-3.5 bg-white text-terracotta-500 border border-terracotta-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-terracotta-50 transition-colors flex items-center gap-2">
+                 <a href="https://stash.paperknife.app" target="_blank" className="flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-terracotta-500 transition-colors group">
+              <ClipboardIcon size={16} /> Stash for Mac <ExternalLinkIcon size={12} className="opacity-40 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+           </a>
+           <button onClick={() => navigate('/thanks')} className="px-8 py-3.5 bg-white text-terracotta-500 border border-terracotta-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-terracotta-50 transition-colors flex items-center gap-2">
                     <SparklesIcon size={14} /> Hall of Fame
                  </button>
               </div>

@@ -3,7 +3,7 @@ import {
   Trash2, Clock,
   ChevronRight, Info, User, DownloadCloud, ListFilter,
   RotateCcw, ShieldCheck, Bug, Heart as HeartIcon, Settings2,
-  Lightbulb
+  Lightbulb, ClipboardList
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { clearActivity } from '../utils/recentActivity'
@@ -192,6 +192,13 @@ export default function Settings() {
 
         {/* Ecosystem */}
         <SettingGroup title="Ecosystem">
+          <SettingItem
+            icon={ClipboardList}
+            title="Stash: Clipboard History for Mac"
+            subtitle="Everything you copy, one shortcut away"
+            iconColor="text-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            onClick={() => window.open('https://stash.paperknife.app', '_blank')}
+          />
           <SettingItem
             icon={HeartIcon}
             title="Sponsor Project"

@@ -427,6 +427,39 @@ export default function WebViewMidnight({ tools }: { tools: Tool[] }) {
         </div>
       </section>
 
+      {/* Stash */}
+      <section className="max-w-4xl mx-auto px-6 pt-16">
+        <div className="mid-card-grad relative overflow-hidden p-10 md:p-14"
+          style={{ background: 'linear-gradient(135deg, #0d0e14 0%, #111a33 100%)' }}
+        >
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, #3b82f6, transparent)' }} />
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 space-y-4">
+              <div className="mid-chip" style={{ background: 'rgba(59, 130, 246, 0.12)', borderColor: 'rgba(59, 130, 246, 0.3)', color: '#8fbcff' }}>
+                Also by PaperKnife · for Mac
+              </div>
+              <h3 className="mid-display-tight text-2xl md:text-3xl leading-tight" style={{ color: 'var(--mid-bone)' }}>
+                Clipboard history<br />
+                <span className="mid-italic" style={{ color: '#8fbcff' }}>that stays small.</span>
+              </h3>
+              <p className="text-base leading-relaxed max-w-lg" style={{ color: 'var(--mid-stone)' }}>
+                Stash keeps everything you copy one shortcut away. Press ⌘⇧C, type a few letters, paste. It runs in about 18 MB of memory and, like PaperKnife, never sends anything off your device.
+              </p>
+              <a
+                href="https://stash.paperknife.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mid-btn-primary no-underline"
+                style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #5b8cff 100%)' }}
+              >
+                Get Stash, free
+              </a>
+            </div>
+            <img src="/logos/stash-icon.png" alt="Stash app icon" width={144} height={144} className="hidden md:block w-36 h-36 shrink-0" style={{ filter: 'drop-shadow(0 30px 40px rgba(59, 130, 246, 0.25))' }} />
+          </div>
+        </div>
+      </section>
+
       {/* SEO Content Block */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="mid-card p-10 md:p-14">

@@ -348,6 +348,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
               <div className="col-span-1 md:col-span-3">
                 <h4 className="mid-mono-label mb-4" style={{ color: 'var(--mid-bone)' }}>Ecosystem</h4>
                 <ul className="space-y-2.5 text-xs">
+                  <li><a href="https://stash.paperknife.app" target="_blank" className="mid-link no-underline">Stash: Clipboard History for Mac</a></li>
                   <li><a href="https://ko-fi.com/kalkikgp" target="_blank" className="mid-link no-underline">Buy me a Coffee</a></li>
                   <li><a href="https://github.com/sponsors/kalki-kgp" target="_blank" className="mid-link no-underline flex items-center gap-2">Sponsor <HeartIcon size={10} style={{ color: 'var(--mid-coral)' }} /></a></li>
                   <li><Link to="/feedback?type=enterprise" className="mid-link no-underline">Enterprise Licensing</Link></li>
