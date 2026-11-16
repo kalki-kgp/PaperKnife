@@ -22,7 +22,6 @@ import {
   Sun as SunIcon,
   ClipboardList
 } from 'lucide-react'
-import { isMacDesktop } from '../../utils/platform'
 import { Theme, Tool, ToolCategory } from '../../types'
 import { PaperKnifeLogo } from '../Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../../utils/recentActivity'
@@ -143,12 +142,13 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
 
-  const stashBadge = isMacDesktop() && (
+  const stashBadge = (
     <a
       href="https://stash.paperknife.app"
       target="_blank"
       rel="noopener noreferrer"
-      className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] no-underline transition-all hover:-translate-y-0.5"
+      title="Stash: clipboard history for your Mac, free"
+      className="shrink-0 ml-1.5 md:ml-0 flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] no-underline transition-all hover:-translate-y-0.5"
       style={{
         background: 'rgba(110, 168, 255, 0.08)',
         border: '1px solid rgba(110, 168, 255, 0.35)',
@@ -156,7 +156,8 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
       }}
     >
       <ClipboardList size={12} />
-      <span>New · Stash for Mac</span>
+      <span className="hidden min-[400px]:inline md:hidden tracking-[0.1em]">Stash</span>
+      <span className="hidden md:inline">New · Stash for Mac</span>
     </a>
   )
 
@@ -235,7 +236,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
               </span>
             </Link>
             <div className="h-6 w-[1px] mx-1 md:mx-2 shrink-0" style={{ background: 'var(--mid-hairline-mid)' }} />
-            <div className="relative min-w-0" ref={dropdownRef}>
+            <div className="relative min-w-0 flex" ref={dropdownRef}>
               <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full transition-all text-[10px] md:text-xs uppercase tracking-[0.16em] min-w-0 font-semibold"
                 style={isDropdownOpen

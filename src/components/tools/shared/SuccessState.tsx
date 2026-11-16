@@ -2,7 +2,6 @@ import { Download, Eye, CheckCircle2, Share2, RotateCcw, X, type LucideIcon } fr
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { downloadFile, shareFile } from '../../../utils/pdfHelpers'
-import { isMacDesktop } from '../../../utils/platform'
 import PdfPreview from '../../PdfPreview'
 
 interface SuccessStateProps {
@@ -17,7 +16,7 @@ interface SuccessStateProps {
 
 export default function SuccessState({ message, downloadUrl, fileName, onStartOver, showPreview = true, nextAction }: SuccessStateProps) {
   const [internalPreviewFile, setInternalPreviewFile] = useState<File | null>(null)
-  const [promoVisible, setPromoVisible] = useState(isMacDesktop)
+  const [promoVisible, setPromoVisible] = useState(true)
 
   useEffect(() => {
     
@@ -158,9 +157,9 @@ export default function SuccessState({ message, downloadUrl, fileName, onStartOv
           <div className="flex items-center gap-4 pr-6">
             <img src="/logos/stash-icon.png" alt="" width={48} height={48} className="w-12 h-12 shrink-0" />
             <div className="min-w-0">
-              <p className="text-sm font-bold text-white mb-0.5">Stash, clipboard history for your Mac</p>
+              <p className="text-sm font-bold text-white mb-0.5">Stash: clipboard history for Mac</p>
               <p className="text-xs text-white/60 leading-relaxed">
-                Everything you copy, one shortcut away. Free, 18 MB, nothing leaves your Mac.
+                Also by PaperKnife. If you use a Mac, everything you copy is one shortcut away. Free, 18 MB, nothing leaves your Mac.
               </p>
             </div>
           </div>

@@ -112,7 +112,7 @@ export default function Settings() {
            </div>
            <div>
               <h2 className="text-xl font-black dark:text-white tracking-tighter leading-none mb-1">Preferences</h2>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Protocol v1.0.9 • Local</p>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Protocol v{__APP_VERSION__} • Local</p>
            </div>
         </div>
 
@@ -258,7 +258,7 @@ export default function Settings() {
                 }}
               />
            </div>
-           <p className="text-[8px] font-black uppercase text-center text-gray-300 dark:text-zinc-700 tracking-[0.5em] mt-10">Configuration Engine v1.0.9 Stable</p>
+           <p className="text-[8px] font-black uppercase text-center text-gray-300 dark:text-zinc-700 tracking-[0.5em] mt-10">Configuration Engine v{__APP_VERSION__} Stable</p>
         </div>
 
       </div>

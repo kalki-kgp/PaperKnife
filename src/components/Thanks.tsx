@@ -77,7 +77,7 @@ export default function Thanks() {
 
           <footer className="text-center py-8 opacity-20">
              <PaperKnifeLogo size={24} iconColor="#E68A73" partColor="currentColor" className="mx-auto mb-4" />
-             <p className="text-[8px] font-black uppercase tracking-[0.5em]">PaperKnife Protocol v1.0.9</p>
+             <p className="text-[8px] font-black uppercase tracking-[0.5em]">PaperKnife Protocol v{__APP_VERSION__}</p>
           </footer>
         </div>
       </main>
