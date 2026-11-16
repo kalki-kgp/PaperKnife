@@ -12,8 +12,10 @@ import {
   ArrowLeft as ArrowLeftIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Moon as MoonIcon
+  Moon as MoonIcon,
+  ClipboardList
 } from 'lucide-react'
+import { isMacDesktop } from '../utils/platform'
 import { Theme, Tool, ToolCategory } from '../types'
 import type { DesignVariant } from '../utils/designVariant'
 import { PaperKnifeLogo } from './Logo'
@@ -132,6 +134,18 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
 
+  const stashBadge = isMacDesktop() && (
+    <a
+      href="https://stash.paperknife.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all bg-blue-50 text-blue-700 border-blue-100 shadow-[0_8px_24px_rgba(59,130,246,0.12)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(59,130,246,0.2)] dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/20 no-underline"
+    >
+      <ClipboardList size={12} />
+      <span>New · Stash for Mac</span>
+    </a>
+  )
+
   const offlineBadge = offlineProgress.status !== 'unsupported' && (
     <div
       className={`group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-[10px] font-black uppercase tracking-[0.18em] transition-all ${
@@ -218,6 +232,7 @@ export default function Layout({ children, tools, onFileDrop, variant, onChangeV
             </div>
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            {stashBadge}
             {offlineBadge}
             <Link to="/about" aria-label="About PaperKnife" className={`p-2 md:px-4 md:py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${location.pathname.includes('about') ? 'bg-terracotta-50 dark:bg-terracotta-900/20 text-terracotta-500' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-900'}`}>
               <InfoIcon size={18} />

@@ -19,8 +19,10 @@ import {
   ArrowLeft as ArrowLeftIcon,
   Github as GHIcon,
   Heart as HeartIcon,
-  Sun as SunIcon
+  Sun as SunIcon,
+  ClipboardList
 } from 'lucide-react'
+import { isMacDesktop } from '../../utils/platform'
 import { Theme, Tool, ToolCategory } from '../../types'
 import { PaperKnifeLogo } from '../Logo'
 import { ActivityEntry, getRecentActivity, clearActivity } from '../../utils/recentActivity'
@@ -140,6 +142,23 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
     : isUpdating
       ? 'Offline access still works. Adding the latest tools and fixes in the background — no action needed.'
       : `${offlineProgress.label || 'Caching app bundles'}${hasProgressData ? ` (${offlineProgress.completed}/${offlineProgress.total})` : ''}. Keep this tab open for a moment.`
+
+  const stashBadge = isMacDesktop() && (
+    <a
+      href="https://stash.paperknife.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] no-underline transition-all hover:-translate-y-0.5"
+      style={{
+        background: 'rgba(110, 168, 255, 0.08)',
+        border: '1px solid rgba(110, 168, 255, 0.35)',
+        color: '#6ea8ff'
+      }}
+    >
+      <ClipboardList size={12} />
+      <span>New · Stash for Mac</span>
+    </a>
+  )
 
   const offlineBadge = offlineProgress.status !== 'unsupported' && (
     <div className="group relative hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
@@ -270,6 +289,7 @@ export default function LayoutMidnight({ children, tools, onFileDrop, variant, o
             </div>
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
+            {stashBadge}
             {offlineBadge}
             <Link to="/about" aria-label="About PaperKnife"
               className="p-2 md:px-4 md:py-2 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] transition-all flex items-center gap-2 no-underline"
