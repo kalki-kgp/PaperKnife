@@ -36,7 +36,7 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 1000 } } }],
   webServer: remote ? undefined : {
-    command: `node_modules/.bin/wrangler dev --local --port ${PORT} --show-interactive-dev-session=false`,
+    command: `node_modules/.bin/wrangler d1 migrations apply STATS --local && node_modules/.bin/wrangler dev --local --port ${PORT} --show-interactive-dev-session=false`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

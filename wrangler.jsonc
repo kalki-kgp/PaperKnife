@@ -2,12 +2,28 @@
   "name": "paperknife",
   "compatibility_date": "2026-09-11",
 
+  // Runs only for /api/* (run_worker_first below); all other paths are served
+  // as static assets without invoking it.
+  "main": "worker/index.ts",
+
+  // Anonymous daily page counts written by POST /api/ping.
+  "d1_databases": [
+    {
+      "binding": "STATS",
+      "database_name": "paperknife-stats",
+      "database_id": "597d6ee7-9498-4f79-934d-d0b945ce5365",
+      "migrations_dir": "migrations"
+    }
+  ],
+
   // Keeps paperknife.<subdomain>.workers.dev alive as a staging URL to verify
   // a deploy against before it reaches the custom domain.
   "workers_dev": true,
 
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
 
     // Unmatched paths serve 404.html with a real 404 status. Deliberately NOT
     // "single-page-application", which returns index.html at 200 for every
