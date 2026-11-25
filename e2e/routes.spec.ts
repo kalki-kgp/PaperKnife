@@ -30,6 +30,18 @@ test('unknown paths return a real 404', async ({ page }) => {
   expect(response?.status()).toBe(404)
 })
 
+test('/api/ping counts same-origin posts and refuses the rest', async ({ request, baseURL }) => {
+  const origin = new URL(baseURL!).origin
+  const body = { path: '/merge', kind: 'visit', ref: 'google.com', installed: false }
+  // Not against production: it would add a fake visit to the real counts.
+  if (!process.env.E2E_BASE_URL) {
+    expect((await request.post('/api/ping', { data: body, headers: { Origin: origin } })).status()).toBe(204)
+  }
+  expect((await request.post('/api/ping', { data: body, headers: { Origin: 'https://evil.example' } })).status()).toBe(403)
+  expect((await request.get('/api/ping')).status()).toBe(405)
+  expect((await request.get('/api/nope')).status()).toBe(404)
+})
+
 test('the CSP still allows what the tools rely on', async ({ request }) => {
   const csp = (await request.get('/')).headers()['content-security-policy'] ?? ''
   const directive = (name: string) => csp.split(';').map(d => d.trim()).find(d => d.startsWith(`${name} `)) ?? ''

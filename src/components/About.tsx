@@ -125,7 +125,7 @@ const AboutWeb = () => {
                   <ServerOffIcon size={14} /> Zero Infrastructure
                </h4>
                <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium leading-relaxed">
-                  We operate no backend. No databases. No file caches. PaperKnife is a static distribution of code that activates your browser's existing power.
+                  No server ever sees your files. No file databases. No file caches. The only thing we keep is an anonymous count of page visits. PaperKnife is a static distribution of code that activates your browser's existing power.
                </p>
             </div>
           </div>

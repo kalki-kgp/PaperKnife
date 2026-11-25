@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { RouteSeo } from './components/RouteSeo'
+import { VisitPing } from './components/VisitPing'
 import { Toaster, toast } from 'sonner'
 import { Tool } from './types'
 import Layout from './components/Layout'
@@ -320,6 +321,7 @@ function App() {
   return (
     <BrowserRouter>
       <RouteSeo />
+      <VisitPing />
       <ScrollToTop />
       <PipelineProvider>
         <ShellComponent
